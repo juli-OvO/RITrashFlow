@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<!--
+  Making Waste Visible
+  To swap in the full Rhode Island dataset later, keep the JSON at /data/ri_municipal_waste_2024.json
+  and preserve the same town + metric field names used in data.js.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Making Waste Visible</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="side-rail side-rail--left">
+        <aside class="intro-panel">
+          <p class="kicker">Making Waste Visible</p>
+          <div class="intro-panel__copy">
+            <h1>Rhode Island Waste Flow</h1>
+            <p class="intro-text">
+              Visualizing Rhode Island municipal waste flow by town. Each route
+              traces household material moving inward toward the Johnston
+              Landfill &amp; Recycle Center.
+            </p>
+          </div>
+        </aside>
+
+        <aside class="control-panel" id="control-panel">
+          <div class="control-panel__block">
+            <p class="control-panel__eyebrow">Mode</p>
+            <p class="control-panel__body">
+              Switch the material stream to compare what moves to Johnston from
+              each municipality.
+            </p>
+          </div>
+
+          <div
+            class="control-panel__block control-panel__block--toggles"
+            id="mode-toggles"
+            aria-label="Waste flow modes"
+          ></div>
+        </aside>
+      </div>
+
+      <main class="map-column">
+        <section class="map-frame" aria-labelledby="map-title">
+          <div class="map-atmosphere"></div>
+          <svg
+            id="waste-map"
+            class="waste-map"
+            viewBox="0 0 920 900"
+            role="img"
+            aria-labelledby="map-title map-description"
+          >
+            <title id="map-title">Rhode Island municipal waste flow map</title>
+            <desc id="map-description">
+              A stylized Rhode Island map showing towns as nodes and animated
+              waste routes flowing inward toward Johnston.
+            </desc>
+          </svg>
+          <div class="map-status" id="map-status" aria-live="polite">
+            Loading municipal dataset…
+          </div>
+          <div class="map-overlay map-overlay--reading">
+            <div class="reading-note">
+              <p class="reading-note__title">How to read</p>
+              <div class="reading-note__grid">
+                <div class="reading-note__item">
+                  <span class="reading-note__glyph reading-note__glyph--landfill"></span>
+                  <span>Landfill</span>
+                </div>
+                <div class="reading-note__item">
+                  <span class="reading-note__glyph reading-note__glyph--recycling"></span>
+                  <span>Recycling</span>
+                </div>
+                <div class="reading-note__item">
+                  <span class="reading-note__glyph reading-note__glyph--rejected"></span>
+                  <span>Rejected recycling</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="map-overlay map-overlay--legend">
+            <p class="control-panel__label">Legend</p>
+            <div class="legend-scale">
+              <div class="legend-scale__row">
+                <span>Lower</span>
+                <div class="legend-scale__marks">
+                  <span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+              <div class="legend-scale__row">
+                <span>Higher</span>
+                <div class="legend-scale__marks legend-scale__marks--dense">
+                  <span></span><span></span><span></span><span></span>
+                  <span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="map-overlay map-overlay--meta">
+            <p class="meta-line" id="dataset-source">Dataset: loading…</p>
+            <p class="meta-line" id="dataset-updated">Updated: loading…</p>
+          </div>
+          <div class="tooltip" id="tooltip" hidden></div>
+        </section>
+      </main>
+
+      <div class="side-rail side-rail--right">
+        <aside class="control-panel control-panel--secondary" id="control-panel-secondary">
+          <div class="control-panel__block">
+            <p class="control-panel__label">Active town</p>
+            <div class="active-town" id="active-town">
+              <p class="active-town__name">Hover a town</p>
+              <p class="active-town__value">to inspect its current route.</p>
+            </div>
+          </div>
+
+          <div class="control-panel__block">
+            <p class="control-panel__label">Statewide municipal mean</p>
+            <div class="summary-list" id="summary-list"></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

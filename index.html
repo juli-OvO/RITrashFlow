@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scroll Story Starter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="canvas-wrap">
+        <canvas id="webgl-canvas" aria-hidden="true"></canvas>
+      </div>
+
+      <header class="section-indicator" aria-live="polite">
+        <span class="section-indicator__arrow">→</span>
+        <span id="section-label">slide 1</span>
+      </header>
+
+      <aside class="info-panel" id="info-panel">
+        <p class="info-panel__eyebrow" id="panel-eyebrow">slide 1</p>
+        <h1 class="info-panel__title" id="panel-title">Making Waste Visible</h1>
+        <p class="info-panel__body" id="panel-body">
+          something someething something something something something something something something
+        </p>
+      </aside>
+
+      <main class="scroll-layer" aria-label="Scroll scenes">
+        <section class="scroll-section" data-slide-id="slide-1">
+          <div class="scroll-section__copy">
+            <p>Scroll to move through the visual sequence.</p>
+          </div>
+        </section>
+        <section class="scroll-section" data-slide-id="slide-2">
+          <div class="scroll-section__copy">
+            <p>Placeholder tag and cube alternate across the frame.</p>
+          </div>
+        </section>
+        <section class="scroll-section" data-slide-id="slide-3">
+          <div class="scroll-section__copy">
+            <p>Scene definitions live in a single editable module.</p>
+          </div>
+        </section>
+        <section class="scroll-section" data-slide-id="slide-4">
+          <div class="scroll-section__copy">
+            <p>Smooth transitions keep the movement editorial and calm.</p>
+          </div>
+        </section>
+        <section class="scroll-section" data-slide-id="slide-5">
+          <div class="scroll-section__copy">
+            <p>Swap in garment and GLB tag assets when you are ready.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/"
+      }
+    }
+    </script>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

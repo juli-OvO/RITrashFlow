@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Making Waste Visible — Rhode Island Waste Flow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+
+      <!-- LEFT ANNOTATION COLUMN -->
+      <aside class="col col--left">
+
+        <h1 class="main-title">Making<br>Waste<br>Visible</h1>
+
+        <p class="body-copy">
+          Visualizing 2024 municipal waste data across Rhode Island.
+        </p>
+
+        <div class="col-section live-totals-section">
+          <p class="section-label">Live totals (statewide)</p>
+          <div id="summary-list" class="summary-list"></div>
+        </div>
+
+        <div class="legend-section">
+          <p class="section-label">How to read</p>
+          <div class="legend-rows">
+            <div class="legend-row">
+              <span class="tri-strip tri-strip--landfill" aria-hidden="true"></span>
+              <div class="legend-text">
+                <span class="legend-desc">Landfilled</span>
+                <span class="legend-unit">(tons per HH)</span>
+              </div>
+            </div>
+            <div class="legend-row">
+              <span class="tri-strip tri-strip--recycling" aria-hidden="true"></span>
+              <div class="legend-text">
+                <span class="legend-desc">Recycled</span>
+                <span class="legend-unit">(pounds per HH)</span>
+              </div>
+            </div>
+            <div class="legend-row">
+              <span class="tri-strip tri-strip--rejected" aria-hidden="true"></span>
+              <div class="legend-text">
+                <span class="legend-desc">Rejected recycling</span>
+                <span class="legend-unit">(pounds per HH)</span>
+              </div>
+            </div>
+          </div>
+          <p class="legend-note">More triangles = more waste flow.</p>
+        </div>
+
+      </aside>
+
+      <!-- CENTER MAP FIELD -->
+      <main class="col col--map">
+        <div class="map-frame">
+          <div class="map-atmosphere" aria-hidden="true"></div>
+          <svg
+            id="waste-map"
+            class="waste-map"
+            viewBox="0 0 1530 790"
+            role="img"
+            aria-labelledby="map-title map-desc"
+          >
+            <title id="map-title">Rhode Island municipal waste flow map</title>
+            <desc id="map-desc">
+              A stylized Rhode Island map showing towns as nodes with animated
+              waste routes flowing inward toward Johnston.
+            </desc>
+          </svg>
+          <div class="map-status" id="map-status" aria-live="polite">
+            Loading municipal dataset…
+          </div>
+          <div class="map-source" id="map-source" hidden>
+            <span id="source-dataset"></span>
+            <span class="source-sep" aria-hidden="true">·</span>
+            <span id="source-updated"></span>
+          </div>
+          <div class="tooltip" id="tooltip" hidden aria-live="polite"></div>
+        </div>
+      </main>
+
+      <!-- RIGHT ANNOTATION COLUMN -->
+      <aside class="col col--right">
+
+        <p class="right-title">Rhode Island<br>Waste Flow</p>
+
+        <p class="body-copy body-copy--right">
+          Live data stream of municipal waste moving to Johnston
+          Landfill &amp; Recycle Center.
+        </p>
+
+        <div class="col-section">
+          <div
+            id="mode-toggles"
+            class="mode-list"
+            aria-label="Waste flow modes"
+          ></div>
+        </div>
+
+        <div class="col-section">
+          <p class="section-label">Active town</p>
+          <div id="active-town" class="active-town">
+            <p class="active-town__name">—</p>
+            <p class="active-town__value">Hover a node to inspect its route.</p>
+          </div>
+        </div>
+
+        <div class="col-section timestamp-block">
+          <p class="section-label">Last updated</p>
+          <p class="timestamp-value" id="timestamp-value"></p>
+          <p class="live-mark" aria-hidden="true">● Live</p>
+        </div>
+
+      </aside>
+
+    </div>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
