@@ -14,7 +14,7 @@ export function createCubePlaceholder() {
   return cube;
 }
 
-export function loadTagGLB(url = "./textag.glb") {
+export function loadTagGLB(url = "./assets/models/textag.glb") {
   const loader = new GLTFLoader();
   return new Promise((resolve, reject) => {
     loader.load(

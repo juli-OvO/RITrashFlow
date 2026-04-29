@@ -1,73 +1,1127 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Scroll Story Starter</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="./styles.css" />
-  </head>
-  <body>
-    <div class="page-shell">
-      <div class="canvas-wrap">
-        <canvas id="webgl-canvas" aria-hidden="true"></canvas>
-      </div>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Making Waste Visible — Wireframe v0.2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400;1,6..96,700&family=Archivo+Narrow:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #0a0c08;          /* near-black with green undertone */
+    --paper-2: #11140e;
+    --ink: #e8ffd6;            /* toxic acid bone */
+    --ink-soft: rgba(232,255,214,0.55);
+    --ink-faint: rgba(232,255,214,0.18);
+    --hair: rgba(232,255,214,0.14);
+    --acid: #c6ff3d;           /* alarm green */
+    --warn: #ff2d2d;           /* warning red */
+    --rust: #b04a1f;           /* contamination */
+    --bruise: #4a1f6b;         /* deep purple shadow */
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Archivo Narrow", "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  body {
+    position: relative;
+    background:
+      radial-gradient(900px 600px at 80% 25%, rgba(198,255,61,0.10), transparent 60%),
+      radial-gradient(700px 500px at 20% 80%, rgba(255,45,45,0.07), transparent 60%),
+      var(--paper);
+  }
+  /* Grain overlay for that printed/alarming feel */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9;
+    pointer-events: none;
+    opacity: 0.18;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  /* Faint scanlines */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 8;
+    pointer-events: none;
+    opacity: 0.06;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(232,255,214,0.5) 0 1px,
+      transparent 1px 3px
+    );
+    mix-blend-mode: overlay;
+  }
 
-      <header class="section-indicator" aria-live="polite">
-        <span class="section-indicator__arrow">→</span>
-        <span id="section-label">slide 1</span>
-      </header>
+  /* ---------- Editorial side rails ---------- */
+  .rail {
+    position: fixed;
+    top: 0; bottom: 0;
+    width: 56px;
+    z-index: 4;
+    pointer-events: none;
+    border-right: 1px solid var(--hair);
+    background: rgba(10,12,8,0.5);
+  }
+  .rail.left { left: 0; }
+  .rail.right { right: 0; border-right: none; border-left: 1px solid var(--hair); }
+  .rail .v-label {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(-90deg);
+    transform-origin: center;
+    white-space: nowrap;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--acid);
+  }
+  .rail .v-stamp-top, .rail .v-stamp-bottom {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+  }
+  .rail .v-stamp-top { top: 22px; color: var(--warn); }
+  .rail .v-stamp-bottom { bottom: 22px; }
 
-      <aside class="info-panel" id="info-panel">
-        <p class="info-panel__eyebrow" id="panel-eyebrow">slide 1</p>
-        <h1 class="info-panel__title" id="panel-title">Making Waste Visible</h1>
-        <p class="info-panel__body" id="panel-body">
-          something someething something something something something something something something
-        </p>
-      </aside>
+  /* ---------- Top header strip ---------- */
+  .header {
+    position: fixed;
+    top: 0; left: 56px; right: 56px;
+    height: 64px;
+    z-index: 5;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
+    align-items: center;
+    border-bottom: 1px solid var(--hair);
+    background: rgba(10,12,8,0.78);
+    backdrop-filter: blur(8px);
+    padding: 0 28px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .header .cell {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-right: 18px;
+    color: var(--ink-soft);
+  }
+  .header .cell strong { color: var(--acid); font-weight: 700; }
+  .header .cell .dash { width: 24px; height: 1px; background: var(--acid); display: inline-block; }
+  .header .cell .alarm { color: var(--warn); animation: blink 1.6s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0.2; } }
+  .header .icon-btn {
+    width: 22px; height: 22px;
+    border: 1px solid var(--ink-soft);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: var(--ink);
+  }
 
-      <main class="scroll-layer" aria-label="Scroll scenes">
-        <section class="scroll-section" data-slide-id="slide-1">
-          <div class="scroll-section__copy">
-            <p>Scroll to move through the visual sequence.</p>
-          </div>
-        </section>
-        <section class="scroll-section" data-slide-id="slide-2">
-          <div class="scroll-section__copy">
-            <p>Placeholder tag and cube alternate across the frame.</p>
-          </div>
-        </section>
-        <section class="scroll-section" data-slide-id="slide-3">
-          <div class="scroll-section__copy">
-            <p>Scene definitions live in a single editable module.</p>
-          </div>
-        </section>
-        <section class="scroll-section" data-slide-id="slide-4">
-          <div class="scroll-section__copy">
-            <p>Smooth transitions keep the movement editorial and calm.</p>
-          </div>
-        </section>
-        <section class="scroll-section" data-slide-id="slide-5">
-          <div class="scroll-section__copy">
-            <p>Swap in garment and GLB tag assets when you are ready.</p>
-          </div>
-        </section>
-      </main>
+  /* ---------- 3D stage ---------- */
+  .stage {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  #webgl { display: block; width: 100%; height: 100%; }
+
+  /* ---------- Soft gradient orb behind cubes (alarm glow) ---------- */
+  .orb {
+    position: fixed;
+    z-index: 0;
+    width: 70vmin;
+    height: 70vmin;
+    right: -10vmin;
+    top: 8vh;
+    border-radius: 50%;
+    filter: blur(60px);
+    background:
+      radial-gradient(circle at 40% 40%, var(--acid), transparent 55%),
+      radial-gradient(circle at 70% 65%, var(--warn), transparent 60%),
+      radial-gradient(circle at 80% 90%, var(--bruise), transparent 55%);
+    opacity: 0.35;
+    transition: opacity 600ms ease, transform 600ms ease;
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
+
+  /* ---------- Captions ---------- */
+  .scroll-track { position: relative; z-index: 3; }
+  .scene-section {
+    height: 100vh;
+    padding: 96px 96px 56px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: end;
+    gap: 64px;
+    pointer-events: none;
+  }
+  .scene-section .caption {
+    pointer-events: auto;
+    max-width: 480px;
+  }
+  .scene-section.right { grid-template-columns: 1fr 1fr; }
+  .scene-section.right .caption { grid-column: 2; justify-self: end; }
+  .scene-section.left  .caption { grid-column: 1; justify-self: start; }
+
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--warn);
+    margin-bottom: 18px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+  .eyebrow .num { color: var(--ink-soft); }
+  .eyebrow .dash { width: 32px; height: 1px; background: var(--warn); display: inline-block; }
+  .eyebrow .alarm-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--warn);
+    box-shadow: 0 0 0 0 rgba(255,45,45,0.7);
+    animation: pulse 1.6s ease-out infinite;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(255,45,45,0.6); }
+    70%  { box-shadow: 0 0 0 12px rgba(255,45,45,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,45,45,0); }
+  }
+
+  .title-finally {
+    font-family: "Bodoni Moda", serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 22px;
+    color: var(--acid);
+    margin: 0 0 12px;
+    letter-spacing: 0.02em;
+  }
+  h2.headline {
+    font-family: "Bodoni Moda", serif;
+    font-weight: 900;
+    font-size: clamp(38px, 5.4vw, 78px);
+    line-height: 0.96;
+    letter-spacing: -0.01em;
+    margin: 0 0 18px;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-shadow: 0 0 32px rgba(198,255,61,0.08);
+  }
+  h2.headline em {
+    font-style: italic;
+    font-weight: 400;
+    text-transform: lowercase;
+    color: var(--warn);
+    font-family: "Bodoni Moda", serif;
+  }
+  h2.headline .strike {
+    text-decoration: line-through;
+    text-decoration-color: var(--warn);
+    text-decoration-thickness: 4px;
+  }
+  .body-block {
+    font-family: "Archivo Narrow", sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--ink);
+    max-width: 38ch;
+    border-top: 1px solid var(--hair);
+    padding-top: 14px;
+  }
+  .body-block .stat {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 14px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .body-block .stat b { color: var(--acid); font-weight: 700; }
+
+  /* ---------- Final CTA ---------- */
+  .cta-wrap { display: flex; gap: 16px; margin-top: 22px; align-items: center; }
+  .cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 22px;
+    background: var(--acid);
+    color: #0a0c08;
+    text-decoration: none;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 700;
+    border: 1px solid var(--acid);
+    transition: background 180ms ease, transform 180ms ease, color 180ms ease;
+    box-shadow: 0 0 24px rgba(198,255,61,0.4);
+  }
+  .cta-button:hover { background: var(--warn); color: var(--ink); border-color: var(--warn); transform: translateY(-2px); box-shadow: 0 0 24px rgba(255,45,45,0.5); }
+  .cta-button .arrow { font-family: "Bodoni Moda", serif; font-style: italic; font-size: 16px; font-weight: 700; }
+
+  /* ---------- Balloon + pin scroll indicator (right rail) ---------- */
+  .balloon-track {
+    position: fixed;
+    right: 0;
+    top: 64px;
+    bottom: 0;
+    width: 56px;
+    z-index: 6;
+    pointer-events: none;
+  }
+  .balloon-track .axis {
+    position: absolute;
+    top: 24px;
+    bottom: 56px;
+    left: 50%;
+    width: 1px;
+    background: repeating-linear-gradient(to bottom,
+      var(--warn) 0 4px,
+      transparent 4px 8px);
+    transform: translateX(-50%);
+    opacity: 0.5;
+  }
+  /* Pin sliding down */
+  .pin {
+    position: absolute;
+    top: 24px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 44px;
+    height: 44px;
+    pointer-events: none;
+  }
+  .pin svg { width: 100%; height: 100%; }
+
+  /* Balloon at bottom */
+  .balloon {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 44px;
+    height: 56px;
+    pointer-events: none;
+    transition: opacity 220ms ease;
+  }
+  .balloon svg { width: 100%; height: 100%; display: block; }
+  .balloon.popped { opacity: 0; }
+
+  /* tiny labels next to balloon track */
+  .balloon-label {
+    position: absolute;
+    right: 56px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--warn);
+    white-space: nowrap;
+    padding: 4px 10px;
+  }
+  .balloon-label.top { top: 28px; }
+  .balloon-label.bot { bottom: 28px; }
+
+  /* ---------- Legacy debris canvas placeholder ---------- */
+  #debris {
+    position: fixed;
+    inset: 0;
+    z-index: 7;
+    pointer-events: none;
+    display: none;
+  }
+
+  /* ---------- Section / progress ticker bottom-left ---------- */
+  .ticker {
+    position: fixed;
+    left: 72px;
+    bottom: 22px;
+    z-index: 5;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    display: flex;
+    gap: 18px;
+    align-items: center;
+  }
+  .ticker .progress { display: flex; gap: 6px; }
+  .ticker .dot {
+    width: 24px; height: 1px;
+    background: var(--ink-faint);
+    transition: background 220ms ease, height 220ms ease;
+  }
+  .ticker .dot.is-active { background: var(--acid); height: 3px; }
+  .ticker .alarm-tag {
+    color: var(--warn);
+    border: 1px solid var(--warn);
+    padding: 2px 8px;
+    animation: blink 1.6s steps(2) infinite;
+  }
+
+  @media (max-width: 880px) {
+    .header { left: 0; right: 0; padding: 0 16px; grid-template-columns: 1fr auto; }
+    .header .cell:nth-child(n+2):nth-child(-n+4) { display: none; }
+    .rail.left, .rail.right { display: none; }
+    .balloon-track { width: 36px; }
+    .scene-section { padding: 96px 24px 80px; grid-template-columns: 1fr; }
+    .scene-section.right .caption, .scene-section.left .caption { grid-column: 1; justify-self: start; }
+    .ticker { left: 24px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- soft gradient orb (decorative) -->
+  <div class="orb" id="orb"></div>
+
+  <!-- 3D stage -->
+  <div class="stage">
+    <canvas id="webgl"></canvas>
+  </div>
+
+  <!-- Legacy debris placeholder; trash bags now render inside the WebGL scene -->
+  <canvas id="debris"></canvas>
+
+  <!-- Editorial side rails -->
+  <aside class="rail left">
+    <span class="v-stamp-top">RI · 2024</span>
+    <span class="v-label">Making Waste Visible · v0.2</span>
+    <span class="v-stamp-bottom">04.27.26</span>
+  </aside>
+  <aside class="rail right">
+    <span class="v-stamp-top">scroll</span>
+    <span class="v-stamp-bottom">pop</span>
+  </aside>
+
+  <!-- Top header -->
+  <header class="header">
+    <div class="cell"><strong>HAZARD</strong> <span class="dash"></span> Five pieces of a broken system</div>
+    <div class="cell"><span class="alarm">●</span> RIRRC · ALERT</div>
+    <div class="cell">Rhode Island, 2024</div>
+    <div class="cell">Landfill closes 2046</div>
+    <div class="cell" style="justify-content:flex-end; gap:10px;">
+      <span class="icon-btn">↻</span>
+      <span class="icon-btn">↗</span>
     </div>
+  </header>
 
-    <script type="importmap">
+  <!-- Balloon + Pin (right rail indicator) -->
+  <div class="balloon-track" aria-hidden="true">
+    <div class="axis"></div>
+    <span class="balloon-label top">PIN</span>
+    <div class="pin" id="pin">
+      <svg viewBox="0 0 44 44" fill="none">
+        <circle cx="22" cy="14" r="9" fill="#ff2d2d"/>
+        <circle cx="19" cy="11" r="2" fill="#ffffff" opacity="0.6"/>
+        <line x1="22" y1="22" x2="22" y2="42" stroke="#e8ffd6" stroke-width="1.5"/>
+        <polygon points="22,44 20,40 24,40" fill="#e8ffd6"/>
+      </svg>
+    </div>
+    <div class="balloon" id="balloon">
+      <svg viewBox="0 0 44 56" fill="none">
+        <ellipse cx="22" cy="22" rx="18" ry="22" fill="#c6ff3d"/>
+        <ellipse cx="15" cy="14" rx="4" ry="6" fill="#ffffff" opacity="0.4"/>
+        <polygon points="22,42 18,48 26,48" fill="#c6ff3d"/>
+        <path d="M22,48 C20,52 24,53 22,56" stroke="#e8ffd6" stroke-width="1" fill="none"/>
+      </svg>
+    </div>
+    <span class="balloon-label bot">BALLOON</span>
+  </div>
+
+  <!-- Scroll captions -->
+  <main class="scroll-track" id="track">
+
+    <section class="scene-section left" data-scene="0">
+      <div class="caption">
+        <p class="title-finally">The State of Things</p>
+        <div class="eyebrow"><span class="alarm-dot"></span><span class="num">01 / 05</span><span class="dash"></span><span>statewide diversion</span></div>
+        <h2 class="headline">RHODE ISLAND'S WASTE<br/>AT <em>a glance.</em></h2>
+        <div class="body-block">
+          Nearly 70% of what Rhode Islanders throw away ends up in the landfill. The state is falling far short of its own recycling mandates.
+          <div class="stat"><span>statewide / mandate / towns meeting it</span><b>29.5% / 35% / 15 of 39</b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene-section right" data-scene="1">
+      <div class="caption">
+        <div class="eyebrow"><span class="alarm-dot"></span><span class="num">02 / 05</span><span class="dash"></span><span>town by town</span></div>
+        <h2 class="headline">WHERE YOUR TRASH<br/>ACTUALLY <em>goes.</em></h2>
+        <div class="body-block">
+          Landfill tonnage per household varies dramatically across RI, with a nearly 3x difference between the best and worst performing towns.
+          <div class="stat"><span>Johnston / Portsmouth / state average</span><b>1.76 / 0.60 / 1.00 tons per HH</b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene-section left" data-scene="2">
+      <div class="caption">
+        <div class="eyebrow"><span class="alarm-dot"></span><span class="num">03 / 05</span><span class="dash"></span><span>rejected recycling</span></div>
+        <h2 class="headline">WHAT YOU RECYCLE<br/>ISN'T ALWAYS <em>recycled.</em></h2>
+        <div class="body-block">
+          Contaminated recycling loads get rejected entirely and sent to the landfill anyway. Some towns are generating hundreds of pounds of rejected recycling per household.
+          <div class="stat"><span>Providence / Cranston / Portsmouth, Warren, Charlestown</span><b>648 / 257 / 0 lbs per HH</b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene-section right" data-scene="3">
+      <div class="caption">
+        <div class="eyebrow"><span class="alarm-dot"></span><span class="num">04 / 05</span><span class="dash"></span><span>best vs worst</span></div>
+        <h2 class="headline">THE GAP BETWEEN<br/>BEST AND <em>worst.</em></h2>
+        <div class="body-block">
+          A small number of towns are diverting over half their waste. Most aren't close. The difference often comes down to education programs and infrastructure access.
+          <div class="stat"><span>North Kingstown / Providence / gap</span><b>55.1% / 7.8% / 47 points</b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene-section left" data-scene="4">
+      <div class="caption">
+        <div class="eyebrow"><span class="alarm-dot"></span><span class="num">05 / 05</span><span class="dash"></span><span>what happens next</span></div>
+        <h2 class="headline">THE CLOCK<br/>IS <em>running.</em></h2>
+        <div class="body-block">
+          At current rates, the Central Landfill reaches capacity in 2046. Better recycling extends that timeline. Here's what you can do in your town.
+          <div class="stat"><span>projected capacity / rejected recycling landfilled</span><b>2046 / 29,000 tons in 2024</b></div>
+          <div class="cta-wrap">
+            <a class="cta-button" href="making-waste-visible/RIWasteGazette.html">
+              open the data viz <span class="arrow">↗</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Ticker -->
+  <div class="ticker">
+    <span class="alarm-tag">ALERT</span>
+    <span id="ticker-label">01 / 05</span>
+    <div class="progress" id="progress">
+      <span class="dot is-active"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+  </div>
+
+  <!-- libs -->
+  <script type="importmap">
     {
       "imports": {
-        "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/"
+        "three": "https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.149.0/examples/jsm/"
       }
     }
-    </script>
-    <script type="module" src="./main.js"></script>
-  </body>
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+    import RAPIER from "https://cdn.jsdelivr.net/npm/@dimforge/rapier3d-compat@0.19.3/+esm";
+
+    const { gsap, ScrollTrigger } = window;
+
+    /* ============================================================
+     * MAKING WASTE VISIBLE — wireframe v0.2
+     * - Cubes are clustered/overlapping to hint at a garment shape
+     * - Camera stays mostly fixed; the GROUP rotates and we zoom in
+     * - Balloon descends as user scrolls; pops on final scene
+     * - Trash bags use Rapier rigid-body physics inside the WebGL scene
+     * ============================================================ */
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* ---------- THREE setup ---------- */
+    const canvas = document.getElementById("webgl");
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    const scene = new THREE.Scene();
+    scene.background = null;
+
+    const camera = new THREE.PerspectiveCamera(34, window.innerWidth / window.innerHeight, 0.1, 200);
+    camera.position.set(0, 0.2, 9);
+    camera.lookAt(0, 0, 0);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 1.6));
+    const key = new THREE.DirectionalLight(0xffffff, 0.7);
+    key.position.set(5, 6, 7);
+    key.castShadow = true;
+    scene.add(key);
+    const fill = new THREE.DirectionalLight(0xc8c4ba, 0.4);
+    fill.position.set(-5, -2, 4);
+    scene.add(fill);
+
+    /* ---------- Cube cluster: a pseudo-garment ----------
+       Layout: roughly a torso silhouette
+         [head-ish small cube on top]
+                 [torso]
+              /          \
+         [sleeve L]   [sleeve R]
+                [hem / lower]
+       Cubes overlap so they read as one mass.
+    --------------------------------------------------- */
+    const cluster = new THREE.Group();
+    scene.add(cluster);
+
+    // [x, y, z, size, label]
+    const layout = [
+      { p: [ 0.0,  1.30, 0.05], s: 0.95, label: "INTRO"   },  // 0 collar / head
+      { p: [ 0.0,  0.10, 0.00], s: 1.55, label: "RECYCLE" },  // 1 torso center
+      { p: [-1.55, 0.15, 0.10], s: 1.20, label: "REJECT"  },  // 2 left sleeve
+      { p: [ 1.55, 0.15, 0.10], s: 1.20, label: "LANDFILL"},  // 3 right sleeve
+      { p: [ 0.0, -1.35, -0.05], s: 1.40, label: "DIVERT" },  // 4 hem
+    ];
+
+    const cubeMeshes = [];
+    function makeCube(cfg, idx) {
+      const grp = new THREE.Group();
+      const g = new THREE.BoxGeometry(cfg.s, cfg.s, cfg.s);
+      const m = new THREE.MeshStandardMaterial({
+        color: 0x1a1f12,
+        roughness: 0.95,
+        metalness: 0.0,
+        emissive: 0x0a0c08,
+      });
+      const mesh = new THREE.Mesh(g, m);
+      grp.add(mesh);
+
+      // sharp edges
+      const edges = new THREE.EdgesGeometry(g);
+      const lines = new THREE.LineSegments(
+        edges,
+        new THREE.LineBasicMaterial({ color: 0xc6ff3d })
+      );
+      grp.add(lines);
+
+      // small accent dot to mark this cube's "data slot"
+      const pin = new THREE.Mesh(
+        new THREE.SphereGeometry(0.05, 12, 12),
+        new THREE.MeshBasicMaterial({ color: 0xff2d2d })
+      );
+      pin.position.set(cfg.s / 2 - 0.06, cfg.s / 2 - 0.06, cfg.s / 2 - 0.06);
+      grp.add(pin);
+
+      grp.position.set(...cfg.p);
+      // tiny per-cube tilt to feel hand-placed
+      grp.rotation.y = (idx - 2) * 0.05;
+      grp.rotation.x = idx % 2 ? -0.04 : 0.04;
+      grp.userData = { idx, baseY: cfg.p[1], mat: m, label: cfg.label };
+      return grp;
+    }
+
+    layout.forEach((cfg, i) => {
+      const c = makeCube(cfg, i);
+      cluster.add(c);
+      cubeMeshes.push(c);
+    });
+
+    // Center the cluster vertically a touch
+    cluster.position.set(0, 0.1, 0);
+
+    /* ---------- Rapier trash bag pile ----------
+       The old 2D debris placeholder spawned from the balloon position.
+       This keeps that story beat but uses real 3D bodies: bags are loaded
+       once, stacked on load, and kicked apart by the balloon pop or cursor.
+    ----------------------------------------------------- */
+    const BAG_COUNT = 21;
+    const BAG_MODEL_URL = "./assets/models/garbage_bag.glb";
+    const BAG_FLOOR_Y = -2.35;
+    const BAG_SPAWN = new THREE.Vector3(2.45, 2.1, 0.1);
+    const BAG_MOUSE_RADIUS = 1.45;
+    const bagGroup = new THREE.Group();
+    scene.add(bagGroup);
+
+    const bagFloorVisual = new THREE.Mesh(
+      new THREE.PlaneGeometry(10.4, 4.8),
+      new THREE.MeshStandardMaterial({
+        color: 0x1b2216,
+        roughness: 1,
+        metalness: 0,
+        transparent: true,
+        opacity: 0.22,
+      })
+    );
+    bagFloorVisual.position.set(0, BAG_FLOOR_Y - 0.005, 0);
+    bagFloorVisual.rotation.x = -Math.PI / 2;
+    bagFloorVisual.receiveShadow = true;
+    scene.add(bagFloorVisual);
+
+    let physicsWorld = null;
+    let bagTemplate = null;
+    let bagItems = [];
+    let trashReady = false;
+    const pointer = {
+      active: false,
+      ndc: new THREE.Vector2(),
+      world: new THREE.Vector3(),
+    };
+    const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -(BAG_FLOOR_Y + 0.22));
+    const raycaster = new THREE.Raycaster();
+
+    function rand(min, max) {
+      return min + Math.random() * (max - min);
+    }
+
+    function updatePointerWorld(clientX, clientY) {
+      pointer.ndc.set(
+        (clientX / window.innerWidth) * 2 - 1,
+        -(clientY / window.innerHeight) * 2 + 1
+      );
+      raycaster.setFromCamera(pointer.ndc, camera);
+      raycaster.ray.intersectPlane(groundPlane, pointer.world);
+    }
+
+    window.addEventListener("pointermove", (event) => {
+      pointer.active = true;
+      updatePointerWorld(event.clientX, event.clientY);
+    });
+    window.addEventListener("pointerleave", () => {
+      pointer.active = false;
+    });
+
+    function tuneBagMaterial(material) {
+      if (!material) return material;
+      const tuned = material.clone();
+      tuned.roughness = 0.92;
+      tuned.metalness = 0.02;
+      if (tuned.color) {
+        tuned.color.offsetHSL(rand(-0.02, 0.02), rand(-0.04, 0.03), rand(-0.08, 0.05));
+      }
+      return tuned;
+    }
+
+    function cloneBagModel(scale) {
+      const model = bagTemplate.clone(true);
+      model.scale.setScalar(scale);
+      model.traverse((child) => {
+        if (!child.isMesh) return;
+        child.castShadow = true;
+        child.receiveShadow = true;
+        child.material = Array.isArray(child.material)
+          ? child.material.map(tuneBagMaterial)
+          : tuneBagMaterial(child.material);
+      });
+      return model;
+    }
+
+    function normalizeBagTemplate(gltfScene) {
+      const model = gltfScene.clone(true);
+      const box = new THREE.Box3().setFromObject(model);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      const longest = Math.max(size.x, size.y, size.z) || 1;
+      model.position.sub(center);
+      model.scale.setScalar(1 / longest);
+      return model;
+    }
+
+    function createPhysicsBounds() {
+      const floor = RAPIER.ColliderDesc.cuboid(5.2, 0.18, 2.4)
+        .setTranslation(0, BAG_FLOOR_Y - 0.16, 0)
+        .setFriction(1.15)
+        .setRestitution(0.04);
+      physicsWorld.createCollider(floor);
+
+      [
+        { x: -4.7, y: -0.55, z: 0, sx: 0.18, sy: 2.2, sz: 2.4 },
+        { x:  4.7, y: -0.55, z: 0, sx: 0.18, sy: 2.2, sz: 2.4 },
+        { x: 0, y: -0.55, z: -2.0, sx: 5.2, sy: 2.2, sz: 0.18 },
+        { x: 0, y: -0.55, z:  2.0, sx: 5.2, sy: 2.2, sz: 0.18 },
+      ].forEach((wall) => {
+        physicsWorld.createCollider(
+          RAPIER.ColliderDesc.cuboid(wall.sx, wall.sy, wall.sz)
+            .setTranslation(wall.x, wall.y, wall.z)
+            .setFriction(1.0)
+            .setRestitution(0.02)
+        );
+      });
+    }
+
+    function createBagBody(index, origin = BAG_SPAWN) {
+      const visualScale = rand(0.62, 0.96);
+      const halfExtents = {
+        x: visualScale * rand(0.34, 0.43),
+        y: visualScale * rand(0.28, 0.38),
+        z: visualScale * rand(0.25, 0.34),
+      };
+      const row = index % 5;
+      const layer = Math.floor(index / 5);
+      const q = new THREE.Quaternion().setFromEuler(
+        new THREE.Euler(rand(-0.25, 0.25), rand(-0.45, 0.45), rand(-0.25, 0.25))
+      );
+      const bodyDesc = RAPIER.RigidBodyDesc.dynamic()
+        .setTranslation(
+          origin.x + (row - 2) * 0.22 + rand(-0.08, 0.08),
+          origin.y + layer * 0.46 + rand(0, 0.2),
+          origin.z + rand(-0.35, 0.35)
+        )
+        .setRotation({ x: q.x, y: q.y, z: q.z, w: q.w })
+        .setLinearDamping(0.72)
+        .setAngularDamping(0.82);
+      const body = physicsWorld.createRigidBody(bodyDesc);
+      const collider = RAPIER.ColliderDesc.cuboid(halfExtents.x, halfExtents.y, halfExtents.z)
+        .setDensity(5.4)
+        .setFriction(1.2)
+        .setRestitution(0.035);
+      physicsWorld.createCollider(collider, body);
+
+      const mesh = cloneBagModel(visualScale * 0.9);
+      mesh.rotation.set(rand(-0.35, 0.35), rand(-Math.PI, Math.PI), rand(-0.35, 0.35));
+      bagGroup.add(mesh);
+      bagItems.push({ body, mesh });
+    }
+
+    function clearTrashBags() {
+      bagItems.forEach(({ body, mesh }) => {
+        physicsWorld.removeRigidBody(body);
+        bagGroup.remove(mesh);
+      });
+      bagItems = [];
+    }
+
+    function spawnTrashBags(origin = BAG_SPAWN) {
+      if (!trashReady) return;
+      clearTrashBags();
+      for (let i = 0; i < BAG_COUNT; i++) createBagBody(i, origin);
+    }
+
+    function screenToBagWorld(clientX, clientY) {
+      updatePointerWorld(clientX, clientY);
+      return pointer.world.clone();
+    }
+
+    function blastTrashBags(origin, strength = 4.8, radius = 2.1) {
+      if (!trashReady) return;
+      bagItems.forEach(({ body }) => {
+        const t = body.translation();
+        const dx = t.x - origin.x;
+        const dz = t.z - origin.z;
+        const dy = Math.max(0.12, t.y - origin.y);
+        const dist = Math.max(Math.sqrt(dx * dx + dz * dz + dy * dy), 0.001);
+        if (dist > radius) return;
+        const falloff = 1 - dist / radius;
+        const impulse = strength * falloff * falloff;
+        body.applyImpulse({
+          x: (dx / dist) * impulse + rand(-0.08, 0.08),
+          y: Math.max(0.2, dy / dist) * impulse * 0.38,
+          z: (dz / dist) * impulse + rand(-0.08, 0.08),
+        }, true);
+        body.applyTorqueImpulse({
+          x: rand(-0.5, 0.5) * impulse,
+          y: rand(-0.25, 0.25) * impulse,
+          z: rand(-0.5, 0.5) * impulse,
+        }, true);
+      });
+    }
+
+    function applyCursorRepulsion(dt) {
+      if (!trashReady || !pointer.active) return;
+      bagItems.forEach(({ body }) => {
+        const t = body.translation();
+        const dx = t.x - pointer.world.x;
+        const dz = t.z - pointer.world.z;
+        const dist = Math.max(Math.sqrt(dx * dx + dz * dz), 0.001);
+        if (dist > BAG_MOUSE_RADIUS) return;
+        const falloff = 1 - dist / BAG_MOUSE_RADIUS;
+        const impulse = 10.5 * falloff * falloff * dt;
+        body.applyImpulse({
+          x: (dx / dist) * impulse,
+          y: 0.08 * falloff,
+          z: (dz / dist) * impulse,
+        }, true);
+        body.applyTorqueImpulse({
+          x: (dz / dist) * impulse * 0.85,
+          y: rand(-0.12, 0.12) * falloff,
+          z: -(dx / dist) * impulse * 0.85,
+        }, true);
+      });
+    }
+
+    function stepTrashPhysics(dt) {
+      if (!trashReady) return;
+      applyCursorRepulsion(dt);
+      physicsWorld.timestep = Math.min(dt, 1 / 30);
+      physicsWorld.step();
+      bagItems.forEach(({ body, mesh }) => {
+        const p = body.translation();
+        const r = body.rotation();
+        mesh.position.set(p.x, p.y, p.z);
+        mesh.quaternion.set(r.x, r.y, r.z, r.w);
+      });
+    }
+
+    function initTrashBagPhysics() {
+      if (!RAPIER || !GLTFLoader) {
+        console.error("Trash bag physics requires Rapier and GLTFLoader.");
+        return;
+      }
+      RAPIER.init().then(() => {
+        physicsWorld = new RAPIER.World({ x: 0, y: -9.81, z: 0 });
+        createPhysicsBounds();
+        const loader = new GLTFLoader();
+        loader.load(
+          BAG_MODEL_URL,
+          (gltf) => {
+            bagTemplate = normalizeBagTemplate(gltf.scene);
+            trashReady = true;
+            spawnTrashBags();
+          },
+          undefined,
+          (error) => {
+            console.error("Could not load garbage bag model:", error);
+          }
+        );
+      });
+    }
+    initTrashBagPhysics();
+
+    /* ---------- Per-scene camera/group targets ----------
+       Camera stays roughly head-on; the GROUP rotates to present
+       a different face, and we zoom by moving camera Z + cluster
+       offset so the focused cube sits in the right composition.
+    ----------------------------------------------------- */
+    function makeTargets() {
+      return [
+        // 0 INTRO — wide, slow rotation, full cluster center
+        { camZ: 9.5, clusterX:  0.0,  clusterY: 0.1, rotY: -0.05, focusIdx: -1 },
+        // 1 RECYCLING — focus torso (idx 1), caption right -> cluster left
+        { camZ: 5.2, clusterX: -1.6,  clusterY: 0.05, rotY:  0.55, focusIdx: 1 },
+        // 2 CONTAMINATION — focus left sleeve (idx 2), caption left -> cluster right
+        { camZ: 5.0, clusterX:  2.0,  clusterY: 0.0,  rotY: -0.65, focusIdx: 2 },
+        // 3 LANDFILL — focus right sleeve (idx 3), caption right -> cluster left
+        { camZ: 5.0, clusterX: -2.0,  clusterY: 0.0,  rotY:  0.85, focusIdx: 3 },
+        // 4 DIVERT — focus hem (idx 4), caption left -> cluster right, slight tilt up
+        { camZ: 5.4, clusterX:  1.6,  clusterY: 1.1,  rotY: -0.35, focusIdx: 4 },
+      ];
+    }
+    let targets = makeTargets();
+
+    // mutable state animated by GSAP
+    const state = {
+      camZ: targets[0].camZ,
+      clusterX: targets[0].clusterX,
+      clusterY: targets[0].clusterY,
+      rotY: targets[0].rotY,
+      activeIdx: 0,
+    };
+
+    /* ---------- Render loop ---------- */
+    const clock = new THREE.Clock();
+    function tick() {
+      const dt = Math.min(clock.getDelta(), 0.033);
+      const t = clock.elapsedTime;
+
+      // apply state to the scene
+      camera.position.z = state.camZ;
+      cluster.position.x = state.clusterX;
+      cluster.position.y = state.clusterY;
+      cluster.rotation.y = state.rotY + Math.sin(t * 0.3) * 0.02;
+      cluster.rotation.x = Math.sin(t * 0.4) * 0.02;
+
+      // gentle per-cube breathing
+      cubeMeshes.forEach((c, i) => {
+        c.position.y = c.userData.baseY + Math.sin(t * 0.7 + i * 1.2) * 0.025;
+      });
+
+      stepTrashPhysics(dt);
+      camera.lookAt(0, 0, 0);
+      renderer.render(scene, camera);
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+
+    /* ---------- Scroll-driven animations ---------- */
+    function buildScroll() {
+      ScrollTrigger.getAll().forEach(s => s.kill());
+      gsap.killTweensOf(state);
+
+      // One master timeline — each segment covers one section's scroll distance.
+      // fromTo() with explicit from/to values per segment prevents the snap-back
+      // that gsap.to() causes by locking in "from" values at creation time.
+      const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
+      for (let i = 1; i < targets.length; i++) {
+        const from = targets[i - 1];
+        const to   = targets[i];
+        tl.fromTo(
+          state,
+          { camZ: from.camZ, clusterX: from.clusterX, clusterY: from.clusterY, rotY: from.rotY },
+          { camZ: to.camZ,   clusterX: to.clusterX,   clusterY: to.clusterY,   rotY: to.rotY,
+            immediateRender: false }
+        );
+      }
+
+      // Pin the master timeline to the full scroll range of the track.
+      // All five sections are equal height (100vh), so each of the four
+      // segments above gets exactly 25% of the timeline — matching the
+      // original per-section trigger ranges (top-bottom → top-top).
+      ScrollTrigger.create({
+        animation: tl,
+        trigger: "#track",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 0.6,
+      });
+
+      // Active scene index
+      gsap.utils.toArray(".scene-section").forEach((section, i) => {
+        ScrollTrigger.create({
+          trigger: section,
+          start: "top center",
+          end: "bottom center",
+          onEnter: () => setActive(i),
+          onEnterBack: () => setActive(i),
+        });
+      });
+
+      // Page-wide progress for the balloon/pin
+      ScrollTrigger.create({
+        trigger: document.body,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 0.3,
+        onUpdate: (self) => updatePin(self.progress),
+      });
+
+      // Pop on entering final section
+      ScrollTrigger.create({
+        trigger: ".scene-section[data-scene='4']",
+        start: "top 65%",
+        onEnter: () => popBalloon(),
+        onLeaveBack: () => resetBalloon(),
+      });
+    }
+
+    function setActive(idx) {
+      state.activeIdx = idx;
+      // progress dots
+      document.querySelectorAll("#progress .dot").forEach((d, i) =>
+        d.classList.toggle("is-active", i === idx)
+      );
+      document.getElementById("ticker-label").textContent =
+        `${String(idx + 1).padStart(2, "0")} / 05`;
+
+      // highlight focused cube
+      const focusIdx = targets[idx].focusIdx;
+      cubeMeshes.forEach((c, i) => {
+        const isFocus = i === focusIdx;
+        const target = isFocus ? 1.06 : 1.0;
+        gsap.to(c.scale, { x: target, y: target, z: target, duration: 0.6, ease: "power2.out" });
+        gsap.to(c.userData.mat.color, {
+          r: isFocus ? 0.78 : 0.10,
+          g: isFocus ? 1.00 : 0.12,
+          b: isFocus ? 0.24 : 0.07,
+          duration: 0.6,
+        });
+        gsap.to(c.userData.mat.emissive, {
+          r: isFocus ? 0.30 : 0.04,
+          g: isFocus ? 0.45 : 0.05,
+          b: isFocus ? 0.10 : 0.03,
+          duration: 0.6,
+        });
+      });
+
+      // shift orb subtly per scene
+      const orb = document.getElementById("orb");
+      const offsets = [
+        { x: "0vmin",  y: "0vh",  o: 0.7 },
+        { x: "-12vmin", y: "4vh",  o: 0.5 },
+        { x: "10vmin",  y: "8vh",  o: 0.55 },
+        { x: "-6vmin", y: "16vh", o: 0.45 },
+        { x: "0vmin",  y: "0vh",  o: 0.85 },
+      ];
+      const o = offsets[idx];
+      gsap.to(orb, { x: o.x, y: o.y, opacity: o.o, duration: 0.9, ease: "power2.out" });
+    }
+
+    /* ---------- Balloon + pin ---------- */
+    const pinEl = document.getElementById("pin");
+    const balloonEl = document.getElementById("balloon");
+    const trackEl = document.querySelector(".balloon-track");
+
+    function updatePin(progress) {
+      // pin descends from top to balloon position
+      const trackH = trackEl.clientHeight;
+      const startY = 0;                   // top
+      const endY = trackH - 24 - 56 - 22; // stop just above balloon
+      const y = startY + (endY - startY) * progress;
+      pinEl.style.transform = `translate(-50%, ${y}px)`;
+    }
+
+    let popped = false;
+    function popBalloon() {
+      if (popped) return;
+      popped = true;
+      // tiny shake then disappear
+      gsap.to(balloonEl, { scale: 1.15, duration: 0.08, ease: "power1.out" });
+      gsap.to(balloonEl, { scale: 0.0, opacity: 0, duration: 0.18, delay: 0.08, ease: "power2.in",
+        onComplete: () => balloonEl.classList.add("popped"),
+      });
+      // kick the loaded GLB trash-bag pile from the balloon position
+      const r = balloonEl.getBoundingClientRect();
+      const blastOrigin = screenToBagWorld(r.left + r.width / 2, r.top + r.height / 2);
+      blastTrashBags(blastOrigin, 8.5, 3.0);
+    }
+    function resetBalloon() {
+      popped = false;
+      balloonEl.classList.remove("popped");
+      gsap.set(balloonEl, { scale: 1, opacity: 1 });
+      spawnTrashBags();
+    }
+
+    /* ---------- init + resize ---------- */
+    buildScroll();
+    setActive(0);
+    updatePin(0);
+
+    function onResize() {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      targets = makeTargets();
+      buildScroll();
+      ScrollTrigger.refresh();
+    }
+    window.addEventListener("resize", onResize);
+  </script>
+</body>
 </html>

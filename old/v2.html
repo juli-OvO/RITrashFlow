@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scroll Story Starter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="canvas-wrap">
+        <canvas id="webgl-canvas" aria-hidden="true"></canvas>
+      </div>
+
+      <header class="section-indicator" aria-live="polite">
+        <span class="section-indicator__arrow">→</span>
+        <span id="section-label">1. The State of Things</span>
+      </header>
+
+      <aside class="info-panel" id="info-panel">
+        <p class="info-panel__eyebrow" id="panel-eyebrow">1. The State of Things</p>
+        <h1 class="info-panel__title" id="panel-title">Rhode Island's Waste at a Glance</h1>
+        <p class="info-panel__body" id="panel-body">
+          Nearly 70% of what Rhode Islanders throw away ends up in the landfill. The state is falling far short of its own recycling mandates. 29.5% overall diversion rate statewide / 35% is the state-mandated minimum / only 15 of 39 municipalities meet it.
+        </p>
+      </aside>
+
+      <main class="scroll-layer" aria-label="Scroll scenes">
+        <section class="scroll-section" data-slide-id="slide-1">
+          <div class="scroll-section__copy">
+            <p>Rhode Island's Waste at a Glance: 29.5% statewide diversion, below the 35% mandate.</p>
+          </div>
+        </section>
+        <section class="scroll-section" data-slide-id="slide-2">
+          <div class="scroll-section__copy">
+            <p>Where Your Trash Actually Goes: Johnston lands at 1.76 tons per household, while Portsmouth lands at 0.60.</p>
+          </div>
+        </section>
+        <section class="scroll-section" data-slide-id="slide-3">
+          <div class="scroll-section__copy">
+            <p>What You Recycle Isn't Always Recycled: Providence reaches 648 pounds rejected per household.</p>
+          </div>
+        </section>
+        <section class="scroll-section" data-slide-id="slide-4">
+          <div class="scroll-section__copy">
+            <p>The Gap Between Best and Worst: North Kingstown diverts 55.1%, while Providence diverts 7.8%.</p>
+          </div>
+        </section>
+        <section class="scroll-section" data-slide-id="slide-5">
+          <div class="scroll-section__copy">
+            <p>The Clock Is Running: the Central Landfill is projected to reach capacity in 2046.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/"
+      }
+    }
+    </script>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

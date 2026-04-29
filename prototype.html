@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Making Waste Visible — Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./src/styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+
+    <!-- 3D canvas (fixed, behind everything) -->
+    <div class="canvas-wrap">
+      <canvas id="webgl-canvas"></canvas>
+    </div>
+
+    <!-- Section label (top-left) -->
+    <div class="section-indicator">
+      <span id="section-label">slide 1</span>
+      <span class="section-indicator__arrow">→</span>
+    </div>
+
+    <!-- Info panel (switches left / right per scene) -->
+    <div id="info-panel" class="info-panel" data-side="left">
+      <p  id="panel-eyebrow" class="info-panel__eyebrow"></p>
+      <h2 id="panel-title"   class="info-panel__title"></h2>
+      <p  id="panel-body"    class="info-panel__body"></p>
+    </div>
+
+    <!-- Scroll layer — one section per scene (5 total) -->
+    <div class="scroll-layer">
+      <section class="scroll-section"></section>
+      <section class="scroll-section"></section>
+      <section class="scroll-section"></section>
+      <section class="scroll-section"></section>
+      <section class="scroll-section"></section>
+    </div>
+
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

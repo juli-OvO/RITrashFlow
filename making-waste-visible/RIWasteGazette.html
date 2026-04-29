@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Rhode Island Waste Gazette — 2024 Municipal Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&family=Special+Elite&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:        #f1ead7;
+    --paper-2:      #e8e0c8;
+    --paper-3:      #ddd2b3;
+    --ink:          #1a1714;
+    --ink-soft:     #3a342c;
+    --ink-faint:    #6b6253;
+    --rule:         #1a1714;
+    --red-stamp:    #a3261b;
+    --blue-stamp:   #1f3b6b;
+
+    --serif-display: "Playfair Display", "Old Standard TT", Georgia, serif;
+    --serif-body:    "Old Standard TT", Georgia, "Times New Roman", serif;
+    --mono:          "JetBrains Mono", ui-monospace, monospace;
+    --type:          "Special Elite", "Courier New", monospace;
+  }
+  *{ box-sizing: border-box; }
+  html, body{ margin:0; padding:0; }
+  body{
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif-body);
+    font-size: 15px;
+    line-height: 1.45;
+    /* paper texture: subtle noise + fiber */
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(120,90,40,0.05) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 78% 62%, rgba(60,30,10,0.04) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 35% 88%, rgba(120,90,40,0.05) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 88% 12%, rgba(60,30,10,0.04) 0 1px, transparent 1.5px),
+      repeating-linear-gradient(92deg, rgba(40,30,10,0.025) 0 1px, transparent 1px 6px),
+      repeating-linear-gradient(2deg, rgba(40,30,10,0.02) 0 1px, transparent 1px 5px);
+  }
+
+  /* ===== NEWSPAPER PAGE ===== */
+  .gazette{
+    max-width: 1380px;
+    margin: 24px auto;
+    padding: 28px 36px 60px;
+    background: var(--paper);
+    box-shadow:
+      0 0 0 1px rgba(30,20,10,0.08),
+      0 30px 80px -40px rgba(40,25,5,0.4);
+    position: relative;
+  }
+  .gazette::before, .gazette::after{
+    /* faint torn edges */
+    content:""; position:absolute; left:0; right:0; height:8px;
+    background: repeating-linear-gradient(90deg, transparent 0 4px, rgba(40,25,10,0.05) 4px 5px);
+  }
+  .gazette::before{ top:0; }
+  .gazette::after{ bottom:0; }
+
+  /* ===== MASTHEAD ===== */
+  .masthead{
+    border-top: 4px double var(--ink);
+    border-bottom: 4px double var(--ink);
+    padding: 14px 0 18px;
+    text-align: center;
+    position: relative;
+  }
+  .top-strip{
+    display:flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-soft);
+    padding: 0 4px 10px;
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: 14px;
+  }
+  .masthead h1{
+    font-family: var(--serif-display);
+    font-weight: 900;
+    font-size: clamp(48px, 7vw, 96px);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin: 0;
+    text-transform: uppercase;
+  }
+  .masthead h1 em{
+    font-style: italic; font-weight: 400;
+    font-family: var(--serif-display);
+  }
+  .sub-rule{
+    margin: 14px auto 6px;
+    width: 100%;
+    border:0; border-top: 1px solid var(--ink);
+  }
+  .deck{
+    font-family: var(--serif-body);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink-soft);
+    margin: 4px auto 0;
+    max-width: 880px;
+  }
+  .byline{
+    margin-top: 8px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--ink-faint);
+  }
+
+  /* stamp / postage */
+  .stamp{
+    position: absolute; top: 18px; right: 28px;
+    width: 88px; height: 56px;
+    border: 1.5px dashed var(--red-stamp);
+    color: var(--red-stamp);
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    transform: rotate(-7deg);
+    padding: 4px;
+    line-height: 1.1;
+  }
+  .stamp::before{
+    content:""; position:absolute; inset:3px;
+    border:1px solid var(--red-stamp);
+  }
+
+  /* ===== MAIN GRID ===== */
+  .layout{
+    display: grid;
+    grid-template-columns: 240px 1fr 280px;
+    gap: 22px;
+    padding-top: 22px;
+  }
+  .col{ min-width: 0; }
+  .col h2.section-h{
+    font-family: var(--serif-display);
+    font-weight: 900;
+    font-size: 22px;
+    margin: 0 0 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 4px;
+  }
+  .col .kicker{
+    font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 14px 0 4px;
+  }
+  .col p{ margin: 0 0 10px; }
+
+  /* halftone newspaper photo */
+  .photo-block{
+    position: relative;
+    margin: 0 0 10px;
+    border: 1px solid var(--ink);
+    overflow: hidden;
+  }
+  .photo-block img{
+    width: 100%; display:block;
+    filter: grayscale(1) contrast(1.18) brightness(0.96);
+    mix-blend-mode: multiply;
+  }
+  .photo-block::after{
+    /* halftone dots */
+    content:""; position:absolute; inset:0;
+    background-image: radial-gradient(circle, rgba(0,0,0,0.55) 0.6px, transparent 1.2px);
+    background-size: 3px 3px;
+    mix-blend-mode: multiply;
+    pointer-events:none;
+  }
+  .photo-cap{
+    font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.08em;
+    color: var(--ink-faint); text-transform: uppercase;
+    margin: 4px 0 14px;
+  }
+
+  /* drop cap */
+  .lede::first-letter{
+    font-family: var(--serif-display);
+    font-weight: 900;
+    float: left;
+    font-size: 56px;
+    line-height: 0.85;
+    padding: 4px 8px 0 0;
+  }
+
+  /* ===== MAP ZONE ===== */
+  .map-wrap{
+    position: relative;
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    padding: 8px;
+  }
+  .map-wrap::before{
+    content:""; position:absolute; inset:3px;
+    border:1px solid var(--ink);
+    pointer-events:none;
+  }
+  .map-head{
+    display:flex; justify-content:space-between; align-items: baseline;
+    padding: 6px 8px 10px;
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: 8px;
+  }
+  .map-head .map-title{
+    font-family: var(--serif-display);
+    font-weight: 900;
+    font-size: 24px;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+  .map-head .map-meta{
+    font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink-faint);
+  }
+
+  .map-canvas{
+    position: relative;
+    aspect-ratio: 500 / 760;
+    width: 100%;
+    /* faint grid */
+    background-image:
+      linear-gradient(to right, rgba(30,20,10,0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(30,20,10,0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .map-canvas svg.basemap{
+    position: absolute; inset:0;
+    width:100%; height:100%;
+    /* render the muni SVG as ink */
+    filter: contrast(1.1);
+  }
+  .map-canvas svg.basemap path,
+  .map-canvas svg.basemap polygon,
+  .map-canvas svg.basemap polyline,
+  .map-canvas svg.basemap rect,
+  .map-canvas svg.basemap circle{
+    fill: rgba(220,210,180,0.15) !important;
+    stroke: rgba(26,23,20,0.7) !important;
+    stroke-width: 0.6 !important;
+  }
+  .map-canvas svg.basemap text{
+    font-family: var(--serif-body) !important;
+    font-size: 5.5px !important;
+    fill: rgba(26,23,20,0.55) !important;
+  }
+
+  .overlay-svg{
+    position: absolute; inset:0;
+    width:100%; height:100%;
+    pointer-events: auto;
+  }
+  .town-hit{
+    cursor: pointer;
+    transition: transform .15s ease;
+  }
+  .town-hit:hover .town-pin,
+  .town-hit.is-active .town-pin{
+    fill: var(--red-stamp);
+  }
+  .town-hit:hover .town-label,
+  .town-hit.is-active .town-label{
+    fill: var(--red-stamp);
+    font-weight: 700;
+  }
+  /* chevron particles flowing toward Johnston */
+  .chevron{
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 0.7;
+    stroke-linejoin: miter;
+    stroke-linecap: butt;
+    opacity: 0.85;
+  }
+  .town-hit.is-active .chevron,
+  .town-hit:hover .chevron{
+    stroke: var(--red-stamp);
+    stroke-width: 0.9;
+    opacity: 1;
+  }
+  .flow-route{
+    fill: none;
+    stroke: rgba(26,23,20,0.18);
+    stroke-width: 0.4;
+    stroke-dasharray: 1.2 2;
+  }
+  .town-hit.is-active .flow-route,
+  .town-hit:hover .flow-route{
+    stroke: rgba(163,38,27,0.55);
+  }
+  .town-pin{
+    fill: var(--ink);
+  }
+  .town-label{
+    font-family: var(--mono);
+    font-size: 7px;
+    fill: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    pointer-events:none;
+    user-select:none;
+  }
+
+  /* compass */
+  .compass{
+    position: absolute;
+    bottom: 14px; left: 14px;
+    width: 64px; height: 64px;
+    display:flex; align-items:center; justify-content:center;
+    font-family: var(--serif-display);
+    font-weight: 900; color: var(--ink);
+    font-size: 14px;
+    pointer-events:none;
+  }
+  .compass svg{ position: absolute; inset:0; }
+
+  /* legend in map */
+  .map-legend{
+    position: absolute;
+    top: 14px; right: 14px;
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    padding: 10px 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    width: 178px;
+    line-height: 1.5;
+  }
+  .map-legend .lg-title{
+    font-family: var(--serif-display);
+    font-weight: 900;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 3px;
+  }
+  .lg-row{ display:flex; align-items:center; gap:8px; margin: 4px 0; }
+  .lg-row svg{ flex:0 0 auto; }
+
+  /* ===== STATS CARD (right column on hover) ===== */
+  .stats-card{
+    border: 2px solid var(--ink);
+    background: var(--paper);
+    padding: 12px;
+    position: relative;
+    margin-bottom: 14px;
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+  .stats-card.empty .empty-msg{ display:block; }
+  .stats-card.empty .data-block{ display:none; }
+  .stats-card .empty-msg{
+    display:none;
+    font-style: italic; color: var(--ink-faint);
+    text-align: center;
+    padding: 30px 6px;
+    font-size: 14px;
+  }
+  .card-banner{
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--serif-display);
+    font-weight: 900;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-align: center;
+    margin: -12px -12px 10px;
+    padding: 5px 6px;
+  }
+  .town-name{
+    font-family: var(--serif-display);
+    font-weight: 900;
+    font-size: 28px;
+    line-height: 1;
+    margin: 4px 0 2px;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+  .town-meta{
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--ink);
+  }
+  .stat-row{
+    display:flex; justify-content: space-between; align-items: baseline;
+    padding: 6px 0;
+    border-bottom: 1px dotted var(--ink-faint);
+    gap: 8px;
+  }
+  .stat-row:last-of-type{ border-bottom: none; }
+  .stat-label{
+    font-family: var(--serif-body);
+    font-size: 12px;
+    line-height: 1.2;
+    flex: 1;
+  }
+  .stat-value{
+    font-family: var(--serif-display);
+    font-weight: 700;
+    font-size: 18px;
+    white-space: nowrap;
+  }
+  .stat-value .unit{
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--ink-faint);
+    margin-left: 3px;
+    font-weight: normal;
+  }
+
+  .ranking{
+    margin: 10px 0 6px;
+    border: 1.5px solid var(--ink);
+    padding: 8px 10px;
+    background: var(--paper-2);
+    text-align: center;
+    position: relative;
+  }
+  .ranking .rank-label{
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .ranking .rank-num{
+    font-family: var(--serif-display);
+    font-weight: 900;
+    font-size: 36px;
+    line-height: 1;
+    margin: 2px 0;
+  }
+  .ranking .rank-sup{ font-size: 18px; vertical-align: top; }
+  .ranking .rank-of{
+    font-family: var(--serif-body);
+    font-style: italic;
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+  .ranking.bad{ background: #f0d6c8; }
+  .ranking.good{ background: #d8e3c8; }
+
+  /* equivalents block */
+  .equiv-block{
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 2px solid var(--ink);
+  }
+  .equiv-title{
+    font-family: var(--serif-display);
+    font-weight: 900;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .equiv-title em{ font-weight: 400; font-style: italic; }
+  .equiv-row{
+    display:flex; align-items:center; gap: 8px;
+    padding: 5px 0;
+    font-size: 13px;
+    line-height: 1.2;
+  }
+  .equiv-row .eq-icon{
+    flex: 0 0 24px; display:flex; align-items:center; justify-content:center;
+  }
+  .equiv-row .eq-text{
+    flex: 1;
+    font-family: var(--serif-body);
+  }
+  .equiv-row .eq-text b{
+    font-family: var(--serif-display);
+    font-weight: 900;
+    font-size: 16px;
+    margin-right: 3px;
+  }
+
+  /* ===== LEFT COL: HEADLINES & RANKINGS ===== */
+  .headline-list .h-item{
+    border-bottom: 1px solid var(--ink);
+    padding: 8px 0;
+    display:flex; gap: 8px;
+    cursor: pointer;
+  }
+  .headline-list .h-item:hover .h-name{ color: var(--red-stamp); }
+  .h-num{
+    font-family: var(--serif-display);
+    font-weight: 900;
+    font-size: 22px;
+    line-height: 1;
+    width: 28px;
+    color: var(--ink-faint);
+  }
+  .h-info{ flex:1; min-width:0; }
+  .h-name{
+    font-family: var(--serif-display);
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.05;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .h-stat{
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.06em;
+  }
+
+  /* mode toggle */
+  .mode-toggle{
+    display:flex;
+    border: 1.5px solid var(--ink);
+    margin-bottom: 14px;
+  }
+  .mode-toggle button{
+    flex:1;
+    background: var(--paper);
+    border: none;
+    border-right: 1px solid var(--ink);
+    padding: 8px 6px;
+    font-family: var(--serif-display);
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  .mode-toggle button:last-child{ border-right: none; }
+  .mode-toggle button.active{
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  /* ===== FOOTER ===== */
+  .colophon{
+    margin-top: 30px;
+    border-top: 4px double var(--ink);
+    padding-top: 14px;
+    display:flex; justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .colophon .ornament{
+    font-family: var(--serif-display);
+    font-style: italic;
+  }
+
+  /* triangle stamps for legend */
+  .tri-icon{ display:inline-block; vertical-align: middle; }
+
+  /* postcard pull-quote */
+  .pull-quote{
+    border: 1px solid var(--ink);
+    padding: 14px 12px;
+    margin: 14px 0;
+    background: var(--paper-2);
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 16px;
+    line-height: 1.3;
+    position: relative;
+  }
+  .pull-quote::before{
+    content: "\201C";
+    position: absolute;
+    left: 6px; top: -8px;
+    font-family: var(--serif-display);
+    font-weight: 900;
+    font-size: 50px;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .pull-quote .pq-attr{
+    display:block;
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  /* sticky note for callout */
+  .sticky{
+    background: #ead6a6;
+    color: var(--ink);
+    padding: 10px 12px;
+    margin: 14px 0;
+    font-family: var(--type);
+    font-size: 13px;
+    line-height: 1.35;
+    transform: rotate(-1deg);
+    box-shadow: 2px 3px 0 rgba(40,25,5,0.25);
+  }
+  .sticky b{ font-family: var(--type); }
+
+  /* small responsive */
+  @media (max-width: 1080px){
+    .layout{ grid-template-columns: 1fr; }
+    .col--right{ order: 3; }
+  }
+</style>
+</head>
+<body>
+
+<div class="gazette">
+
+  <div class="masthead">
+    <div class="top-strip">
+      <span>Vol. CLIV &middot; No. 04</span>
+      <span>Providence &middot; Rhode Island</span>
+      <span id="masthead-date">Spring Edition &middot; MMXXIV</span>
+      <span>Price: One Cent</span>
+    </div>
+    <h1>The Rhode Island <em>Waste</em> Gazette</h1>
+    <hr class="sub-rule" />
+    <p class="deck">A municipal accounting of the trash, recycling, and rubbish hauled across the smallest state &mdash; read by the triangle, weighed in basketballs, elephants, and washing machines.</p>
+    <div class="byline">&mdash; Special Data Edition &middot; Sourced from RIRRC 2024 &mdash;</div>
+    <div class="stamp">First<br/>Class<br/>Refuse</div>
+  </div>
+
+  <div class="layout">
+
+    <!-- LEFT COLUMN -->
+    <aside class="col col--left">
+      <h2 class="section-h">The Field</h2>
+
+      <p class="lede">Across thirty&#8209;nine municipalities, Rhode Islanders sent <b>0.83 tons of trash per household</b> to the Central Landfill in Johnston in 2024. Some sent twice that. Some sent a third.</p>
+
+      <div class="photo-block">
+        <img src="trash_pile.png" alt="A pile of municipal waste" />
+      </div>
+      <p class="photo-cap">Fig. 1 &mdash; The Central Landfill, Johnston RI. Photographed at the working face.</p>
+
+      <div class="kicker">&mdash; Worst offenders, landfilled &mdash;</div>
+      <h2 class="section-h" style="font-size:18px;">Top of the Heap</h2>
+      <div id="worst-list" class="headline-list"></div>
+
+      <div class="sticky">
+        <b>EDITOR'S NOTE.</b> Hover any town on the map to read its dossier &mdash; the chevrons count the tonnage, one mark per <span id="ed-note-unit">tenth of a ton</span>.
+      </div>
+
+      <div class="kicker">&mdash; Lightest treaders &mdash;</div>
+      <h2 class="section-h" style="font-size:18px;">Bottom of the Bin</h2>
+      <div id="best-list" class="headline-list"></div>
+    </aside>
+
+    <!-- CENTER MAP -->
+    <main class="col col--center">
+      <div class="map-wrap">
+        <div class="map-head">
+          <div class="map-title">Plate I &mdash; Refuse of Rhode Island</div>
+          <div class="map-meta">Scale &asymp; 1&nbsp;:&nbsp;380,000 &middot; Chevrons per household</div>
+        </div>
+
+        <div class="map-canvas" id="map-canvas">
+          <!-- Basemap is injected as inline SVG so we can style strokes -->
+          <div id="basemap-host"></div>
+          <svg class="overlay-svg" id="overlay" viewBox="0 0 500 760" preserveAspectRatio="xMidYMid meet"></svg>
+
+          <div class="map-legend">
+            <div class="lg-title">The Legend</div>
+            <div class="lg-row">
+              <svg width="34" height="14" viewBox="0 0 34 14">
+                <polyline points="3,10 6,4 9,10" fill="none" stroke="#1a1714" stroke-width="1"/>
+                <polyline points="11,10 14,4 17,10" fill="none" stroke="#1a1714" stroke-width="1"/>
+                <polyline points="19,10 22,4 25,10" fill="none" stroke="#1a1714" stroke-width="1"/>
+                <polyline points="27,10 30,4 33,10" fill="none" stroke="#1a1714" stroke-width="1"/>
+              </svg>
+              <span>chevrons flow toward Johnston</span>
+            </div>
+            <div class="lg-row">
+              <svg width="22" height="14" viewBox="0 0 22 14">
+                <polyline points="3,10 6,4 9,10" fill="none" stroke="#a3261b" stroke-width="1.2"/>
+                <polyline points="11,10 14,4 17,10" fill="none" stroke="#a3261b" stroke-width="1.2"/>
+              </svg>
+              <span>active town</span>
+            </div>
+            <div class="lg-row">
+              <svg width="22" height="18" viewBox="0 0 22 18">
+                <circle cx="11" cy="9" r="3" fill="#1a1714"/>
+                <circle cx="11" cy="9" r="6" fill="none" stroke="#1a1714" stroke-width="0.6"/>
+              </svg>
+              <span>Central Landfill</span>
+            </div>
+          </div>
+
+          <div class="compass" aria-hidden="true">
+            <svg viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="26" fill="none" stroke="#1a1714" stroke-width="0.8"/>
+              <polygon points="32,8 36,32 32,28 28,32" fill="#1a1714"/>
+              <polygon points="32,56 28,32 32,36 36,32" fill="none" stroke="#1a1714" stroke-width="0.8"/>
+              <text x="32" y="6" text-anchor="middle" font-family="Playfair Display" font-weight="900" font-size="7" fill="#1a1714">N</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT COLUMN: TOWN DOSSIER -->
+    <aside class="col col--right">
+
+      <div class="kicker">&mdash; Choose a metric &mdash;</div>
+      <div class="mode-toggle" id="mode-toggle">
+        <button data-mode="landfill" class="active">Landfilled</button>
+        <button data-mode="recycling">Recycled</button>
+        <button data-mode="rejected">Rejected</button>
+      </div>
+
+      <div class="kicker">&mdash; Town dossier &mdash;</div>
+      <div class="stats-card empty" id="stats-card">
+        <div class="card-banner">Town File &middot; 2024</div>
+        <div class="empty-msg">Hover a chevron flow on the map to pull a town's file.</div>
+
+        <div class="data-block">
+          <div class="town-name" id="d-name">&mdash;</div>
+          <div class="town-meta" id="d-meta">&mdash;</div>
+
+          <div class="stat-row">
+            <span class="stat-label">Trash landfilled</span>
+            <span class="stat-value" id="d-landfill">&mdash; <span class="unit">t/hh</span></span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Recycling collected</span>
+            <span class="stat-value" id="d-recycle">&mdash; <span class="unit">lb/hh</span></span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Rejected at MRF</span>
+            <span class="stat-value" id="d-reject">&mdash; <span class="unit">lb/hh</span></span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Diversion rate</span>
+            <span class="stat-value" id="d-diversion">&mdash; <span class="unit">%</span></span>
+          </div>
+
+          <div class="ranking" id="d-ranking">
+            <div class="rank-label" id="r-label">Landfill rank</div>
+            <div class="rank-num"><span id="r-num">&mdash;</span><span class="rank-sup" id="r-sup"></span></div>
+            <div class="rank-of">out of <span id="r-of">39</span> towns</div>
+          </div>
+
+          <div class="equiv-block">
+            <div class="equiv-title">In <em>plain</em> English, that is &mdash;</div>
+            <div id="equivalents"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pull-quote">
+        Providence sent the heaviest load &mdash; every household, every year, like the weight of a small horse hauled to the landfill.
+        <span class="pq-attr">&mdash; from the dispatches, p. 1</span>
+      </div>
+
+      <div class="kicker">&mdash; Statewide tally &mdash;</div>
+      <h2 class="section-h" style="font-size:18px;">By the Numbers</h2>
+      <div id="totals" style="font-family:var(--mono); font-size:11px; line-height:1.7;"></div>
+    </aside>
+
+  </div>
+
+  <div class="colophon">
+    <span>Source: RIRRC 2024 &mdash; How is My City or Town Doing?</span>
+    <span class="ornament">&mdash; &#10086; &mdash;</span>
+    <span>Chevrons: 1 mark &asymp; 0.05 t / household</span>
+    <span class="ornament">&mdash; &#10086; &mdash;</span>
+    <span>Last revised: 2025-04-18</span>
+  </div>
+
+</div>
+
+<script>
+/* =========================================================
+   DATA — embedded inline so the file is portable
+   (sourced from data/ri_municipal_waste_2024.json)
+   ========================================================= */
+const DATA = {
+  source: "RIRRC 2024 How is My City or Town Doing?",
+  source_last_updated: "2025-04-18",
+  towns: [
+    {town:"Coventry",program_type:"gt_10k_curbside",mrf_recycling_rate_pct:24.9,overall_diversion_rate_pct:33.8,trash_landfilled_tons_per_hh:0.83,mrf_recycling_lbs_per_hh:551,rejected_recycling_lbs_per_hh:10},
+    {town:"Cranston",program_type:"gt_10k_curbside",mrf_recycling_rate_pct:14.6,overall_diversion_rate_pct:27.3,trash_landfilled_tons_per_hh:0.96,mrf_recycling_lbs_per_hh:328,rejected_recycling_lbs_per_hh:257},
+    {town:"Cumberland",program_type:"gt_10k_curbside",mrf_recycling_rate_pct:19.5,overall_diversion_rate_pct:28.6,trash_landfilled_tons_per_hh:0.93,mrf_recycling_lbs_per_hh:451,rejected_recycling_lbs_per_hh:58},
+    {town:"East Providence",program_type:"gt_10k_curbside",mrf_recycling_rate_pct:16.6,overall_diversion_rate_pct:36.6,trash_landfilled_tons_per_hh:0.91,mrf_recycling_lbs_per_hh:363,rejected_recycling_lbs_per_hh:115},
+    {town:"Newport",program_type:"gt_10k_curbside",mrf_recycling_rate_pct:25.4,overall_diversion_rate_pct:40.6,trash_landfilled_tons_per_hh:0.56,mrf_recycling_lbs_per_hh:381,rejected_recycling_lbs_per_hh:0},
+    {town:"North Providence",program_type:"gt_10k_curbside",mrf_recycling_rate_pct:12.8,overall_diversion_rate_pct:22.8,trash_landfilled_tons_per_hh:0.94,mrf_recycling_lbs_per_hh:277,rejected_recycling_lbs_per_hh:136},
+    {town:"Pawtucket",program_type:"gt_10k_curbside",mrf_recycling_rate_pct:10.8,overall_diversion_rate_pct:17.4,trash_landfilled_tons_per_hh:0.9,mrf_recycling_lbs_per_hh:217,rejected_recycling_lbs_per_hh:216},
+    {town:"Providence",program_type:"gt_10k_curbside",mrf_recycling_rate_pct:2.4,overall_diversion_rate_pct:7.8,trash_landfilled_tons_per_hh:1.34,mrf_recycling_lbs_per_hh:65,rejected_recycling_lbs_per_hh:648},
+    {town:"Warwick",program_type:"gt_10k_curbside",mrf_recycling_rate_pct:24.0,overall_diversion_rate_pct:50.2,trash_landfilled_tons_per_hh:0.87,mrf_recycling_lbs_per_hh:550,rejected_recycling_lbs_per_hh:14},
+    {town:"Woonsocket",program_type:"gt_10k_curbside",mrf_recycling_rate_pct:19.9,overall_diversion_rate_pct:30.1,trash_landfilled_tons_per_hh:0.95,mrf_recycling_lbs_per_hh:472,rejected_recycling_lbs_per_hh:19},
+    {town:"Barrington",program_type:"lt_10k_curbside",mrf_recycling_rate_pct:25.7,overall_diversion_rate_pct:49.4,trash_landfilled_tons_per_hh:0.95,mrf_recycling_lbs_per_hh:655,rejected_recycling_lbs_per_hh:21},
+    {town:"Bristol",program_type:"lt_10k_curbside",mrf_recycling_rate_pct:25.6,overall_diversion_rate_pct:33.2,trash_landfilled_tons_per_hh:0.74,mrf_recycling_lbs_per_hh:511,rejected_recycling_lbs_per_hh:3},
+    {town:"Burrillville",program_type:"lt_10k_curbside",mrf_recycling_rate_pct:24.5,overall_diversion_rate_pct:32.7,trash_landfilled_tons_per_hh:0.8,mrf_recycling_lbs_per_hh:522,rejected_recycling_lbs_per_hh:31},
+    {town:"Central Falls",program_type:"lt_10k_curbside",mrf_recycling_rate_pct:18.2,overall_diversion_rate_pct:20.4,trash_landfilled_tons_per_hh:1.12,mrf_recycling_lbs_per_hh:496,rejected_recycling_lbs_per_hh:36},
+    {town:"East Greenwich",program_type:"lt_10k_curbside",mrf_recycling_rate_pct:23.8,overall_diversion_rate_pct:35.7,trash_landfilled_tons_per_hh:1.02,mrf_recycling_lbs_per_hh:637,rejected_recycling_lbs_per_hh:18},
+    {town:"Foster",program_type:"lt_10k_curbside",mrf_recycling_rate_pct:18.8,overall_diversion_rate_pct:20.3,trash_landfilled_tons_per_hh:1.21,mrf_recycling_lbs_per_hh:559,rejected_recycling_lbs_per_hh:25},
+    {town:"Johnston",program_type:"lt_10k_curbside",mrf_recycling_rate_pct:11.0,overall_diversion_rate_pct:14.3,trash_landfilled_tons_per_hh:1.76,mrf_recycling_lbs_per_hh:438,rejected_recycling_lbs_per_hh:71},
+    {town:"Lincoln",program_type:"lt_10k_curbside",mrf_recycling_rate_pct:21.9,overall_diversion_rate_pct:29.5,trash_landfilled_tons_per_hh:1.22,mrf_recycling_lbs_per_hh:684,rejected_recycling_lbs_per_hh:17},
+    {town:"Middletown",program_type:"lt_10k_curbside",mrf_recycling_rate_pct:34.4,overall_diversion_rate_pct:49.1,trash_landfilled_tons_per_hh:0.58,mrf_recycling_lbs_per_hh:604,rejected_recycling_lbs_per_hh:23},
+    {town:"North Smithfield",program_type:"lt_10k_curbside",mrf_recycling_rate_pct:24.5,overall_diversion_rate_pct:33.6,trash_landfilled_tons_per_hh:0.79,mrf_recycling_lbs_per_hh:517,rejected_recycling_lbs_per_hh:32},
+    {town:"Scituate",program_type:"lt_10k_curbside",mrf_recycling_rate_pct:21.7,overall_diversion_rate_pct:25.6,trash_landfilled_tons_per_hh:0.97,mrf_recycling_lbs_per_hh:539,rejected_recycling_lbs_per_hh:13},
+    {town:"Smithfield",program_type:"lt_10k_curbside",mrf_recycling_rate_pct:26.2,overall_diversion_rate_pct:39.2,trash_landfilled_tons_per_hh:0.77,mrf_recycling_lbs_per_hh:548,rejected_recycling_lbs_per_hh:22},
+    {town:"Tiverton",program_type:"lt_10k_curbside",mrf_recycling_rate_pct:30.4,overall_diversion_rate_pct:35.3,trash_landfilled_tons_per_hh:0.52,mrf_recycling_lbs_per_hh:456,rejected_recycling_lbs_per_hh:18},
+    {town:"Warren",program_type:"lt_10k_curbside",mrf_recycling_rate_pct:22.3,overall_diversion_rate_pct:37.2,trash_landfilled_tons_per_hh:0.75,mrf_recycling_lbs_per_hh:431,rejected_recycling_lbs_per_hh:0},
+    {town:"West Warwick",program_type:"lt_10k_curbside",mrf_recycling_rate_pct:10.9,overall_diversion_rate_pct:21.6,trash_landfilled_tons_per_hh:1.16,mrf_recycling_lbs_per_hh:284,rejected_recycling_lbs_per_hh:203},
+    {town:"Charlestown",program_type:"transfer_station",mrf_recycling_rate_pct:24.3,overall_diversion_rate_pct:35.0,trash_landfilled_tons_per_hh:0.32,mrf_recycling_lbs_per_hh:204,rejected_recycling_lbs_per_hh:0},
+    {town:"Exeter",program_type:"transfer_station",mrf_recycling_rate_pct:18.4,overall_diversion_rate_pct:29.4,trash_landfilled_tons_per_hh:0.53,mrf_recycling_lbs_per_hh:238,rejected_recycling_lbs_per_hh:0},
+    {town:"Glocester",program_type:"transfer_station",mrf_recycling_rate_pct:24.8,overall_diversion_rate_pct:33.0,trash_landfilled_tons_per_hh:0.62,mrf_recycling_lbs_per_hh:406,rejected_recycling_lbs_per_hh:1},
+    {town:"Jamestown",program_type:"transfer_station",mrf_recycling_rate_pct:30.5,overall_diversion_rate_pct:45.8,trash_landfilled_tons_per_hh:0.78,mrf_recycling_lbs_per_hh:684,rejected_recycling_lbs_per_hh:2},
+    {town:"Little Compton",program_type:"transfer_station",mrf_recycling_rate_pct:22.6,overall_diversion_rate_pct:31.1,trash_landfilled_tons_per_hh:0.63,mrf_recycling_lbs_per_hh:367,rejected_recycling_lbs_per_hh:0},
+    {town:"Narragansett",program_type:"transfer_station",mrf_recycling_rate_pct:27.7,overall_diversion_rate_pct:30.7,trash_landfilled_tons_per_hh:0.64,mrf_recycling_lbs_per_hh:488,rejected_recycling_lbs_per_hh:3},
+    {town:"New Shoreham",program_type:"transfer_station",mrf_recycling_rate_pct:12.0,overall_diversion_rate_pct:34.9,trash_landfilled_tons_per_hh:1.37,mrf_recycling_lbs_per_hh:376,rejected_recycling_lbs_per_hh:0},
+    {town:"North Kingstown",program_type:"transfer_station",mrf_recycling_rate_pct:33.9,overall_diversion_rate_pct:55.1,trash_landfilled_tons_per_hh:0.57,mrf_recycling_lbs_per_hh:586,rejected_recycling_lbs_per_hh:9},
+    {town:"Portsmouth",program_type:"transfer_station",mrf_recycling_rate_pct:34.1,overall_diversion_rate_pct:54.0,trash_landfilled_tons_per_hh:0.6,mrf_recycling_lbs_per_hh:621,rejected_recycling_lbs_per_hh:0},
+    {town:"Richmond/Hopkinton",program_type:"transfer_station",mrf_recycling_rate_pct:34.1,overall_diversion_rate_pct:39.9,trash_landfilled_tons_per_hh:0.52,mrf_recycling_lbs_per_hh:540,rejected_recycling_lbs_per_hh:0},
+    {town:"South Kingstown",program_type:"transfer_station",mrf_recycling_rate_pct:25.4,overall_diversion_rate_pct:36.0,trash_landfilled_tons_per_hh:0.68,mrf_recycling_lbs_per_hh:465,rejected_recycling_lbs_per_hh:3},
+    {town:"West Greenwich",program_type:"transfer_station",mrf_recycling_rate_pct:20.9,overall_diversion_rate_pct:29.2,trash_landfilled_tons_per_hh:1.25,mrf_recycling_lbs_per_hh:660,rejected_recycling_lbs_per_hh:7},
+    {town:"Westerly",program_type:"transfer_station",mrf_recycling_rate_pct:27.5,overall_diversion_rate_pct:40.7,trash_landfilled_tons_per_hh:0.89,mrf_recycling_lbs_per_hh:676,rejected_recycling_lbs_per_hh:0}
+  ]
+};
+
+/* =========================================================
+   TOWN POSITIONS — coords in 500x760 (Wikipedia RI svg space)
+   ========================================================= */
+const TOWN_POS = {
+  Barrington:           { x: 366, y: 256 },
+  Bristol:              { x: 397, y: 308 },
+  Burrillville:         { x: 130, y: 61  },
+  "Central Falls":      { x: 321, y: 130 },
+  Charlestown:          { x: 150, y: 547 },
+  Coventry:             { x: 151, y: 296 },
+  Cranston:             { x: 275, y: 254 },
+  Cumberland:           { x: 295, y: 72  },
+  "East Greenwich":     { x: 255, y: 347 },
+  "East Providence":    { x: 343, y: 205 },
+  Exeter:               { x: 158, y: 415 },
+  Foster:               { x: 107, y: 214 },
+  Glocester:            { x: 136, y: 126 },
+  Jamestown:            { x: 332, y: 450 },
+  Johnston:             { x: 242, y: 178 },
+  Lincoln:              { x: 290, y: 96  },
+  "Little Compton":     { x: 463, y: 452 },
+  Middletown:           { x: 394, y: 444 },
+  Narragansett:         { x: 272, y: 516 },
+  "New Shoreham":       { x: 204, y: 722 },
+  Newport:              { x: 363, y: 470 },
+  "North Kingstown":    { x: 276, y: 398 },
+  "North Providence":   { x: 279, y: 154 },
+  "North Smithfield":   { x: 223, y: 59  },
+  Pawtucket:            { x: 328, y: 140 },
+  Portsmouth:           { x: 382, y: 382 },
+  Providence:           { x: 301, y: 182 },
+  "Richmond/Hopkinton": { x: 125, y: 473 },
+  Scituate:             { x: 177, y: 214 },
+  Smithfield:           { x: 234, y: 120 },
+  "South Kingstown":    { x: 230, y: 507 },
+  Tiverton:             { x: 457, y: 366 },
+  Warren:               { x: 404, y: 265 },
+  Warwick:              { x: 292, y: 294 },
+  "West Greenwich":     { x: 148, y: 350 },
+  "West Warwick":       { x: 247, y: 293 },
+  Westerly:             { x: 60,  y: 576 },
+  Woonsocket:           { x: 254, y: 36  },
+};
+
+/* =========================================================
+   STATE
+   ========================================================= */
+let activeMode = "landfill"; // landfill | recycling | rejected
+let activeTown = null;
+let pinned = null;
+
+const MODE = {
+  landfill: { key:"trash_landfilled_tons_per_hh", label:"landfilled", unit:"tons / hh", high_is_bad:true,
+              triUnit:0.05, bandLabel:"Landfilled" },
+  recycling:{ key:"mrf_recycling_lbs_per_hh", label:"recycled", unit:"lbs / hh", high_is_bad:false,
+              triUnit:30, bandLabel:"Recycled" },
+  rejected: { key:"rejected_recycling_lbs_per_hh", label:"rejected", unit:"lbs / hh", high_is_bad:true,
+              triUnit:15, bandLabel:"Rejected" }
+};
+
+/* =========================================================
+   EQUIVALENTS — convert kg/lbs to relatable objects
+   ========================================================= */
+const TON_TO_KG = 907.185;
+const LB_TO_KG  = 0.45359;
+
+const EQUIVS = [
+  { kg: 0.62,  one:"basketball",       many:"basketballs",      icon:"basketball" },
+  { kg: 7.26,  one:"bowling ball",     many:"bowling balls",    icon:"bowl" },
+  { kg: 65,    one:"washing machine",  many:"washing machines", icon:"washer" },
+  { kg: 1500,  one:"sedan car",        many:"sedans",           icon:"car" },
+  { kg: 6000,  one:"adult elephant",   many:"elephants",        icon:"elephant" },
+];
+
+function eqIcon(kind){
+  const ink = "#1a1714";
+  switch(kind){
+    case "basketball":
+      return `<svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="8" fill="none" stroke="${ink}" stroke-width="1.2"/><path d="M3 11h16M11 3v16M5.5 5.5q5.5 5.5 11 11M16.5 5.5q-5.5 5.5-11 11" fill="none" stroke="${ink}" stroke-width="1"/></svg>`;
+    case "bowl":
+      return `<svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="8" fill="${ink}"/><circle cx="8" cy="8" r="0.8" fill="#f1ead7"/><circle cx="11" cy="7" r="0.8" fill="#f1ead7"/><circle cx="9.5" cy="10" r="0.8" fill="#f1ead7"/></svg>`;
+    case "washer":
+      return `<svg width="22" height="22" viewBox="0 0 22 22"><rect x="3" y="3" width="16" height="16" fill="none" stroke="${ink}" stroke-width="1.2"/><circle cx="11" cy="13" r="4.5" fill="none" stroke="${ink}" stroke-width="1"/><circle cx="11" cy="13" r="2.5" fill="none" stroke="${ink}" stroke-width="0.8"/><circle cx="6" cy="6" r="0.7" fill="${ink}"/><circle cx="9" cy="6" r="0.7" fill="${ink}"/></svg>`;
+    case "car":
+      return `<svg width="26" height="22" viewBox="0 0 26 22"><path d="M2 14 L4 9 L8 7 L18 7 L21 9 L24 14 L24 17 L2 17 Z" fill="none" stroke="${ink}" stroke-width="1.1"/><circle cx="7" cy="17.5" r="2" fill="${ink}"/><circle cx="19" cy="17.5" r="2" fill="${ink}"/></svg>`;
+    case "elephant":
+      return `<svg width="28" height="22" viewBox="0 0 28 22"><path d="M3 17 L3 11 Q3 6 9 6 L18 6 Q23 6 23 11 L23 14 L20 14 L20 17 L17 17 L17 14 L11 14 L11 17 L8 17 L8 14 L3 14 Z" fill="${ink}"/><path d="M23 11 Q26 12 25 17 Q24 19 22 18" fill="none" stroke="${ink}" stroke-width="1.2"/><circle cx="8" cy="9" r="0.7" fill="#f1ead7"/></svg>`;
+  }
+  return "";
+}
+
+/* =========================================================
+   BUILD
+   ========================================================= */
+async function init(){
+  try{
+    const res = await fetch("ri_municipalities.svg");
+    const txt = await res.text();
+    const host = document.getElementById("basemap-host");
+    host.innerHTML = txt;
+    const svg = host.querySelector("svg");
+    if (svg){
+      svg.classList.add("basemap");
+      svg.removeAttribute("width");
+      svg.removeAttribute("height");
+      svg.setAttribute("preserveAspectRatio","xMidYMid meet");
+      svg.style.width = "100%";
+      svg.style.height = "100%";
+      svg.style.position = "absolute";
+      svg.style.inset = "0";
+    }
+  }catch(e){
+    console.warn("Could not load basemap, using bare overlay.", e);
+  }
+
+  computeRankings();
+  renderOverlay();
+  renderHeadlines();
+  renderTotals();
+
+  document.querySelectorAll("#mode-toggle button").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      document.querySelectorAll("#mode-toggle button").forEach(b=> b.classList.remove("active"));
+      btn.classList.add("active");
+      activeMode = btn.dataset.mode;
+      renderOverlay();
+      renderHeadlines();
+      updateEditorNote();
+      if (activeTown) showTown(activeTown);
+    });
+  });
+
+  updateEditorNote();
+  const dEl = document.getElementById("masthead-date");
+  if (dEl) dEl.textContent = "Spring Edition · MMXXIV";
+}
+
+function updateEditorNote(){
+  const el = document.getElementById("ed-note-unit");
+  if (!el) return;
+  const m = MODE[activeMode];
+  if (activeMode === "landfill") el.textContent = `${m.triUnit} ton`;
+  else el.textContent = `${m.triUnit} pounds`;
+}
+
+const RANKS = {};
+function computeRankings(){
+  for (const mode of Object.keys(MODE)){
+    const key = MODE[mode].key;
+    const sorted = [...DATA.towns].sort((a,b)=> b[key] - a[key]);
+    RANKS[mode] = {};
+    sorted.forEach((t, i)=>{ RANKS[mode][t.town] = { rank: i+1, of: sorted.length }; });
+  }
+}
+
+/* =========================================================
+   OVERLAY RENDER
+   ========================================================= */
+let FLOWS = [];
+
+function renderOverlay(){
+  const svg = document.getElementById("overlay");
+  svg.replaceChildren();
+  FLOWS = [];
+  const mode = MODE[activeMode];
+
+  const cx = TOWN_POS["Johnston"].x, cy = TOWN_POS["Johnston"].y;
+  const center = el("g");
+  center.append(
+    circle(cx,cy, 6, {fill:"#f1ead7","stroke":"#1a1714","stroke-width":0.8}),
+    circle(cx,cy, 9, {fill:"none","stroke":"#1a1714","stroke-width":0.4,"stroke-dasharray":"1.5 1.5"}),
+    circle(cx,cy, 1.6,{fill:"#1a1714"}),
+    svgText(cx, cy-13, "★", {"font-family":"Playfair Display","font-weight":"900","font-size":"9","text-anchor":"middle","fill":"#1a1714"}),
+  );
+  svg.append(center);
+
+  const sorted = [...DATA.towns].sort((a,b)=> a[mode.key] - b[mode.key]);
+
+  for (const t of sorted){
+    const pos = TOWN_POS[t.town];
+    if (!pos) continue;
+    if (t.town === "Johnston") continue;
+
+    const value = t[mode.key];
+    const triCount = Math.max(1, Math.round(value / mode.triUnit));
+    const visualCount = Math.min(triCount, 26);
+
+    const g = el("g", { class:"town-hit", "data-town": t.town, tabindex:"0", role:"button", "aria-label": t.town });
+
+    g.append(circle(pos.x, pos.y, 16, {fill:"transparent"}));
+    g.append(circle(pos.x, pos.y, 1.6, {class:"town-pin"}));
+    g.append(svgText(pos.x, pos.y + 9, t.town.toUpperCase(), {class:"town-label","text-anchor":"middle"}));
+
+    const route = el("line", {
+      class: "flow-route",
+      x1: pos.x, y1: pos.y, x2: cx, y2: cy
+    });
+    g.append(route);
+
+    const dx = cx - pos.x, dy = cy - pos.y;
+    const dist = Math.hypot(dx, dy);
+    const angleDeg = Math.atan2(dy, dx) * 180 / Math.PI;
+    const speed = 35;
+    const dur = Math.max(2.2, dist / speed);
+
+    const chevs = [];
+    for (let i = 0; i < visualCount; i++){
+      const ch = el("path", {
+        class: "chevron",
+        d: "M -3 -2 L 0 0 L -3 2",
+      });
+      const t0 = (i / visualCount) * dur + (Math.sin(i*7.3 + pos.x*0.1) * 0.2);
+      chevs.push({ el: ch, t0, dur, x0: pos.x, y0: pos.y, x1: cx, y1: cy, angleDeg });
+      g.append(ch);
+    }
+
+    g.addEventListener("pointerenter", ()=>{ if (!pinned) showTown(t.town); else if (pinned===t.town) showTown(t.town); });
+    g.addEventListener("pointerleave", ()=>{ if (!pinned) clearTown(); });
+    g.addEventListener("click", ()=>{
+      if (pinned===t.town){ pinned=null; clearTown(); }
+      else { pinned=t.town; showTown(t.town); }
+    });
+    g.addEventListener("focus", ()=> showTown(t.town));
+    g.addEventListener("blur", ()=>{ if (!pinned) clearTown(); });
+
+    svg.append(g);
+    FLOWS.push({ town: t.town, group: g, chevs });
+  }
+
+  if (activeTown) markActive(activeTown);
+  startAnimation();
+}
+
+let _animStart = null, _animRAF = null;
+function startAnimation(){
+  if (_animRAF) cancelAnimationFrame(_animRAF);
+  _animRAF = null;
+  _animStart = performance.now();
+  const tick = (now) => {
+    const tSec = (now - _animStart) / 1000;
+    for (const flow of FLOWS){
+      for (const c of flow.chevs){
+        let p = ((tSec + c.t0) / c.dur) % 1;
+        if (p < 0) p += 1;
+        const x = c.x0 + (c.x1 - c.x0) * p;
+        const y = c.y0 + (c.y1 - c.y0) * p;
+        let op = 1;
+        if (p < 0.08) op = p / 0.08;
+        else if (p > 0.85) op = (1 - p) / 0.15;
+        c.el.setAttribute("transform", `translate(${x.toFixed(2)} ${y.toFixed(2)}) rotate(${c.angleDeg.toFixed(1)})`);
+        c.el.style.opacity = (0.85 * op).toFixed(2);
+      }
+    }
+    _animRAF = requestAnimationFrame(tick);
+  };
+  _animRAF = requestAnimationFrame(tick);
+}
+
+/* helpers */
+function el(tag, attrs={}){
+  const e = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+function circle(cx,cy,r,attrs={}){ return el("circle", {cx,cy,r,...attrs}); }
+function svgText(x,y,t,attrs={}){
+  const e = el("text", {x,y,...attrs});
+  e.textContent = t;
+  return e;
+}
+
+/* =========================================================
+   TOWN DOSSIER
+   ========================================================= */
+function showTown(name){
+  const t = DATA.towns.find(x=> x.town===name);
+  if (!t) return;
+  activeTown = name;
+  markActive(name);
+
+  const card = document.getElementById("stats-card");
+  card.classList.remove("empty");
+
+  document.getElementById("d-name").textContent = t.town;
+
+  const programs = {
+    gt_10k_curbside: "Curbside · pop. > 10,000",
+    lt_10k_curbside: "Curbside · pop. < 10,000",
+    transfer_station:"Transfer station",
+  };
+  document.getElementById("d-meta").textContent = programs[t.program_type] || "Municipality";
+
+  document.getElementById("d-landfill").innerHTML  = `${(t.trash_landfilled_tons_per_hh).toFixed(2)} <span class="unit">t/hh</span>`;
+  document.getElementById("d-recycle").innerHTML   = `${Math.round(t.mrf_recycling_lbs_per_hh).toLocaleString()} <span class="unit">lb/hh</span>`;
+  document.getElementById("d-reject").innerHTML    = `${Math.round(t.rejected_recycling_lbs_per_hh).toLocaleString()} <span class="unit">lb/hh</span>`;
+  document.getElementById("d-diversion").innerHTML = `${t.overall_diversion_rate_pct.toFixed(1)} <span class="unit">%</span>`;
+
+  const r = RANKS[activeMode][t.town];
+  const rEl = document.getElementById("d-ranking");
+  const high_is_bad = MODE[activeMode].high_is_bad;
+  const ord = ordinal(r.rank);
+  document.getElementById("r-num").textContent = r.rank;
+  document.getElementById("r-sup").textContent = ord.sup;
+  document.getElementById("r-of").textContent = r.of;
+  document.getElementById("r-label").textContent = `${MODE[activeMode].bandLabel} rank — ` +
+    (high_is_bad ? (r.rank<=5 ? "among the worst" : r.rank>=r.of-5 ? "among the best" : "in the middle")
+                 : (r.rank<=5 ? "among the best" : r.rank>=r.of-5 ? "among the worst" : "in the middle"));
+
+  rEl.classList.remove("bad","good");
+  if (high_is_bad && r.rank<=10) rEl.classList.add("bad");
+  if (high_is_bad && r.rank>=r.of-9) rEl.classList.add("good");
+  if (!high_is_bad && r.rank<=10) rEl.classList.add("good");
+  if (!high_is_bad && r.rank>=r.of-9) rEl.classList.add("bad");
+
+  const value = t[MODE[activeMode].key];
+  const kg = activeMode === "landfill" ? value * TON_TO_KG : value * LB_TO_KG;
+  renderEquivalents(kg);
+}
+
+function clearTown(){
+  if (pinned) return;
+  activeTown = null;
+  document.getElementById("stats-card").classList.add("empty");
+  markActive(null);
+}
+
+function markActive(name){
+  document.querySelectorAll(".town-hit").forEach(el=>{
+    el.classList.toggle("is-active", el.dataset.town === name);
+  });
+}
+
+function ordinal(n){
+  const s = ["th","st","nd","rd"];
+  const v = n % 100;
+  return { sup: s[(v-20)%10] || s[v] || s[0] };
+}
+
+function renderEquivalents(kg){
+  const host = document.getElementById("equivalents");
+  host.innerHTML = "";
+  const choices = [];
+  const desc = [...EQUIVS].sort((a,b)=> b.kg - a.kg);
+  for (const eq of desc){
+    const n = kg / eq.kg;
+    if (n >= 0.5){ choices.push({eq, n}); break; }
+  }
+  const wash = EQUIVS.find(e=> e.icon==="washer");
+  if (wash && (kg/wash.kg)>=1) choices.push({eq:wash, n: kg/wash.kg});
+  const ball = EQUIVS.find(e=> e.icon==="basketball");
+  choices.push({eq:ball, n: kg/ball.kg});
+
+  const seen = new Set();
+  const final = [];
+  for (const c of choices){
+    if (seen.has(c.eq.icon)) continue;
+    seen.add(c.eq.icon);
+    final.push(c);
+  }
+
+  for (const {eq, n} of final.slice(0,3)){
+    const count = formatCount(n);
+    const word = (Math.round(n*10)/10 === 1) ? eq.one : eq.many;
+    const row = document.createElement("div");
+    row.className = "equiv-row";
+    row.innerHTML = `
+      <span class="eq-icon">${eqIcon(eq.icon)}</span>
+      <span class="eq-text">≈ <b>${count}</b> ${word}</span>
+    `;
+    host.append(row);
+  }
+
+  const total = document.createElement("div");
+  total.className = "equiv-row";
+  total.style.borderTop = "1px dashed var(--ink-faint)";
+  total.style.paddingTop = "8px";
+  total.style.marginTop = "4px";
+  total.innerHTML = `
+    <span class="eq-icon">⚖</span>
+    <span class="eq-text">that's <b>${formatKg(kg)}</b> per household.</span>
+  `;
+  host.append(total);
+}
+
+function formatCount(n){
+  if (n >= 100) return Math.round(n).toLocaleString();
+  if (n >= 10)  return Math.round(n).toString();
+  if (n >= 1)   return n.toFixed(1).replace(/\.0$/,"");
+  return n.toFixed(2).replace(/\.?0+$/,"");
+}
+function formatKg(kg){
+  if (kg>=1000) return `${(kg/1000).toFixed(2)} t`;
+  if (kg>=10) return `${Math.round(kg)} kg`;
+  return `${kg.toFixed(1)} kg`;
+}
+
+/* =========================================================
+   HEADLINES
+   ========================================================= */
+function renderHeadlines(){
+  const m = MODE[activeMode];
+  const sorted = [...DATA.towns].sort((a,b)=> b[m.key] - a[m.key]);
+  const top = sorted.slice(0,5);
+  const bottom = sorted.slice(-5).reverse();
+
+  document.getElementById("worst-list").innerHTML = top.map((t,i)=> headlineRow(t,i+1,m)).join("");
+  document.getElementById("best-list").innerHTML  = bottom.map((t,i)=> headlineRow(t,i+1,m, true)).join("");
+
+  document.querySelectorAll(".headline-list .h-item").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      pinned = el.dataset.town;
+      showTown(pinned);
+    });
+    el.addEventListener("mouseenter", ()=> showTown(el.dataset.town));
+    el.addEventListener("mouseleave", ()=>{ if (!pinned) clearTown(); });
+  });
+}
+
+function headlineRow(t, n, m, fromBottom=false){
+  const v = t[m.key];
+  const txt = (m.key==="trash_landfilled_tons_per_hh")
+              ? `${v.toFixed(2)} t/hh`
+              : `${Math.round(v).toLocaleString()} lb/hh`;
+  return `
+    <div class="h-item" data-town="${t.town}">
+      <div class="h-num">${n}</div>
+      <div class="h-info">
+        <div class="h-name">${t.town}</div>
+        <div class="h-stat">${txt}</div>
+      </div>
+    </div>`;
+}
+
+/* =========================================================
+   TOTALS
+   ========================================================= */
+function renderTotals(){
+  const t = DATA.towns;
+  const avg = (k)=> t.reduce((s,x)=> s+x[k],0) / t.length;
+  const max = (k)=> t.reduce((m,x)=> x[k]>m.val ? {val:x[k], town:x.town} : m, {val:-Infinity,town:""});
+  const min = (k)=> t.reduce((m,x)=> x[k]<m.val ? {val:x[k], town:x.town} : m, {val:Infinity,town:""});
+
+  const aLand = avg("trash_landfilled_tons_per_hh");
+  const aRec  = avg("mrf_recycling_lbs_per_hh");
+  const aRej  = avg("rejected_recycling_lbs_per_hh");
+  const mxLand = max("trash_landfilled_tons_per_hh");
+  const mnLand = min("trash_landfilled_tons_per_hh");
+  const totalKg = aLand * TON_TO_KG;
+  const elephants = (totalKg / 6000).toFixed(2);
+
+  const html = `
+    <div>${aLand.toFixed(2)} t/hh &mdash; <i>state average landfilled</i></div>
+    <div>${Math.round(aRec).toLocaleString()} lb/hh &mdash; <i>state average recycled</i></div>
+    <div>${Math.round(aRej).toLocaleString()} lb/hh &mdash; <i>state average rejected</i></div>
+    <div style="margin-top:6px; padding-top:6px; border-top:1px dotted var(--ink-faint);">
+      Heaviest: <b>${mxLand.town}</b> &mdash; ${mxLand.val.toFixed(2)} t/hh
+    </div>
+    <div>Lightest: <b>${mnLand.town}</b> &mdash; ${mnLand.val.toFixed(2)} t/hh</div>
+    <div style="margin-top:6px; padding-top:6px; border-top:1px dotted var(--ink-faint);">
+      That averages <b>${elephants}</b> elephants of trash, per household, every year.
+    </div>
+  `;
+  document.getElementById("totals").innerHTML = html;
+}
+
+init();
+</script>
+</body>
+</html>
