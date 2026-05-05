@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 // ── DATA ────────────────────────────────────────────────────────────────────
 const MUNICIPALITIES = [
@@ -506,63 +506,10 @@ function MunicipalityFallback({ label = "Loading RI municipal paths..." }) {
 
 // ── PATTERN GENERATOR ────────────────────────────────────────────────────────
 function PatternMap({ data, palette, variable, onHover, hovered, pathLookup, importedPattern, levelPatternSlots, levelInfo }) {
-  const svgRef = useRef(null);
   const vals = data.map(m => getValue(m, variable));
   const mn = vals.length ? Math.min(...vals) : 0, mx = vals.length ? Math.max(...vals) : 0;
   const stops = PALETTES.find(p => p.key === palette)?.stops || PALETTES[0].stops;
   const hasPaths = data.some(m => pathLookup[m.name]?.length);
-
-  function downloadSvg() {
-    const svg = svgRef.current;
-    if (!svg) return;
-    const clone = svg.cloneNode(true);
-    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    const source = new XMLSerializer().serializeToString(clone);
-    const blob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `ri-waste-pattern-${variable}.svg`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
-
-  function downloadPng() {
-    const svg = svgRef.current;
-    if (!svg) return;
-    const clone = svg.cloneNode(true);
-    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    const viewBox = svg.viewBox.baseVal;
-    const width = viewBox?.width || 500.01;
-    const height = viewBox?.height || 759.6;
-    clone.setAttribute("width", width);
-    clone.setAttribute("height", height);
-    const source = new XMLSerializer().serializeToString(clone);
-    const blob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const img = new Image();
-    img.onload = () => {
-      const scale = 2;
-      const canvas = document.createElement("canvas");
-      canvas.width = width * scale;
-      canvas.height = height * scale;
-      const ctx = canvas.getContext("2d");
-      ctx.fillStyle = "#fffaf0";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const a = document.createElement("a");
-      a.href = canvas.toDataURL("image/png");
-      a.download = `ri-waste-pattern-${variable}.png`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    };
-    img.onerror = () => URL.revokeObjectURL(url);
-    img.src = url;
-  }
 
   if (!hasPaths) return <MunicipalityFallback />;
   const allMunicipalityPaths = Object.entries(pathLookup).flatMap(([name, paths]) =>
@@ -571,23 +518,7 @@ function PatternMap({ data, palette, variable, onHover, hovered, pathLookup, imp
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 6, marginBottom: 8 }}>
-        <button onClick={downloadSvg} style={{
-          padding: "4px 9px", fontSize: 9, cursor: "pointer", letterSpacing: 1,
-          background: "#f5eadb", color: "#3a342c", border: "1px solid #bba98e",
-          borderRadius: 3, textTransform: "uppercase", fontFamily: "monospace"
-        }}>
-          Download SVG
-        </button>
-        <button onClick={downloadPng} style={{
-          padding: "4px 9px", fontSize: 9, cursor: "pointer", letterSpacing: 1,
-          background: "#f5eadb", color: "#3a342c", border: "1px solid #bba98e",
-          borderRadius: 3, textTransform: "uppercase", fontFamily: "monospace"
-        }}>
-          Download PNG
-        </button>
-      </div>
-      <svg ref={svgRef} viewBox={RI_MAP_VIEWBOX} style={{ width: "100%", height: "auto", display: "block" }}>
+      <svg id="pattern-map-svg" viewBox={RI_MAP_VIEWBOX} style={{ width: "100%", height: "auto", display: "block" }}>
         <rect width="500.01" height="759.6" fill="#fffaf0" />
         {allMunicipalityPaths.map(({ name, d, index }) => (
           <path key={`base-${name}-${index}`} d={d} fill={BASE_MUNICIPAL_FILL} stroke={BASE_MUNICIPAL_STROKE}
@@ -652,7 +583,7 @@ function CartogramView({ data, palette, variable, onHover, hovered }) {
   const maxR = 38, minR = 6;
 
   return (
-    <svg viewBox="0 0 400 480" style={{ width: "100%", height: "auto" }}>
+    <svg id="cartogram-svg" viewBox="0 0 400 480" style={{ width: "100%", height: "auto" }}>
       <rect width="400" height="480" fill="#fffaf0" />
       {data.map(m => {
         const val = getValue(m, variable);
@@ -693,7 +624,7 @@ function ChoroplethView({ data, palette, variable, onHover, hovered, pathLookup,
   );
 
   return (
-    <svg viewBox={RI_MAP_VIEWBOX} style={{ width: "100%", height: "auto", display: "block" }}>
+    <svg id="choropleth-map-svg" viewBox={RI_MAP_VIEWBOX} style={{ width: "100%", height: "auto", display: "block" }}>
       <rect width="500.01" height="759.6" fill="#fffaf0" />
       {allMunicipalityPaths.map(({ name, d, index }) => (
         <path key={`base-${name}-${index}`} d={d} fill={BASE_MUNICIPAL_FILL} stroke={BASE_MUNICIPAL_STROKE}
@@ -740,7 +671,7 @@ function BarChart({ data, palette, variable }) {
   const chartW = 520;
 
   return (
-    <svg viewBox={`0 0 ${chartW} ${totalH}`} style={{ width: "100%", height: "auto" }}>
+    <svg id="bar-chart-svg" viewBox={`0 0 ${chartW} ${totalH}`} style={{ width: "100%", height: "auto" }}>
       <rect width={chartW} height={totalH} fill="#fffaf0" />
       {sorted.map((m, i) => {
         const val = getValue(m, variable);
@@ -1024,9 +955,64 @@ export default function App() {
   const stops = curPal?.stops || PALETTES[0].stops;
   const levelInfo = useMemo(() => computeLevelInfo(MUNICIPALITIES, variable, splitMethod), [variable, splitMethod]);
 
-  // State-level stats
-  const totalCost = MUNICIPALITIES.reduce((s,m) => s + Math.round((m.rejected * m.hh / 2000) * 115), 0);
-  const avgRej = (MUNICIPALITIES.reduce((s,m) => s + m.rejRate, 0) / MUNICIPALITIES.length).toFixed(1);
+  const SVG_IDS = { bar: "bar-chart-svg", choropleth: "choropleth-map-svg", cartogram: "cartogram-svg", pattern: "pattern-map-svg" };
+
+  function getActiveSvgClone() {
+    const svg = document.getElementById(SVG_IDS[mode]);
+    if (!svg) return null;
+    const clone = svg.cloneNode(true);
+    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    clone.removeAttribute("id");
+    return { svg, clone };
+  }
+
+  function downloadSvg() {
+    const result = getActiveSvgClone();
+    if (!result) return;
+    const source = new XMLSerializer().serializeToString(result.clone);
+    const blob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ri-waste-${mode}-${variable}.svg`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function downloadPng() {
+    const result = getActiveSvgClone();
+    if (!result) return;
+    const viewBox = result.svg.viewBox.baseVal;
+    const width = viewBox?.width || 500;
+    const height = viewBox?.height || 760;
+    result.clone.setAttribute("width", width);
+    result.clone.setAttribute("height", height);
+    const source = new XMLSerializer().serializeToString(result.clone);
+    const blob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => {
+      const scale = 2;
+      const canvas = document.createElement("canvas");
+      canvas.width = width * scale;
+      canvas.height = height * scale;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#fffaf0";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const a = document.createElement("a");
+      a.href = canvas.toDataURL("image/png");
+      a.download = `ri-waste-${mode}-${variable}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = () => URL.revokeObjectURL(url);
+    img.src = url;
+  }
 
   return (
     <div style={{
@@ -1049,19 +1035,21 @@ export default function App() {
             Source: RIRRC 2025 Municipal Data · 38 municipalities
           </div>
         </div>
-        <div style={{ display: "flex", gap: 16, fontSize: 11 }}>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ color: "#ff6b35", fontSize: 18, fontWeight: "bold" }}>{avgRej}%</div>
-            <div style={{ color: "#625a4e", fontSize: 9 }}>avg rejection rate</div>
-          </div>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ color: "#ffcc02", fontSize: 18, fontWeight: "bold" }}>${(totalCost/1e6).toFixed(1)}M</div>
-            <div style={{ color: "#625a4e", fontSize: 9 }}>est. statewide cost</div>
-          </div>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ color: "#4dd0e1", fontSize: 18, fontWeight: "bold" }}>2046</div>
-            <div style={{ color: "#625a4e", fontSize: 9 }}>landfill capacity</div>
-          </div>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
+          <button onClick={downloadSvg} style={{
+            padding: "6px 10px", fontSize: 9, cursor: "pointer", letterSpacing: 1,
+            background: "#17130f", color: "#fffaf0", border: "1px solid #17130f",
+            borderRadius: 3, textTransform: "uppercase", fontFamily: "monospace"
+          }}>
+            Download SVG
+          </button>
+          <button onClick={downloadPng} style={{
+            padding: "6px 10px", fontSize: 9, cursor: "pointer", letterSpacing: 1,
+            background: "#17130f", color: "#fffaf0", border: "1px solid #17130f",
+            borderRadius: 3, textTransform: "uppercase", fontFamily: "monospace"
+          }}>
+            Download PNG
+          </button>
         </div>
       </div>
 
