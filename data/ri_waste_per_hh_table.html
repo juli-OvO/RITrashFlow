@@ -1,0 +1,167 @@
+
+<style>
+#dt-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:12px; table-layout:fixed; }
+thead th { background:var(--color-background-secondary); color:var(--color-text-secondary); font-weight:500; font-size:11px; text-align:right; padding:6px 8px; border-bottom:1px solid var(--color-border-secondary); white-space:nowrap; position:sticky;top:0; }
+thead th:first-child { text-align:left; }
+tbody tr:hover { background:var(--color-background-secondary); }
+tbody td { padding:5px 8px; border-bottom:0.5px solid var(--color-border-tertiary); text-align:right; color:var(--color-text-primary); vertical-align:middle; }
+tbody td:first-child { text-align:left; font-weight:500; }
+tbody td.muted { color:var(--color-text-secondary); font-size:11px; }
+tfoot td { padding:6px 8px; text-align:right; font-weight:500; background:var(--color-background-secondary); border-top:1px solid var(--color-border-secondary); font-size:11px; }
+tfoot td:first-child { text-align:left; }
+.bar-cell { padding:4px 8px; }
+.bar-bg { background:var(--color-background-secondary); border-radius:2px; height:6px; width:100%; }
+.bar-fill { height:6px; border-radius:2px; }
+.tag { display:inline-block; font-size:10px; padding:1px 5px; border-radius:3px; margin-left:4px; vertical-align:middle; }
+input[type=text] { font-size:12px; padding:4px 8px; margin-bottom:10px; width:200px; border-radius:var(--border-radius-md); }
+</style>
+
+<input type="text" id="search" placeholder="Filter municipality..." oninput="filterTable()">
+<div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px;font-size:11px;color:var(--color-text-secondary);">
+  <span><span style="display:inline-block;width:10px;height:6px;border-radius:2px;background:#888780;margin-right:4px;vertical-align:middle;"></span>Trash landfilled</span>
+  <span><span style="display:inline-block;width:10px;height:6px;border-radius:2px;background:#3266ad;margin-right:4px;vertical-align:middle;"></span>MRF recycling kept</span>
+  <span><span style="display:inline-block;width:10px;height:6px;border-radius:2px;background:#d85a30;margin-right:4px;vertical-align:middle;"></span>Rejected recycling</span>
+  <span style="margin-left:8px;color:var(--color-text-tertiary);">Trash = tons/HH × 2,000 lbs. Sorted by total lbs/HH.</span>
+</div>
+<div id="dt-wrap">
+<table id="dt">
+<thead>
+  <tr>
+    <th style="width:160px;">Municipality</th>
+    <th style="width:88px;">Trash landfilled<br>(lbs/HH)</th>
+    <th style="width:88px;">MRF recycling<br>(lbs/HH)</th>
+    <th style="width:80px;">Rejected<br>(lbs/HH)</th>
+    <th style="width:80px;">Total<br>(lbs/HH)</th>
+    <th style="width:120px;">Composition</th>
+    <th style="width:70px;">Div. rate</th>
+  </tr>
+</thead>
+<tbody id="dt-body"></tbody>
+<tfoot id="dt-foot"></tfoot>
+</table>
+</div>
+
+<script>
+const raw = [
+  {name:"Coventry",         hhTons:0.81, recyc:526,  rej:9,   type:'>10K curbside'},
+  {name:"Cranston",         hhTons:0.92, recyc:371,  rej:201, type:'>10K curbside'},
+  {name:"Cumberland",       hhTons:0.91, recyc:453,  rej:14,  type:'>10K curbside'},
+  {name:"East Providence",  hhTons:0.88, recyc:372,  rej:70,  type:'>10K curbside'},
+  {name:"Newport",          hhTons:0.55, recyc:476,  rej:0,   type:'>10K curbside'},
+  {name:"North Providence", hhTons:0.96, recyc:358,  rej:58,  type:'>10K curbside'},
+  {name:"Pawtucket",        hhTons:0.84, recyc:252,  rej:178, type:'>10K curbside'},
+  {name:"Providence",       hhTons:1.43, recyc:78,   rej:654, type:'>10K curbside'},
+  {name:"Warwick",          hhTons:0.86, recyc:537,  rej:5,   type:'>10K curbside'},
+  {name:"Woonsocket",       hhTons:1.01, recyc:474,  rej:5,   type:'>10K curbside'},
+  {name:"Barrington",       hhTons:0.95, recyc:622,  rej:23,  type:'<10K curbside'},
+  {name:"Bristol",          hhTons:0.73, recyc:493,  rej:3,   type:'<10K curbside'},
+  {name:"Burrillville",     hhTons:0.81, recyc:537,  rej:12,  type:'<10K curbside'},
+  {name:"Central Falls",    hhTons:1.13, recyc:497,  rej:66,  type:'<10K curbside'},
+  {name:"East Greenwich",   hhTons:1.01, recyc:601,  rej:19,  type:'<10K curbside'},
+  {name:"Foster",           hhTons:1.06, recyc:578,  rej:15,  type:'<10K curbside'},
+  {name:"Johnston",         hhTons:1.76, recyc:456,  rej:82,  type:'<10K curbside'},
+  {name:"Lincoln",          hhTons:1.23, recyc:660,  rej:9,   type:'<10K curbside'},
+  {name:"Middletown",       hhTons:0.58, recyc:585,  rej:32,  type:'<10K curbside'},
+  {name:"North Smithfield", hhTons:0.75, recyc:471,  rej:20,  type:'<10K curbside'},
+  {name:"Portsmouth",       hhTons:0.52, recyc:439,  rej:0,   type:'<10K curbside'},
+  {name:"Scituate",         hhTons:1.00, recyc:522,  rej:22,  type:'<10K curbside'},
+  {name:"Smithfield",       hhTons:0.75, recyc:514,  rej:7,   type:'<10K curbside'},
+  {name:"Tiverton",         hhTons:0.53, recyc:424,  rej:38,  type:'<10K curbside'},
+  {name:"Warren",           hhTons:0.74, recyc:429,  rej:0,   type:'<10K curbside'},
+  {name:"West Warwick",     hhTons:1.09, recyc:366,  rej:112, type:'<10K curbside'},
+  {name:"Charlestown",      hhTons:0.33, recyc:196,  rej:0,   type:'Transfer station'},
+  {name:"Exeter",           hhTons:0.54, recyc:247,  rej:0,   type:'Transfer station'},
+  {name:"Glocester",        hhTons:0.60, recyc:371,  rej:1,   type:'Transfer station'},
+  {name:"Jamestown",        hhTons:0.78, recyc:670,  rej:0,   type:'Transfer station'},
+  {name:"Little Compton",   hhTons:0.61, recyc:337,  rej:0,   type:'Transfer station'},
+  {name:"Narragansett",     hhTons:0.59, recyc:542,  rej:0,   type:'Transfer station'},
+  {name:"New Shoreham",     hhTons:1.38, recyc:504,  rej:0,   type:'Transfer station'},
+  {name:"North Kingstown",  hhTons:0.54, recyc:510,  rej:0,   type:'Transfer station'},
+  {name:"Richmond/Hopkinton",hhTons:0.58,recyc:441,  rej:8,   type:'Transfer station'},
+  {name:"South Kingstown",  hhTons:0.64, recyc:513,  rej:0,   type:'Transfer station'},
+  {name:"West Greenwich",   hhTons:1.16, recyc:610,  rej:0,   type:'Transfer station'},
+  {name:"Westerly",         hhTons:0.82, recyc:656,  rej:0,   type:'Transfer station'},
+];
+
+const divRates = {
+  'Coventry':33.4,'Cranston':29.0,'Cumberland':28.1,'East Providence':37.1,'Newport':41.5,
+  'North Providence':23.1,'Pawtucket':19.6,'Providence':7.3,'Warwick':49.6,'Woonsocket':27.6,
+  'Barrington':50.4,'Bristol':31.9,'Burrillville':32.1,'Central Falls':19.4,'East Greenwich':36.2,
+  'Foster':24.9,'Johnston':15.9,'Lincoln':28.6,'Middletown':48.5,'North Smithfield':29.2,
+  'Portsmouth':43.2,'Scituate':23.9,'Smithfield':43.2,'Tiverton':33.8,'Warren':36.6,
+  'West Warwick':24.2,'Charlestown':35.1,'Exeter':32.5,'Glocester':31.2,'Jamestown':38.5,
+  'Little Compton':31.2,'Narragansett':34.6,'New Shoreham':31.9,'North Kingstown':53.1,
+  'Richmond/Hopkinton':36.6,'South Kingstown':39.5,'West Greenwich':31.4,'Westerly':43.6,
+};
+
+const data = raw.map(d => {
+  const trash = Math.round(d.hhTons * 2000);
+  const total = trash + d.recyc + d.rej;
+  return {...d, trash, total, divRate: divRates[d.name] ?? null};
+}).sort((a,b) => b.total - a.total);
+
+const maxTotal = Math.max(...data.map(d => d.total));
+
+function typeTag(t) {
+  const colors = {
+    '>10K curbside': '#1d4ed8',
+    '<10K curbside': '#5e9e6e',
+    'Transfer station': '#888780'
+  };
+  return `<span class="tag" style="background:${colors[t]}18;color:${colors[t]};">${t}</span>`;
+}
+
+function buildRows(rows) {
+  return rows.map(d => {
+    const tp = (d.trash / d.total * 100).toFixed(0);
+    const rp = (d.recyc / d.total * 100).toFixed(0);
+    const jp = (d.rej   / d.total * 100).toFixed(0);
+    const trashW = (d.trash / maxTotal * 100).toFixed(1);
+    const recycW = (d.recyc / maxTotal * 100).toFixed(1);
+    const rejW   = (d.rej   / maxTotal * 100).toFixed(1);
+    const divStr = d.divRate !== null ? d.divRate.toFixed(1) + '%' : '—';
+    const divColor = d.divRate >= 50 ? '#166534' : d.divRate >= 35 ? '#1d4ed8' : d.divRate >= 25 ? '#b45309' : '#991b1b';
+    return `<tr>
+      <td>${d.name}${typeTag(d.type)}</td>
+      <td>${d.trash.toLocaleString()}<span class="muted"> (${tp}%)</span></td>
+      <td>${d.recyc.toLocaleString()}<span class="muted"> (${rp}%)</span></td>
+      <td>${d.rej.toLocaleString()}<span class="muted"> (${jp}%)</span></td>
+      <td style="font-weight:500;">${d.total.toLocaleString()}</td>
+      <td class="bar-cell">
+        <div class="bar-bg" style="display:flex;overflow:hidden;">
+          <div class="bar-fill" style="width:${trashW}%;background:#888780;border-radius:0;"></div>
+          <div class="bar-fill" style="width:${recycW}%;background:#3266ad;border-radius:0;"></div>
+          <div class="bar-fill" style="width:${rejW}%;background:#d85a30;border-radius:0;"></div>
+        </div>
+      </td>
+      <td style="color:${divColor};font-weight:500;">${divStr}</td>
+    </tr>`;
+  }).join('');
+}
+
+function buildFoot(rows) {
+  const totTrash = Math.round(rows.reduce((s,d) => s + d.trash, 0) / rows.length);
+  const totRecyc = Math.round(rows.reduce((s,d) => s + d.recyc, 0) / rows.length);
+  const totRej   = Math.round(rows.reduce((s,d) => s + d.rej,   0) / rows.length);
+  const tot      = totTrash + totRecyc + totRej;
+  return `<tr>
+    <td>Avg (${rows.length} munis)</td>
+    <td>${totTrash.toLocaleString()}</td>
+    <td>${totRecyc.toLocaleString()}</td>
+    <td>${totRej.toLocaleString()}</td>
+    <td style="font-weight:500;">${tot.toLocaleString()}</td>
+    <td></td><td></td>
+  </tr>`;
+}
+
+function filterTable() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const filtered = data.filter(d => d.name.toLowerCase().includes(q));
+  document.getElementById('dt-body').innerHTML = buildRows(filtered);
+  document.getElementById('dt-foot').innerHTML = buildFoot(filtered);
+}
+
+document.getElementById('dt-body').innerHTML = buildRows(data);
+document.getElementById('dt-foot').innerHTML = buildFoot(data);
+</script>

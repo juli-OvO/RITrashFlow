@@ -1,0 +1,170 @@
+
+<div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:6px;">Overall material diversion rate per municipality — circle size = households served. Hover for details.</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px;font-size:11px;color:var(--color-text-secondary);align-items:center;">
+  <span style="font-weight:500;color:var(--color-text-primary);">Diversion rate</span>
+  <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#7f1d1d;margin-right:3px;vertical-align:middle;"></span>&lt;15%</span>
+  <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#d85a30;margin-right:3px;vertical-align:middle;"></span>15–25%</span>
+  <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#b45309;margin-right:3px;vertical-align:middle;"></span>25–35%</span>
+  <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#1d4ed8;margin-right:3px;vertical-align:middle;"></span>35–50%</span>
+  <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#166534;margin-right:3px;vertical-align:middle;"></span>≥50% mandate met</span>
+</div>
+
+<div id="mapwrap" style="position:relative;width:100%;"></div>
+
+<div id="tooltip" style="display:none;position:absolute;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:8px;padding:10px 14px;font-size:12px;pointer-events:none;z-index:10;min-width:180px;"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+const towns = [
+  {name:"Barrington",       div:50.4,mand:49.7,hh:6050, lat:41.7440,lon:-71.3148},
+  {name:"Bristol",          div:31.9,mand:31.1,hh:8700, lat:41.6779,lon:-71.2673},
+  {name:"Burrillville",     div:32.1,mand:30.8,hh:6022, lat:41.9776,lon:-71.6715},
+  {name:"Central Falls",    div:19.4,mand:19.0,hh:5293, lat:41.8898,lon:-71.3931},
+  {name:"Charlestown",      div:35.1,mand:33.0,hh:2193, lat:41.4076,lon:-71.6479},
+  {name:"Coventry",         div:33.4,mand:32.9,hh:12884,lat:41.6998,lon:-71.6276},
+  {name:"Cranston",         div:29.0,mand:28.6,hh:29275,lat:41.7798,lon:-71.4373},
+  {name:"Cumberland",       div:28.1,mand:27.8,hh:13922,lat:41.9679,lon:-71.4287},
+  {name:"East Greenwich",   div:36.2,mand:35.7,hh:4332, lat:41.6612,lon:-71.5454},
+  {name:"East Providence",  div:37.1,mand:36.2,hh:17022,lat:41.8137,lon:-71.3706},
+  {name:"Exeter",           div:32.5,mand:28.7,hh:1800, lat:41.5762,lon:-71.5482},
+  {name:"Foster",           div:24.9,mand:23.8,hh:1575, lat:41.8623,lon:-71.7554},
+  {name:"Glocester",        div:31.2,mand:28.4,hh:3500, lat:41.8751,lon:-71.6915},
+  {name:"Jamestown",        div:38.5,mand:37.8,hh:2700, lat:41.4970,lon:-71.3670},
+  {name:"Johnston",         div:15.9,mand:15.8,hh:9867, lat:41.8298,lon:-71.5215},
+  {name:"Lincoln",          div:28.6,mand:28.0,hh:6114, lat:41.9126,lon:-71.4373},
+  {name:"Little Compton",   div:31.2,mand:28.7,hh:1500, lat:41.5076,lon:-71.1762},
+  {name:"Middletown",       div:48.5,mand:48.0,hh:4733, lat:41.5243,lon:-71.2748},
+  {name:"Narragansett",     div:34.6,mand:34.0,hh:6159, lat:41.4290,lon:-71.4565},
+  {name:"New Shoreham",     div:31.9,mand:30.0,hh:250,  lat:41.1712,lon:-71.5598},
+  {name:"Newport",          div:41.5,mand:40.0,hh:10100,lat:41.4901,lon:-71.3128},
+  {name:"North Kingstown",  div:53.1,mand:52.7,hh:10464,lat:41.5826,lon:-71.4537},
+  {name:"North Providence", div:23.1,mand:22.7,hh:12545,lat:41.8648,lon:-71.4537},
+  {name:"North Smithfield", div:29.2,mand:28.8,hh:4537, lat:41.9751,lon:-71.5537},
+  {name:"Pawtucket",        div:19.6,mand:19.3,hh:30000,lat:41.8787,lon:-71.3820},
+  {name:"Portsmouth",       div:43.2,mand:42.4,hh:3213, lat:41.5973,lon:-71.2548},
+  {name:"Providence",       div:7.3, mand:6.8, hh:51541,lat:41.8240,lon:-71.4128},
+  {name:"Richmond/Hopkinton",div:36.6,mand:34.0,hh:2500,lat:41.4876,lon:-71.6426},
+  {name:"Scituate",         div:23.9,mand:23.2,hh:4184, lat:41.7951,lon:-71.6126},
+  {name:"Smithfield",       div:43.2,mand:35.7,hh:7603, lat:41.9065,lon:-71.5437},
+  {name:"South Kingstown",  div:39.5,mand:38.0,hh:5844, lat:41.4451,lon:-71.5326},
+  {name:"Tiverton",         div:33.8,mand:32.7,hh:6782, lat:41.6262,lon:-71.2098},
+  {name:"Warren",           div:36.6,mand:35.9,hh:5020, lat:41.7290,lon:-71.2848},
+  {name:"Warwick",          div:49.6,mand:49.2,hh:31503,lat:41.7001,lon:-71.4187},
+  {name:"West Greenwich",   div:31.4,mand:29.3,hh:2000, lat:41.6337,lon:-71.6465},
+  {name:"West Warwick",     div:24.2,mand:23.6,hh:9500, lat:41.6987,lon:-71.5237},
+  {name:"Westerly",         div:43.6,mand:41.3,hh:8000, lat:41.3773,lon:-71.8276},
+  {name:"Woonsocket",       div:27.6,mand:26.7,hh:10543,lat:42.0026,lon:-71.5148},
+];
+
+function fillColor(div) {
+  if (div < 15) return '#7f1d1d';
+  if (div < 25) return '#d85a30';
+  if (div < 35) return '#b45309';
+  if (div < 50) return '#1d4ed8';
+  return '#166534';
+}
+function circleR(hh) {
+  return Math.max(5, Math.min(32, Math.sqrt(hh) * 0.25));
+}
+
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const wrap = document.getElementById('mapwrap');
+const W = wrap.clientWidth || 620;
+const H = Math.round(W * 0.88);
+
+const svg = d3.select('#mapwrap').append('svg')
+  .attr('width', W).attr('height', H)
+  .style('display','block');
+
+const riCountyFips = new Set(['44001','44003','44005','44007','44009']);
+
+const projection = d3.geoMercator()
+  .center([-71.50, 41.65])
+  .scale(W * 55)
+  .translate([W * 0.48, H * 0.50]);
+
+const path = d3.geoPath().projection(projection);
+
+const bgColor  = isDark ? '#1e2025' : '#e8f0f8';
+const landColor = isDark ? '#2a2f3a' : '#d4dde8';
+const strokeCol = isDark ? '#4a5060' : '#b0bcc8';
+const waterCol  = isDark ? '#141820' : '#c8daea';
+
+svg.append('rect').attr('width', W).attr('height', H).attr('fill', waterCol);
+
+const tip = document.getElementById('tooltip');
+
+d3.json('https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json').then(us => {
+  const allCounties = topojson.feature(us, us.objects.counties).features;
+  const riCounties  = allCounties.filter(f => riCountyFips.has(String(f.id).padStart(5,'0')));
+
+  svg.selectAll('.county')
+    .data(riCounties)
+    .join('path')
+    .attr('class','county')
+    .attr('d', path)
+    .attr('fill', landColor)
+    .attr('stroke', strokeCol)
+    .attr('stroke-width', 0.8);
+
+  const circles = svg.selectAll('.town')
+    .data(towns)
+    .join('circle')
+    .attr('class','town')
+    .attr('cx', d => projection([d.lon, d.lat])[0])
+    .attr('cy', d => projection([d.lon, d.lat])[1])
+    .attr('r',  d => circleR(d.hh))
+    .attr('fill', d => fillColor(d.div))
+    .attr('fill-opacity', 0.82)
+    .attr('stroke', isDark ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.7)')
+    .attr('stroke-width', 1.2)
+    .style('cursor','pointer');
+
+  circles.on('mouseover', function(event, d) {
+    d3.select(this).attr('stroke','#fff').attr('stroke-width',2.5);
+    const m35 = d.mand >= 35 ? '✓ meets 35% recycling' : '✗ below 35% recycling';
+    const m50 = d.div  >= 50 ? '✓ meets 50% diversion' : '✗ below 50% diversion';
+    const c35 = d.mand >= 35 ? '#166534' : '#991b1b';
+    const c50 = d.div  >= 50 ? '#166534' : '#991b1b';
+    tip.innerHTML = `
+      <div style="font-weight:500;font-size:13px;color:var(--color-text-primary);margin-bottom:4px;">${d.name}</div>
+      <div style="color:var(--color-text-secondary);font-size:11px;margin-bottom:6px;">${d.hh.toLocaleString()} households</div>
+      <div style="margin-bottom:2px;"><b>Diversion:</b> ${d.div.toFixed(1)}%</div>
+      <div style="margin-bottom:6px;"><b>Mand. recycling:</b> ${d.mand.toFixed(1)}%</div>
+      <div style="font-size:11px;color:${c35};margin-bottom:1px;">${m35}</div>
+      <div style="font-size:11px;color:${c50};">${m50}</div>`;
+    const rect = wrap.getBoundingClientRect();
+    const ex = event.clientX - rect.left;
+    const ey = event.clientY - rect.top;
+    tip.style.display = 'block';
+    tip.style.left = (ex + 12) + 'px';
+    tip.style.top  = (ey - 10) + 'px';
+  }).on('mousemove', function(event) {
+    const rect = wrap.getBoundingClientRect();
+    tip.style.left = (event.clientX - rect.left + 12) + 'px';
+    tip.style.top  = (event.clientY - rect.top  - 10) + 'px';
+  }).on('mouseout', function() {
+    d3.select(this).attr('stroke', isDark ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.7)').attr('stroke-width',1.2);
+    tip.style.display = 'none';
+  });
+
+  const labels = svg.selectAll('.label')
+    .data(towns.filter(d => d.hh > 8000))
+    .join('text')
+    .attr('class','label')
+    .attr('x', d => projection([d.lon, d.lat])[0])
+    .attr('y', d => projection([d.lon, d.lat])[1] - circleR(d.hh) - 3)
+    .attr('text-anchor','middle')
+    .attr('font-size', 9)
+    .attr('font-family','sans-serif')
+    .attr('fill', isDark ? '#ccc' : '#333')
+    .attr('pointer-events','none')
+    .text(d => d.name);
+
+}).catch(err => {
+  svg.append('text').attr('x', W/2).attr('y', H/2)
+    .attr('text-anchor','middle').attr('fill','#999').attr('font-size',13)
+    .text('Map data failed to load — check network');
+});
+</script>
