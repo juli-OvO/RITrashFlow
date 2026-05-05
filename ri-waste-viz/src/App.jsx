@@ -108,7 +108,7 @@ const PATTERN_SLOT_COUNT = 5;
 const DEFAULT_LEVEL_PATTERN_SLOTS = Object.fromEntries(
   Array.from({ length: PATTERN_SLOT_COUNT }, (_, i) => [
     i,
-    { pattern: null, scale: 1, opacity: 100 },
+    { pattern: null, scale: 1, opacity: 100, color: null },
   ])
 );
 
@@ -118,6 +118,17 @@ function patternSlotIndex(t) {
 
 function levelMidpoint(index) {
   return (index + 0.5) / PATTERN_SLOT_COUNT;
+}
+
+function colorToHex(color) {
+  if (!color) return "#000000";
+  if (color.startsWith("#")) return color;
+  const match = color.match(/\d+/g);
+  if (!match || match.length < 3) return "#000000";
+  return "#" + match.slice(0, 3).map(n => {
+    const hex = Math.max(0, Math.min(255, Number(n))).toString(16);
+    return hex.padStart(2, "0");
+  }).join("");
 }
 
 function formatLevelRange(range, unit) {
@@ -518,6 +529,41 @@ function PatternMap({ data, palette, variable, onHover, hovered, pathLookup, imp
     URL.revokeObjectURL(url);
   }
 
+  function downloadPng() {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const clone = svg.cloneNode(true);
+    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    const viewBox = svg.viewBox.baseVal;
+    const width = viewBox?.width || 500.01;
+    const height = viewBox?.height || 759.6;
+    clone.setAttribute("width", width);
+    clone.setAttribute("height", height);
+    const source = new XMLSerializer().serializeToString(clone);
+    const blob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => {
+      const scale = 2;
+      const canvas = document.createElement("canvas");
+      canvas.width = width * scale;
+      canvas.height = height * scale;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#fffaf0";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const a = document.createElement("a");
+      a.href = canvas.toDataURL("image/png");
+      a.download = `ri-waste-pattern-${variable}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = () => URL.revokeObjectURL(url);
+    img.src = url;
+  }
+
   if (!hasPaths) return <MunicipalityFallback />;
   const allMunicipalityPaths = Object.entries(pathLookup).flatMap(([name, paths]) =>
     paths.map((d, index) => ({ name, d, index }))
@@ -525,13 +571,20 @@ function PatternMap({ data, palette, variable, onHover, hovered, pathLookup, imp
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 6, marginBottom: 8 }}>
         <button onClick={downloadSvg} style={{
           padding: "4px 9px", fontSize: 9, cursor: "pointer", letterSpacing: 1,
           background: "#f5eadb", color: "#3a342c", border: "1px solid #bba98e",
           borderRadius: 3, textTransform: "uppercase", fontFamily: "monospace"
         }}>
           Download SVG
+        </button>
+        <button onClick={downloadPng} style={{
+          padding: "4px 9px", fontSize: 9, cursor: "pointer", letterSpacing: 1,
+          background: "#f5eadb", color: "#3a342c", border: "1px solid #bba98e",
+          borderRadius: 3, textTransform: "uppercase", fontFamily: "monospace"
+        }}>
+          Download PNG
         </button>
       </div>
       <svg ref={svgRef} viewBox={RI_MAP_VIEWBOX} style={{ width: "100%", height: "auto", display: "block" }}>
@@ -549,7 +602,8 @@ function PatternMap({ data, palette, variable, onHover, hovered, pathLookup, imp
           {data.map(m => (pathLookup[m.name] || []).map((d, index) => {
             const levelIndex = levelInfo.getLevel(m);
             const levelT = levelMidpoint(levelIndex);
-            const color = interpolateColor(stops, levelT);
+            const levelSlot = getLevelPatternSlot(levelPatternSlots, m, levelInfo);
+            const color = levelSlot?.color || interpolateColor(stops, levelT);
             const spacing = Math.max(4, 24 - levelT * 18);
             const lineWidth = 0.45 + levelT * 1.15;
             const id = `municipality-clip-${cssId(m.name)}-${index}`;
@@ -569,9 +623,9 @@ function PatternMap({ data, palette, variable, onHover, hovered, pathLookup, imp
         {data.map(m => (pathLookup[m.name] || []).map((d, index) => {
           const levelIndex = levelInfo.getLevel(m);
           const levelT = levelMidpoint(levelIndex);
-          const color = interpolateColor(stops, levelT);
-          const isHov = hovered === m.name;
           const levelSlot = getLevelPatternSlot(levelPatternSlots, m, levelInfo);
+          const color = levelSlot?.color || interpolateColor(stops, levelT);
+          const isHov = hovered === m.name;
           const fill = levelSlot?.pattern || importedPattern ? `url(#pattern-import-${cssId(m.name)})` : `url(#woven-${cssId(m.name)}-${index})`;
           return (
             <g key={`${m.name}-${index}`} onMouseEnter={() => onHover(m.name)} onMouseLeave={() => onHover(null)}
@@ -657,9 +711,9 @@ function ChoroplethView({ data, palette, variable, onHover, hovered, pathLookup,
         const t = normalise(val, mn, mx);
         const levelIndex = levelInfo.getLevel(m);
         const levelT = levelMidpoint(levelIndex);
-        const color = interpolateColor(stops, levelT);
         const isHov = hovered === m.name;
         const levelSlot = getLevelPatternSlot(levelPatternSlots, m, levelInfo);
+        const color = levelSlot?.color || interpolateColor(stops, levelT);
         const fill = levelSlot?.pattern || importedPattern ? `url(#choro-import-${cssId(m.name)})` : color;
         return (
           <path key={`${m.name}-${index}`} d={d} fill={fill}
@@ -780,7 +834,7 @@ function Tooltip({ name, variable }) {
   );
 }
 
-function LevelDistributionChart({ levelInfo, stops }) {
+function LevelDistributionChart({ levelInfo, stops, splitMethod, setSplitMethod, levelPatternSlots }) {
   const maxCount = Math.max(...levelInfo.counts, 1);
   return (
     <div style={{
@@ -790,9 +844,20 @@ function LevelDistributionChart({ levelInfo, stops }) {
       <div style={{ fontSize: 8, color: "#756b5b", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>
         Level split
       </div>
+      <div style={{ display: "flex", gap: 2, marginBottom: 7 }}>
+        {["stddev", "quantile", "equal"].map(method => (
+          <button key={method} onClick={() => setSplitMethod(method)} style={{
+            flex: 1, padding: "2px 3px", fontSize: 7, cursor: "pointer", fontFamily: "monospace",
+            textTransform: "uppercase", borderRadius: 3,
+            background: splitMethod === method ? "#17130f" : "transparent",
+            color: splitMethod === method ? "#fffaf0" : "#5b5348",
+            border: "1px solid " + (splitMethod === method ? "#17130f" : "#cbbba4")
+          }}>{method === "stddev" ? "Std" : method === "quantile" ? "Quant" : "Equal"}</button>
+        ))}
+      </div>
       {[4, 3, 2, 1, 0].map(levelIndex => {
         const count = levelInfo.counts[levelIndex] || 0;
-        const color = interpolateColor(stops, levelMidpoint(levelIndex));
+        const color = levelPatternSlots[levelIndex]?.color || interpolateColor(stops, levelMidpoint(levelIndex));
         return (
           <div key={levelIndex} style={{ display: "grid", gridTemplateColumns: "38px 1fr 48px", gap: 5, alignItems: "center", marginTop: 4 }}>
             <span style={{ fontSize: 8, color: "#403a31" }}>L{levelIndex + 1}</span>
@@ -808,29 +873,12 @@ function LevelDistributionChart({ levelInfo, stops }) {
 }
 
 function LevelPatternDrawer({
-  open,
-  onClose,
   levelPatternSlots,
   setLevelPatternSlots,
   stops,
   variable,
-  splitMethod,
-  setSplitMethod,
   levelInfo,
 }) {
-  const drawerRef = useRef(null);
-
-  useEffect(() => {
-    if (!open) return;
-    function handlePointerDown(event) {
-      if (drawerRef.current && !drawerRef.current.contains(event.target)) onClose();
-    }
-    document.addEventListener("pointerdown", handlePointerDown, true);
-    return () => document.removeEventListener("pointerdown", handlePointerDown, true);
-  }, [open, onClose]);
-
-  if (!open) return null;
-
   function importLevelPattern(levelIndex, file) {
     if (!file || !/\.(png|jpe?g|svg)$/i.test(file.name)) return;
     const reader = new FileReader();
@@ -856,45 +904,31 @@ function LevelPatternDrawer({
   function resetLevel(levelIndex) {
     setLevelPatternSlots(prev => ({
       ...prev,
-      [levelIndex]: { pattern: null, scale: 1, opacity: 100 },
+      [levelIndex]: { pattern: null, scale: 1, opacity: 100, color: null },
     }));
   }
 
   return (
-    <>
-      <aside ref={drawerRef} style={{
-        position: "fixed", top: 0, right: 0, bottom: 0, width: 360, zIndex: 31,
-        background: "#f6efe3", borderLeft: "1px solid #cbbba4", boxShadow: "-12px 0 30px rgb(80 60 30 / 0.18)",
-        padding: "14px 14px 18px", fontFamily: "monospace", color: "#2e2922",
-        overflowY: "auto"
+      <aside style={{
+        width: 360, flex: "0 0 360px", background: "#f6efe3", borderLeft: "1px solid #cbbba4",
+        padding: "16px 14px 18px", fontFamily: "monospace", color: "#2e2922",
+        overflowY: "auto", maxHeight: "calc(100vh - 160px)"
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14, gap: 10 }}>
           <div>
             <div style={{ fontSize: 8, color: "#756b5b", textTransform: "uppercase", letterSpacing: 2 }}>Pattern levels</div>
             <div style={{ fontSize: 13, color: "#17130f", fontWeight: "bold", marginTop: 3 }}>Customize contamination bands</div>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 2, marginTop: 8, fontSize: 8, color: "#756b5b" }}>
-              <span style={{ marginRight: 4 }}>Split:</span>
-              {["stddev", "quantile", "equal"].map(method => (
-                <button key={method} onClick={() => setSplitMethod(method)} style={{
-                  padding: "2px 5px", fontSize: 8, cursor: "pointer", fontFamily: "monospace",
-                  textTransform: "uppercase", borderRadius: 3,
-                  background: splitMethod === method ? "#17130f" : "transparent",
-                  color: splitMethod === method ? "#fffaf0" : "#5b5348",
-                  border: "1px solid " + (splitMethod === method ? "#17130f" : "#cbbba4")
-                }}>{method === "stddev" ? "Std Dev" : method === "quantile" ? "Quantile" : "Equal"}</button>
-              ))}
+            <div style={{ fontSize: 8, color: "#756b5b", marginTop: 5, lineHeight: 1.45, maxWidth: 300 }}>
+              Custom band colors and imported patterns only apply to Choropleth and Pattern maps.
             </div>
           </div>
-          <button onClick={onClose} aria-label="Close pattern levels" style={{
-            width: 24, height: 24, cursor: "pointer", background: "#f5eadb", color: "#3a342c",
-            border: "1px solid #bba98e", borderRadius: 3, fontFamily: "monospace", fontSize: 14
-          }}>X</button>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {[4, 3, 2, 1, 0].map(levelIndex => {
             const slot = levelPatternSlots[levelIndex];
-            const color = interpolateColor(stops, levelMidpoint(levelIndex));
+            const defaultColor = interpolateColor(stops, levelMidpoint(levelIndex));
+            const color = slot.color || defaultColor;
             const vari = VARIABLES.find(v => v.key === variable);
             return (
               <div key={levelIndex} style={{
@@ -902,7 +936,19 @@ function LevelPatternDrawer({
                 padding: 8
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                  <div style={{ width: 16, height: 16, borderRadius: 2, background: color, border: "1px solid #9b8d78", flex: "0 0 auto" }} />
+                  <label title={`Choose color for level ${levelIndex + 1}`} style={{
+                    width: 16, height: 16, borderRadius: 2, background: color,
+                    border: "1px solid #9b8d78", flex: "0 0 auto", cursor: "pointer",
+                    position: "relative", display: "block", boxShadow: "inset 0 0 0 1px rgb(255 250 240 / 0.45)"
+                  }}>
+                    <input type="color" value={colorToHex(color)}
+                      onChange={e => updateLevel(levelIndex, { color: e.target.value })}
+                      aria-label={`Choose color for level ${levelIndex + 1}`}
+                      style={{
+                        position: "absolute", inset: 0, width: "100%", height: "100%",
+                        opacity: 0, cursor: "pointer", border: 0, padding: 0
+                      }} />
+                  </label>
                   <div style={{ width: 104, flex: "0 0 auto" }}>
                     <div style={{ fontSize: 10, color: "#242018", fontWeight: "bold" }}>Level {levelIndex + 1}</div>
                     <div style={{ fontSize: 8, color: "#625a4e" }}>{formatLevelRange(levelInfo.ranges[levelIndex], vari?.unit || "")}</div>
@@ -950,7 +996,6 @@ function LevelPatternDrawer({
           })}
         </div>
       </aside>
-    </>
   );
 }
 
@@ -961,7 +1006,6 @@ export default function App() {
   const [palette, setPalette] = useState("heat");
   const [importedPatterns, setImportedPatterns] = useState([]);
   const [levelPatternSlots, setLevelPatternSlots] = useState(DEFAULT_LEVEL_PATTERN_SLOTS);
-  const [levelDrawerOpen, setLevelDrawerOpen] = useState(false);
   const [splitMethod, setSplitMethod] = useState("stddev");
   const [hovered, setHovered] = useState(null);
   const [search, setSearch] = useState("");
@@ -1106,13 +1150,6 @@ export default function App() {
             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.label}</span>
           </button>
         ))}
-        <button onClick={() => setLevelDrawerOpen(true)} style={{
-          padding: "3px 8px", fontSize: 9, cursor: "pointer", letterSpacing: 1,
-          background: "transparent", color: "#50483d", border: "1px dashed #9b8d78",
-          borderRadius: 4, textTransform: "uppercase", fontFamily: "monospace"
-        }}>
-          Customize Levels →
-        </button>
       </div>
 
       {/* Main content */}
@@ -1159,7 +1196,9 @@ export default function App() {
           display: "flex", flexDirection: "column", gap: 10,
           overflowY: "auto", maxHeight: "calc(100vh - 160px)"
         }}>
-          <LevelDistributionChart levelInfo={levelInfo} stops={stops} />
+          <LevelDistributionChart levelInfo={levelInfo} stops={stops}
+            splitMethod={splitMethod} setSplitMethod={setSplitMethod}
+            levelPatternSlots={levelPatternSlots} />
 
           {hovered
             ? <Tooltip name={hovered} variable={variable} />
@@ -1220,18 +1259,14 @@ export default function App() {
             </div>
           </div>
         </div>
+        <LevelPatternDrawer
+          levelPatternSlots={levelPatternSlots}
+          setLevelPatternSlots={setLevelPatternSlots}
+          stops={stops}
+          variable={variable}
+          levelInfo={levelInfo}
+        />
       </div>
-      <LevelPatternDrawer
-        open={levelDrawerOpen}
-        onClose={() => setLevelDrawerOpen(false)}
-        levelPatternSlots={levelPatternSlots}
-        setLevelPatternSlots={setLevelPatternSlots}
-        stops={stops}
-        variable={variable}
-        splitMethod={splitMethod}
-        setSplitMethod={setSplitMethod}
-        levelInfo={levelInfo}
-      />
     </div>
   );
 }
