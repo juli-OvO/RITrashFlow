@@ -305,8 +305,8 @@ const POSITIONS = {
 
 // ── RI MUNICIPAL SVG EXTRACTION ───────────────────────────────────────────────
 const RI_MAP_VIEWBOX = "0 0 500.01 759.6";
-const BASE_MUNICIPAL_FILL = "#efe4cf";
-const BASE_MUNICIPAL_STROKE = "#8b806f";
+const BASE_MUNICIPAL_FILL = "#f7f7f7";
+const BASE_MUNICIPAL_STROKE = "#888888";
 
 const SVG_ID_ALIAS = {
   Barrington: "Barrington",
@@ -496,8 +496,8 @@ function PatternImportDefs({ importedPattern, levelPatternSlots, levelInfo, data
 function MunicipalityFallback({ label = "Loading RI municipal paths..." }) {
   return (
     <svg viewBox={RI_MAP_VIEWBOX} style={{ width: "100%", height: "auto", display: "block" }}>
-      <rect width="500.01" height="759.6" fill="#fffaf0" />
-      <text x="250" y="380" textAnchor="middle" fill="#625a4e" fontSize="12" fontFamily="monospace">
+      <rect width="500.01" height="759.6" fill="#ffffff" />
+      <text x="250" y="380" textAnchor="middle" fill="#666666" fontSize="12" fontFamily="monospace">
         {label}
       </text>
     </svg>
@@ -519,14 +519,14 @@ function PatternMap({ data, palette, variable, onHover, hovered, pathLookup, imp
   return (
     <div>
       <svg id="pattern-map-svg" viewBox={RI_MAP_VIEWBOX} style={{ width: "100%", height: "auto", display: "block" }}>
-        <rect width="500.01" height="759.6" fill="#fffaf0" />
+        <rect width="500.01" height="759.6" fill="#ffffff" />
         {allMunicipalityPaths.map(({ name, d, index }) => (
           <path key={`base-${name}-${index}`} d={d} fill={BASE_MUNICIPAL_FILL} stroke={BASE_MUNICIPAL_STROKE}
             strokeWidth="0.6" vectorEffect="non-scaling-stroke" />
         ))}
         <defs>
           <filter id="pattern-hover-glow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#4b3826" floodOpacity="0.28" />
+            <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#333333" floodOpacity="0.28" />
           </filter>
           <PatternImportDefs importedPattern={importedPattern} levelPatternSlots={levelPatternSlots} levelInfo={levelInfo}
             data={data} variable={variable} min={mn} max={mx} prefix="pattern" />
@@ -563,12 +563,12 @@ function PatternMap({ data, palette, variable, onHover, hovered, pathLookup, imp
               filter={isHov ? "url(#pattern-hover-glow)" : undefined}>
               <path d={d} fill={color} opacity={0.16 + levelT * 0.26} />
               <path d={d} fill={fill} clipPath={`url(#municipality-clip-${cssId(m.name)}-${index})`} />
-              <path d={d} fill="none" stroke={isHov ? "#17130f" : "#8b806f"}
+              <path d={d} fill="none" stroke={isHov ? "#111111" : "#888888"}
                 strokeWidth={isHov ? 1.5 : 0.75} vectorEffect="non-scaling-stroke" />
             </g>
           );
         }))}
-        <text x="472" y="742" fontSize="11" fill="#9b8d78" fontFamily="monospace" textAnchor="end">Rhode Island</text>
+        <text x="472" y="742" fontSize="11" fill="#8a8a8a" fontFamily="monospace" textAnchor="end">Rhode Island</text>
       </svg>
     </div>
   );
@@ -584,7 +584,7 @@ function CartogramView({ data, palette, variable, onHover, hovered }) {
 
   return (
     <svg id="cartogram-svg" viewBox="0 0 400 480" style={{ width: "100%", height: "auto" }}>
-      <rect width="400" height="480" fill="#fffaf0" />
+      <rect width="400" height="480" fill="#ffffff" />
       {data.map(m => {
         const val = getValue(m, variable);
         const t = normalise(val, mn, mx);
@@ -595,10 +595,10 @@ function CartogramView({ data, palette, variable, onHover, hovered }) {
         return (
           <g key={m.name} onMouseEnter={() => onHover(m.name)} onMouseLeave={() => onHover(null)}>
             <circle cx={cx} cy={cy} r={r} fill={color} opacity={isHov ? 1 : 0.82}
-              stroke={isHov ? "#17130f" : "none"} strokeWidth={isHov ? 1.5 : 0} />
+              stroke={isHov ? "#111111" : "none"} strokeWidth={isHov ? 1.5 : 0} />
             {r > 14 && (
               <text x={cx} y={cy + 1} textAnchor="middle" dominantBaseline="middle"
-                fontSize={Math.min(7, r * 0.45)} fill={t > 0.5 ? "#fffaf0" : "#17130f"} fontFamily="monospace" fontWeight="bold">
+                fontSize={Math.min(7, r * 0.45)} fill="#111111" fontFamily="monospace" fontWeight="bold">
                 {m.name.length > 8 ? m.name.slice(0,7)+"…" : m.name}
               </text>
             )}
@@ -606,7 +606,7 @@ function CartogramView({ data, palette, variable, onHover, hovered }) {
         );
       })}
       {/* RI label */}
-      <text x="370" y="470" fontSize="9" fill="#9b8d78" fontFamily="monospace" textAnchor="end">Rhode Island</text>
+      <text x="370" y="470" fontSize="9" fill="#8a8a8a" fontFamily="monospace" textAnchor="end">Rhode Island</text>
     </svg>
   );
 }
@@ -625,14 +625,14 @@ function ChoroplethView({ data, palette, variable, onHover, hovered, pathLookup,
 
   return (
     <svg id="choropleth-map-svg" viewBox={RI_MAP_VIEWBOX} style={{ width: "100%", height: "auto", display: "block" }}>
-      <rect width="500.01" height="759.6" fill="#fffaf0" />
+      <rect width="500.01" height="759.6" fill="#ffffff" />
       {allMunicipalityPaths.map(({ name, d, index }) => (
         <path key={`base-${name}-${index}`} d={d} fill={BASE_MUNICIPAL_FILL} stroke={BASE_MUNICIPAL_STROKE}
           strokeWidth="0.6" vectorEffect="non-scaling-stroke" />
       ))}
       <defs>
         <filter id="choropleth-hover-glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="1.5" stdDeviation="3" floodColor="#4b3826" floodOpacity="0.24" />
+          <feDropShadow dx="0" dy="1.5" stdDeviation="3" floodColor="#333333" floodOpacity="0.24" />
         </filter>
         <PatternImportDefs importedPattern={importedPattern} levelPatternSlots={levelPatternSlots} levelInfo={levelInfo}
           data={data} variable={variable} min={mn} max={mx} prefix="choro" />
@@ -649,12 +649,12 @@ function ChoroplethView({ data, palette, variable, onHover, hovered, pathLookup,
         return (
           <path key={`${m.name}-${index}`} d={d} fill={fill}
             opacity={levelSlot?.pattern || importedPattern ? 0.35 + t * 0.65 : (isHov ? 1 : 0.9)}
-            stroke={isHov ? "#17130f" : "#8b806f"} strokeWidth={isHov ? 1.6 : 0.55}
+            stroke={isHov ? "#111111" : "#888888"} strokeWidth={isHov ? 1.6 : 0.55}
             vectorEffect="non-scaling-stroke" filter={isHov ? "url(#choropleth-hover-glow)" : undefined}
             onMouseEnter={() => onHover(m.name)} onMouseLeave={() => onHover(null)} />
         );
       }))}
-      <text x="472" y="742" fontSize="11" fill="#9b8d78" fontFamily="monospace" textAnchor="end">Rhode Island</text>
+      <text x="472" y="742" fontSize="11" fill="#8a8a8a" fontFamily="monospace" textAnchor="end">Rhode Island</text>
     </svg>
   );
 }
@@ -672,7 +672,7 @@ function BarChart({ data, palette, variable }) {
 
   return (
     <svg id="bar-chart-svg" viewBox={`0 0 ${chartW} ${totalH}`} style={{ width: "100%", height: "auto" }}>
-      <rect width={chartW} height={totalH} fill="#fffaf0" />
+      <rect width={chartW} height={totalH} fill="#ffffff" />
       {sorted.map((m, i) => {
         const val = getValue(m, variable);
         const t = normalise(val, 0, mx);
@@ -682,7 +682,7 @@ function BarChart({ data, palette, variable }) {
         return (
           <g key={m.name}>
             <text x={PAD_L - 4} y={y + BAR_H/2 + 1} textAnchor="end"
-              fontSize="7" fill="#403a31" fontFamily="monospace" dominantBaseline="middle">
+              fontSize="7" fill="#333333" fontFamily="monospace" dominantBaseline="middle">
               {m.name.length > 14 ? m.name.slice(0,13)+"…" : m.name}
             </text>
             <rect x={PAD_L} y={y} width={bw} height={BAR_H} fill={color} rx={1} opacity={0.9} />
@@ -705,27 +705,27 @@ function Legend({ palette, min, max, variable, importedPattern }) {
   if (importedPattern) {
     return (
       <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ fontSize: 9, color: "#5b5348", fontFamily: "monospace" }}>{fmtVal(min, vari?.unit || "")}</span>
+        <span style={{ fontSize: 9, color: "#555555", fontFamily: "monospace" }}>{fmtVal(min, vari?.unit || "")}</span>
         <div style={{ height: 14, flex: 1, display: "grid", gridTemplateColumns: `repeat(${PATTERN_SLOT_COUNT}, 1fr)`, gap: 2 }}>
           {Array.from({ length: PATTERN_SLOT_COUNT }).map((_, i) => {
             const slot = importedPattern.slots?.[i] || getPatternSlot(importedPattern, i / (PATTERN_SLOT_COUNT - 1));
             return (
               <div key={i} style={{
-                borderRadius: 2, overflow: "hidden", border: "1px solid #d9cbb7",
-                backgroundColor: "#f5eadb",
+                borderRadius: 2, overflow: "hidden", border: "1px solid #d0d0d0",
+                backgroundColor: "#f5f5f5",
                 backgroundImage: slot ? `linear-gradient(90deg, rgba(5,5,5,${0.68 - i * 0.11}), rgba(5,5,5,0.04)), url(${slot.dataUrl})` : "none",
                 backgroundSize: "auto, 34px 34px"
               }} />
             );
           })}
         </div>
-        <span style={{ fontSize: 9, color: "#5b5348", fontFamily: "monospace" }}>{fmtVal(max, vari?.unit || "")}</span>
+        <span style={{ fontSize: 9, color: "#555555", fontFamily: "monospace" }}>{fmtVal(max, vari?.unit || "")}</span>
       </div>
     );
   }
   return (
     <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 8 }}>
-      <span style={{ fontSize: 9, color: "#5b5348", fontFamily: "monospace" }}>{fmtVal(min, vari?.unit || "")}</span>
+      <span style={{ fontSize: 9, color: "#555555", fontFamily: "monospace" }}>{fmtVal(min, vari?.unit || "")}</span>
       <div style={{ position: "relative", height: 10, flex: 1, borderRadius: 3, overflow: "hidden" }}>
         <svg width="100%" height="10" preserveAspectRatio="none" viewBox={`0 0 ${steps} 10`}>
           {Array.from({length: steps}).map((_,i) => (
@@ -734,7 +734,7 @@ function Legend({ palette, min, max, variable, importedPattern }) {
           ))}
         </svg>
       </div>
-      <span style={{ fontSize: 9, color: "#5b5348", fontFamily: "monospace" }}>{fmtVal(max, vari?.unit || "")}</span>
+      <span style={{ fontSize: 9, color: "#555555", fontFamily: "monospace" }}>{fmtVal(max, vari?.unit || "")}</span>
     </div>
   );
 }
@@ -747,19 +747,19 @@ function Tooltip({ name, variable }) {
   const cost = Math.round((m.rejected * m.hh / 2000) * 115);
   return (
     <div style={{
-      background: "#f5eadb", border: "1px solid #9b8d78", borderRadius: 6, padding: "10px 14px",
-      fontSize: 11, fontFamily: "monospace", color: "#2e2922", lineHeight: 1.7,
+      background: "#f5f5f5", border: "1px solid #8a8a8a", borderRadius: 6, padding: "10px 14px",
+      fontSize: 11, fontFamily: "monospace", color: "#222222", lineHeight: 1.7,
       position: "sticky", top: 0
     }}>
-      <div style={{ fontWeight: "bold", color: "#17130f", fontSize: 13, marginBottom: 6 }}>{name}</div>
-      <div>Rejection rate: <span style={{color:"#ff6b35"}}>{m.rejRate}%</span></div>
-      <div>Rejected recycling: <span style={{color:"#ff6b35"}}>{m.rejected} lbs/HH</span></div>
-      <div>MRF recycling: <span style={{color:"#aed581"}}>{m.mrf} lbs/HH</span></div>
-      <div>Diversion rate: <span style={{color:"#4dd0e1"}}>{m.diversion}%</span></div>
-      <div>Landfilled: <span style={{color:"#b0bec5"}}>{m.landfilled} tons/HH</span></div>
-      <div>HH served: <span style={{color:"#2e2922"}}>{m.hh.toLocaleString()}</span></div>
-      <div style={{marginTop:6, borderTop:"1px solid #cbbba4", paddingTop:6}}>
-        Est. rejection cost: <span style={{color:"#ffcc02", fontWeight:"bold"}}>${cost.toLocaleString()}</span>
+      <div style={{ fontWeight: "bold", color: "#111111", fontSize: 13, marginBottom: 6 }}>{name}</div>
+      <div>Rejection rate: <span style={{color:"#333333"}}>{m.rejRate}%</span></div>
+      <div>Rejected recycling: <span style={{color:"#333333"}}>{m.rejected} lbs/HH</span></div>
+      <div>MRF recycling: <span style={{color:"#333333"}}>{m.mrf} lbs/HH</span></div>
+      <div>Diversion rate: <span style={{color:"#333333"}}>{m.diversion}%</span></div>
+      <div>Landfilled: <span style={{color:"#333333"}}>{m.landfilled} tons/HH</span></div>
+      <div>HH served: <span style={{color:"#222222"}}>{m.hh.toLocaleString()}</span></div>
+      <div style={{marginTop:6, borderTop:"1px solid #c8c8c8", paddingTop:6}}>
+        Est. rejection cost: <span style={{color:"#111111", fontWeight:"bold"}}>${cost.toLocaleString()}</span>
       </div>
     </div>
   );
@@ -769,10 +769,10 @@ function LevelDistributionChart({ levelInfo, stops, splitMethod, setSplitMethod,
   const maxCount = Math.max(...levelInfo.counts, 1);
   return (
     <div style={{
-      width: 160, background: "#fff6e8", border: "1px solid #d9cbb7", borderRadius: 4,
-      padding: 8, fontFamily: "monospace", boxShadow: "0 6px 18px rgb(80 60 30 / 0.08)"
+      width: 160, background: "#ffffff", border: "1px solid #d0d0d0", borderRadius: 4,
+      padding: 8, fontFamily: "monospace", boxShadow: "0 6px 18px rgb(0 0 0 / 0.08)"
     }}>
-      <div style={{ fontSize: 8, color: "#756b5b", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>
+      <div style={{ fontSize: 8, color: "#777777", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>
         Level split
       </div>
       <div style={{ display: "flex", gap: 2, marginBottom: 7 }}>
@@ -780,9 +780,9 @@ function LevelDistributionChart({ levelInfo, stops, splitMethod, setSplitMethod,
           <button key={method} onClick={() => setSplitMethod(method)} style={{
             flex: 1, padding: "2px 3px", fontSize: 7, cursor: "pointer", fontFamily: "monospace",
             textTransform: "uppercase", borderRadius: 3,
-            background: splitMethod === method ? "#17130f" : "transparent",
-            color: splitMethod === method ? "#fffaf0" : "#5b5348",
-            border: "1px solid " + (splitMethod === method ? "#17130f" : "#cbbba4")
+            background: splitMethod === method ? "#e5e5e5" : "#ffffff",
+            color: splitMethod === method ? "#111111" : "#555555",
+            border: "1px solid " + (splitMethod === method ? "#777777" : "#c8c8c8")
           }}>{method === "stddev" ? "Std" : method === "quantile" ? "Quant" : "Equal"}</button>
         ))}
       </div>
@@ -791,11 +791,11 @@ function LevelDistributionChart({ levelInfo, stops, splitMethod, setSplitMethod,
         const color = levelPatternSlots[levelIndex]?.color || interpolateColor(stops, levelMidpoint(levelIndex));
         return (
           <div key={levelIndex} style={{ display: "grid", gridTemplateColumns: "38px 1fr 48px", gap: 5, alignItems: "center", marginTop: 4 }}>
-            <span style={{ fontSize: 8, color: "#403a31" }}>L{levelIndex + 1}</span>
-            <div style={{ height: 7, background: "#eadcc8", borderRadius: 2, overflow: "hidden" }}>
+            <span style={{ fontSize: 8, color: "#333333" }}>L{levelIndex + 1}</span>
+            <div style={{ height: 7, background: "#eeeeee", borderRadius: 2, overflow: "hidden" }}>
               <div style={{ width: `${(count / maxCount) * 100}%`, height: "100%", background: color }} />
             </div>
-            <span style={{ fontSize: 8, color: "#5b5348", textAlign: "right" }}>{count} towns</span>
+            <span style={{ fontSize: 8, color: "#555555", textAlign: "right" }}>{count} towns</span>
           </div>
         );
       })}
@@ -841,15 +841,15 @@ function LevelPatternDrawer({
 
   return (
       <aside style={{
-        width: 360, flex: "0 0 360px", background: "#f6efe3", borderLeft: "1px solid #cbbba4",
-        padding: "16px 14px 18px", fontFamily: "monospace", color: "#2e2922",
+        width: 360, flex: "0 0 360px", background: "#ffffff", borderLeft: "1px solid #c8c8c8",
+        padding: "16px 14px 18px", fontFamily: "monospace", color: "#222222",
         overflowY: "auto", maxHeight: "calc(100vh - 160px)"
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14, gap: 10 }}>
           <div>
-            <div style={{ fontSize: 8, color: "#756b5b", textTransform: "uppercase", letterSpacing: 2 }}>Pattern levels</div>
-            <div style={{ fontSize: 13, color: "#17130f", fontWeight: "bold", marginTop: 3 }}>Customize contamination bands</div>
-            <div style={{ fontSize: 8, color: "#756b5b", marginTop: 5, lineHeight: 1.45, maxWidth: 300 }}>
+            <div style={{ fontSize: 8, color: "#777777", textTransform: "uppercase", letterSpacing: 2 }}>Pattern levels</div>
+            <div style={{ fontSize: 13, color: "#111111", fontWeight: "bold", marginTop: 3 }}>Customize contamination bands</div>
+            <div style={{ fontSize: 8, color: "#777777", marginTop: 5, lineHeight: 1.45, maxWidth: 300 }}>
               Custom band colors and imported patterns only apply to Choropleth and Pattern maps.
             </div>
           </div>
@@ -863,13 +863,13 @@ function LevelPatternDrawer({
             const vari = VARIABLES.find(v => v.key === variable);
             return (
               <div key={levelIndex} style={{
-                border: "1px solid #d9cbb7", borderRadius: 4, background: "#fffaf0",
+                border: "1px solid #d0d0d0", borderRadius: 4, background: "#ffffff",
                 padding: 8
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                   <label title={`Choose color for level ${levelIndex + 1}`} style={{
                     width: 16, height: 16, borderRadius: 2, background: color,
-                    border: "1px solid #9b8d78", flex: "0 0 auto", cursor: "pointer",
+                    border: "1px solid #8a8a8a", flex: "0 0 auto", cursor: "pointer",
                     position: "relative", display: "block", boxShadow: "inset 0 0 0 1px rgb(255 250 240 / 0.45)"
                   }}>
                     <input type="color" value={colorToHex(color)}
@@ -881,17 +881,17 @@ function LevelPatternDrawer({
                       }} />
                   </label>
                   <div style={{ width: 104, flex: "0 0 auto" }}>
-                    <div style={{ fontSize: 10, color: "#242018", fontWeight: "bold" }}>Level {levelIndex + 1}</div>
-                    <div style={{ fontSize: 8, color: "#625a4e" }}>{formatLevelRange(levelInfo.ranges[levelIndex], vari?.unit || "")}</div>
+                    <div style={{ fontSize: 10, color: "#222222", fontWeight: "bold" }}>Level {levelIndex + 1}</div>
+                    <div style={{ fontSize: 8, color: "#666666" }}>{formatLevelRange(levelInfo.ranges[levelIndex], vari?.unit || "")}</div>
                   </div>
                   <div style={{
-                    width: 28, height: 22, borderRadius: 2, border: "1px solid #bba98e",
-                    background: slot.pattern ? `url(${slot.pattern.dataUrl}) center / cover` : "#f5eadb",
-                    boxShadow: "inset 0 0 0 1px #fffaf0"
+                    width: 28, height: 22, borderRadius: 2, border: "1px solid #b8b8b8",
+                    background: slot.pattern ? `url(${slot.pattern.dataUrl}) center / cover` : "#f5f5f5",
+                    boxShadow: "inset 0 0 0 1px #ffffff"
                   }} />
                   <label style={{
                     padding: "4px 5px", fontSize: 8, cursor: "pointer", letterSpacing: 1,
-                    background: "#f5eadb", color: "#403a31", border: "1px solid #bba98e",
+                    background: "#f5f5f5", color: "#333333", border: "1px solid #b8b8b8",
                     borderRadius: 3, textTransform: "uppercase", flex: "0 0 auto"
                   }}>
                     Import
@@ -902,7 +902,7 @@ function LevelPatternDrawer({
                       }} />
                   </label>
                   <div style={{ width: 42, flex: "0 0 auto" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 8, color: "#5b5348" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 8, color: "#555555" }}>
                       <span>Scale</span><span>{slot.scale}x</span>
                     </div>
                     <input type="range" min="0.25" max="4" step="0.25" value={slot.scale}
@@ -910,7 +910,7 @@ function LevelPatternDrawer({
                       style={{ width: "100%" }} />
                   </div>
                   <div style={{ width: 48, flex: "0 0 auto" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 8, color: "#5b5348" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 8, color: "#555555" }}>
                       <span>Opacity</span><span>{slot.opacity}%</span>
                     </div>
                     <input type="range" min="0" max="100" step="1" value={slot.opacity}
@@ -918,8 +918,8 @@ function LevelPatternDrawer({
                       style={{ width: "100%" }} />
                   </div>
                   <button onClick={() => resetLevel(levelIndex)} aria-label={`Reset level ${levelIndex + 1}`} style={{
-                    width: 22, height: 22, cursor: "pointer", background: "transparent", color: "#5b5348",
-                    border: "1px solid #cbbba4", borderRadius: 3, fontFamily: "monospace"
+                    width: 22, height: 22, cursor: "pointer", background: "#ffffff", color: "#555555",
+                    border: "1px solid #c8c8c8", borderRadius: 3, fontFamily: "monospace"
                   }}>x</button>
                 </div>
               </div>
@@ -999,7 +999,7 @@ export default function App() {
       canvas.width = width * scale;
       canvas.height = height * scale;
       const ctx = canvas.getContext("2d");
-      ctx.fillStyle = "#fffaf0";
+      ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       const a = document.createElement("a");
@@ -1016,36 +1016,36 @@ export default function App() {
 
   return (
     <div style={{
-      minHeight: "100vh", background: "#f6efe3", color: "#242018",
+      minHeight: "100vh", background: "#ffffff", color: "#222222",
       fontFamily: "'Courier New', monospace", display: "flex", flexDirection: "column"
     }}>
       {/* Header */}
       <div style={{
-        borderBottom: "1px solid #d9cbb7", padding: "16px 24px",
+        borderBottom: "1px solid #d0d0d0", padding: "16px 24px",
         display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 8
       }}>
         <div>
-          <div style={{ fontSize: 10, color: "#756b5b", letterSpacing: 3, textTransform: "uppercase", marginBottom: 2 }}>
+          <div style={{ fontSize: 10, color: "#777777", letterSpacing: 3, textTransform: "uppercase", marginBottom: 2 }}>
             Making Waste Visible · RISD 2025
           </div>
-          <h1 style={{ margin: 0, fontSize: 20, fontWeight: "bold", color: "#17130f", letterSpacing: -0.5 }}>
+          <h1 style={{ margin: 0, fontSize: 20, fontWeight: "bold", color: "#111111", letterSpacing: -0.5 }}>
             Rhode Island Waste Flow
           </h1>
-          <div style={{ fontSize: 10, color: "#625a4e", marginTop: 2 }}>
+          <div style={{ fontSize: 10, color: "#666666", marginTop: 2 }}>
             Source: RIRRC 2025 Municipal Data · 38 municipalities
           </div>
         </div>
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
           <button onClick={downloadSvg} style={{
             padding: "6px 10px", fontSize: 9, cursor: "pointer", letterSpacing: 1,
-            background: "#17130f", color: "#fffaf0", border: "1px solid #17130f",
+            background: "#f5f5f5", color: "#111111", border: "1px solid #999999",
             borderRadius: 3, textTransform: "uppercase", fontFamily: "monospace"
           }}>
             Download SVG
           </button>
           <button onClick={downloadPng} style={{
             padding: "6px 10px", fontSize: 9, cursor: "pointer", letterSpacing: 1,
-            background: "#17130f", color: "#fffaf0", border: "1px solid #17130f",
+            background: "#f5f5f5", color: "#111111", border: "1px solid #999999",
             borderRadius: 3, textTransform: "uppercase", fontFamily: "monospace"
           }}>
             Download PNG
@@ -1055,7 +1055,7 @@ export default function App() {
 
       {/* Controls */}
       <div style={{
-        borderBottom: "1px solid #f5eadb", padding: "10px 24px",
+        borderBottom: "1px solid #f5f5f5", padding: "10px 24px",
         display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center"
       }}>
         {/* View mode */}
@@ -1068,9 +1068,9 @@ export default function App() {
           ].map(({ k, label }) => (
             <button key={k} onClick={() => setMode(k)} style={{
               padding: "4px 10px", fontSize: 10, cursor: "pointer", letterSpacing: 1,
-              background: mode === k ? "#17130f" : "transparent",
-              color: mode === k ? "#fffaf0" : "#625a4e",
-              border: "1px solid " + (mode === k ? "#17130f" : "#cbbba4"),
+              background: mode === k ? "#e5e5e5" : "#ffffff",
+              color: mode === k ? "#111111" : "#666666",
+              border: "1px solid " + (mode === k ? "#777777" : "#c8c8c8"),
               borderRadius: 3, textTransform: "uppercase", fontFamily: "monospace",
               transition: "all 0.15s"
             }}>{label}</button>
@@ -1079,7 +1079,7 @@ export default function App() {
 
         {/* Variable */}
         <select value={variable} onChange={e => setVariable(e.target.value)} style={{
-          background: "#f5eadb", color: "#2e2922", border: "1px solid #cbbba4",
+          background: "#f5f5f5", color: "#222222", border: "1px solid #c8c8c8",
           padding: "4px 8px", fontSize: 10, fontFamily: "monospace", borderRadius: 3, cursor: "pointer"
         }}>
           {VARIABLES.map(v => <option key={v.key} value={v.key}>{v.label}</option>)}
@@ -1088,7 +1088,7 @@ export default function App() {
         {/* Search */}
         <input placeholder="Search municipality…" value={search}
           onChange={e => setSearch(e.target.value)} style={{
-            background: "#f5eadb", color: "#2e2922", border: "1px solid #cbbba4",
+            background: "#f5f5f5", color: "#222222", border: "1px solid #c8c8c8",
             padding: "4px 10px", fontSize: 10, fontFamily: "monospace", borderRadius: 3,
             outline: "none", width: 160
           }} />
@@ -1096,16 +1096,16 @@ export default function App() {
 
       {/* Palette row */}
       <div style={{
-        borderBottom: "1px solid #f5eadb", padding: "8px 24px",
+        borderBottom: "1px solid #f5f5f5", padding: "8px 24px",
         display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap"
       }}>
-        <span style={{ fontSize: 9, color: "#756b5b", textTransform: "uppercase", letterSpacing: 2 }}>Palette</span>
+        <span style={{ fontSize: 9, color: "#777777", textTransform: "uppercase", letterSpacing: 2 }}>Palette</span>
         {PALETTES.map(p => (
           <button key={p.key} onClick={() => setPalette(p.key)} style={{
             display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
-            background: palette === p.key ? "#d9cbb7" : "transparent",
-            border: "1px solid " + (palette === p.key ? "#756b5b" : "#d9cbb7"),
-            borderRadius: 4, padding: "3px 8px", fontFamily: "monospace", fontSize: 9, color: "#403a31"
+            background: palette === p.key ? "#d0d0d0" : "#ffffff",
+            border: "1px solid " + (palette === p.key ? "#777777" : "#d0d0d0"),
+            borderRadius: 4, padding: "3px 8px", fontFamily: "monospace", fontSize: 9, color: "#333333"
           }}>
             <div style={{ display: "flex", gap: 1 }}>
               {p.stops.map((c,i) => (
@@ -1118,9 +1118,9 @@ export default function App() {
         {importedPatterns.map(p => (
           <button key={p.key} onClick={() => setPalette(p.key)} style={{
             display: "flex", alignItems: "center", gap: 5, cursor: "pointer",
-            background: palette === p.key ? "#d9cbb7" : "transparent",
-            border: "1px solid " + (palette === p.key ? "#625a4e" : "#d9cbb7"),
-            borderRadius: 4, padding: "3px 8px", fontFamily: "monospace", fontSize: 9, color: "#403a31",
+            background: palette === p.key ? "#d0d0d0" : "#ffffff",
+            border: "1px solid " + (palette === p.key ? "#666666" : "#d0d0d0"),
+            borderRadius: 4, padding: "3px 8px", fontFamily: "monospace", fontSize: 9, color: "#333333",
             maxWidth: 230
           }}>
             <div style={{ display: "flex", gap: 1 }}>
@@ -1129,8 +1129,8 @@ export default function App() {
                 return (
                   <div key={i} style={{
                     width: 10, height: 10, borderRadius: 1,
-                    border: "1px solid " + (slot ? "#9b8d78" : "#c8b89d"),
-                    background: slot ? `url(${slot.dataUrl}) center / cover` : "#eadcc8"
+                    border: "1px solid " + (slot ? "#8a8a8a" : "#c0c0c0"),
+                    background: slot ? `url(${slot.dataUrl}) center / cover` : "#eeeeee"
                   }} />
                 );
               })}
@@ -1145,8 +1145,8 @@ export default function App() {
         {/* Viz panel */}
         <div style={{ flex: 1, padding: "16px 24px", minWidth: 0 }}>
           {curVari && (
-            <div style={{ marginBottom: 10, fontSize: 10, color: "#625a4e" }}>
-              <span style={{ color: "#403a31" }}>{curVari.label}</span> — {curVari.desc}
+            <div style={{ marginBottom: 10, fontSize: 10, color: "#666666" }}>
+              <span style={{ color: "#333333" }}>{curVari.label}</span> — {curVari.desc}
             </div>
           )}
 
@@ -1166,7 +1166,7 @@ export default function App() {
           )}
           {mode === "pattern" && (
             <div>
-              <div style={{ fontSize: 9, color: "#756b5b", marginBottom: 8, letterSpacing: 1 }}>
+              <div style={{ fontSize: 9, color: "#777777", marginBottom: 8, letterSpacing: 1 }}>
                 TEXTILE PATTERN — line density encodes data value · exportable as visual reference
               </div>
               <PatternMap data={filtered} palette={palette} variable={variable}
@@ -1180,7 +1180,7 @@ export default function App() {
 
         {/* Sidebar */}
         <div style={{
-          width: 200, borderLeft: "1px solid #f5eadb", padding: "16px 12px",
+          width: 200, borderLeft: "1px solid #f5f5f5", padding: "16px 12px",
           display: "flex", flexDirection: "column", gap: 10,
           overflowY: "auto", maxHeight: "calc(100vh - 160px)"
         }}>
@@ -1191,7 +1191,7 @@ export default function App() {
           {hovered
             ? <Tooltip name={hovered} variable={variable} />
             : (
-              <div style={{ fontSize: 9, color: "#9b8d78", textAlign: "center", marginTop: 20, lineHeight: 1.8 }}>
+              <div style={{ fontSize: 9, color: "#8a8a8a", textAlign: "center", marginTop: 20, lineHeight: 1.8 }}>
                 Hover a town<br/>to see details
               </div>
             )
@@ -1199,7 +1199,7 @@ export default function App() {
 
           {/* Top 5 worst */}
           <div style={{ marginTop: 12 }}>
-            <div style={{ fontSize: 8, color: "#756b5b", textTransform: "uppercase", letterSpacing: 2, marginBottom: 6 }}>
+            <div style={{ fontSize: 8, color: "#777777", textTransform: "uppercase", letterSpacing: 2, marginBottom: 6 }}>
               Worst 5
             </div>
             {[...MUNICIPALITIES].sort((a,b) => getValue(b,variable) - getValue(a,variable)).slice(0,5).map((m,i) => {
@@ -1209,10 +1209,10 @@ export default function App() {
               return (
                 <div key={m.name} style={{
                   display: "flex", justifyContent: "space-between", alignItems: "center",
-                  padding: "4px 0", borderBottom: "1px solid #f5eadb", fontSize: 9
+                  padding: "4px 0", borderBottom: "1px solid #f5f5f5", fontSize: 9
                 }}>
-                  <span style={{ color: "#403a31" }}>{i+1}. {m.name.length > 11 ? m.name.slice(0,10)+"…" : m.name}</span>
-                  <span style={{ color, fontWeight: "bold" }}>{fmtVal(val, curVari?.unit||"")}</span>
+                  <span style={{ color: "#333333" }}>{i+1}. {m.name.length > 11 ? m.name.slice(0,10)+"…" : m.name}</span>
+                  <span style={{ color: "#111111", fontWeight: "bold" }}>{fmtVal(val, curVari?.unit||"")}</span>
                 </div>
               );
             })}
@@ -1220,7 +1220,7 @@ export default function App() {
 
           {/* Top 5 best */}
           <div style={{ marginTop: 8 }}>
-            <div style={{ fontSize: 8, color: "#756b5b", textTransform: "uppercase", letterSpacing: 2, marginBottom: 6 }}>
+            <div style={{ fontSize: 8, color: "#777777", textTransform: "uppercase", letterSpacing: 2, marginBottom: 6 }}>
               Best 5
             </div>
             {[...MUNICIPALITIES].sort((a,b) => getValue(a,variable) - getValue(b,variable)).slice(0,5).map((m,i) => {
@@ -1230,19 +1230,19 @@ export default function App() {
               return (
                 <div key={m.name} style={{
                   display: "flex", justifyContent: "space-between", alignItems: "center",
-                  padding: "4px 0", borderBottom: "1px solid #f5eadb", fontSize: 9
+                  padding: "4px 0", borderBottom: "1px solid #f5f5f5", fontSize: 9
                 }}>
-                  <span style={{ color: "#403a31" }}>{i+1}. {m.name.length > 11 ? m.name.slice(0,10)+"…" : m.name}</span>
-                  <span style={{ color, fontWeight: "bold" }}>{fmtVal(val, curVari?.unit||"")}</span>
+                  <span style={{ color: "#333333" }}>{i+1}. {m.name.length > 11 ? m.name.slice(0,10)+"…" : m.name}</span>
+                  <span style={{ color: "#111111", fontWeight: "bold" }}>{fmtVal(val, curVari?.unit||"")}</span>
                 </div>
               );
             })}
           </div>
 
           {/* State avg */}
-          <div style={{ marginTop: 8, padding: "8px", background: "#fff6e8", borderRadius: 4, border: "1px solid #d9cbb7" }}>
-            <div style={{ fontSize: 8, color: "#756b5b", textTransform: "uppercase", letterSpacing: 2, marginBottom: 4 }}>State avg</div>
-            <div style={{ fontSize: 13, fontWeight: "bold", color: "#17130f" }}>
+          <div style={{ marginTop: 8, padding: "8px", background: "#ffffff", borderRadius: 4, border: "1px solid #d0d0d0" }}>
+            <div style={{ fontSize: 8, color: "#777777", textTransform: "uppercase", letterSpacing: 2, marginBottom: 4 }}>State avg</div>
+            <div style={{ fontSize: 13, fontWeight: "bold", color: "#111111" }}>
               {fmtVal(vals.length ? parseFloat((vals.reduce((a,b) => a+b,0) / vals.length).toFixed(1)) : 0, curVari?.unit||"")}
             </div>
           </div>
