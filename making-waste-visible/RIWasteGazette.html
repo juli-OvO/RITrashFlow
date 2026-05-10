@@ -654,7 +654,7 @@
     </div>
     <h1>The Rhode Island <em>Waste</em> Gazette</h1>
     <hr class="sub-rule" />
-    <p class="deck">A municipal accounting of the trash, recycling, and rubbish hauled across the smallest state &mdash; read by the triangle, weighed in basketballs, elephants, and washing machines.</p>
+    <p class="deck">A municipal accounting of the trash, recycling, and trash hauled across the smallest state, weighed daily objects.</p>
     <div class="byline">&mdash; Special Data Edition &middot; Sourced from RIRRC 2025 &mdash;</div>
     <div class="stamp">First<br/>Class<br/>Refuse</div>
   </div>
@@ -673,15 +673,15 @@
       <p class="photo-cap">Fig. 1 &mdash; The Central Landfill, Johnston RI. Photographed at the working face.</p>
 
       <div class="kicker">&mdash; Worst offenders, landfilled &mdash;</div>
-      <h2 class="section-h" style="font-size:18px;">Top of the Heap</h2>
+      <h2 class="section-h" style="font-size:18px;">Top</h2>
       <div id="worst-list" class="headline-list"></div>
 
       <div class="sticky">
-        <b>EDITOR'S NOTE.</b> Hover any town on the map to read its dossier &mdash; colors show the overall diversion rate.
+        <b>NOTE.</b> Hover any town on the map for more info &mdash; colors show the overall diversion rate.
       </div>
 
       <div class="kicker">&mdash; Lightest treaders &mdash;</div>
-      <h2 class="section-h" style="font-size:18px;">Bottom of the Bin</h2>
+      <h2 class="section-h" style="font-size:18px;">Bottom</h2>
       <div id="best-list" class="headline-list"></div>
     </aside>
 
@@ -689,8 +689,8 @@
     <main class="col col--center">
       <div class="map-wrap">
         <div class="map-head">
-          <div class="map-title">Plate I &mdash; Refuse of Rhode Island</div>
-          <div class="map-meta">Scale &asymp; 1&nbsp;:&nbsp;380,000 &middot; Chevrons per household</div>
+          <div class="map-title"> Trash of Rhode Island</div>
+          
         </div>
 
         <div class="map-canvas" id="map-canvas">
@@ -792,8 +792,8 @@
       </div>
 
       <div class="pull-quote">
-        Providence sent the heaviest load &mdash; every household, every year, like the weight of a small horse hauled to the landfill.
-        <span class="pq-attr">&mdash; from the dispatches, p. 1</span>
+        Providence sent the heaviest load. 
+        <!-- <span class="pq-attr">&mdash; </span> -->
       </div>
 
       <div class="kicker">&mdash; Statewide tally &mdash;</div>
@@ -985,11 +985,9 @@ const TON_TO_KG = 907.185;
 const LB_TO_KG  = 0.45359;
 
 const EQUIVS = [
-  { kg: 0.62,  one:"basketball",       many:"basketballs",      icon:"basketball" },
-  { kg: 7.26,  one:"bowling ball",     many:"bowling balls",    icon:"bowl" },
-  { kg: 65,    one:"washing machine",  many:"washing machines", icon:"washer" },
-  { kg: 1500,  one:"sedan car",        many:"sedans",           icon:"car" },
-  { kg: 6000,  one:"adult elephant",   many:"elephants",        icon:"elephant" },
+  { kg: 1.2  * LB_TO_KG, one:"basketball",      many:"basketballs",      icon:"basketball" },
+  { kg: 4    * LB_TO_KG, one:"MacBook",         many:"MacBooks",         icon:"macbook"    },
+  { kg: 130  * LB_TO_KG, one:"washing machine", many:"washing machines", icon:"washer"     },
 ];
 
 function eqIcon(kind){
@@ -997,14 +995,10 @@ function eqIcon(kind){
   switch(kind){
     case "basketball":
       return `<svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="8" fill="none" stroke="${ink}" stroke-width="1.2"/><path d="M3 11h16M11 3v16M5.5 5.5q5.5 5.5 11 11M16.5 5.5q-5.5 5.5-11 11" fill="none" stroke="${ink}" stroke-width="1"/></svg>`;
-    case "bowl":
-      return `<svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="8" fill="${ink}"/><circle cx="8" cy="8" r="0.8" fill="#f1ead7"/><circle cx="11" cy="7" r="0.8" fill="#f1ead7"/><circle cx="9.5" cy="10" r="0.8" fill="#f1ead7"/></svg>`;
+    case "macbook":
+      return `<svg width="26" height="22" viewBox="0 0 26 22"><rect x="3" y="5" width="20" height="13" rx="1.5" fill="none" stroke="${ink}" stroke-width="1.2"/><rect x="6" y="8" width="14" height="7" fill="none" stroke="${ink}" stroke-width="0.7"/><rect x="1" y="18" width="24" height="2" rx="1" fill="none" stroke="${ink}" stroke-width="1"/><rect x="10" y="18" width="6" height="1" rx="0.5" fill="${ink}"/></svg>`;
     case "washer":
       return `<svg width="22" height="22" viewBox="0 0 22 22"><rect x="3" y="3" width="16" height="16" fill="none" stroke="${ink}" stroke-width="1.2"/><circle cx="11" cy="13" r="4.5" fill="none" stroke="${ink}" stroke-width="1"/><circle cx="11" cy="13" r="2.5" fill="none" stroke="${ink}" stroke-width="0.8"/><circle cx="6" cy="6" r="0.7" fill="${ink}"/><circle cx="9" cy="6" r="0.7" fill="${ink}"/></svg>`;
-    case "car":
-      return `<svg width="26" height="22" viewBox="0 0 26 22"><path d="M2 14 L4 9 L8 7 L18 7 L21 9 L24 14 L24 17 L2 17 Z" fill="none" stroke="${ink}" stroke-width="1.1"/><circle cx="7" cy="17.5" r="2" fill="${ink}"/><circle cx="19" cy="17.5" r="2" fill="${ink}"/></svg>`;
-    case "elephant":
-      return `<svg width="28" height="22" viewBox="0 0 28 22"><path d="M3 17 L3 11 Q3 6 9 6 L18 6 Q23 6 23 11 L23 14 L20 14 L20 17 L17 17 L17 14 L11 14 L11 17 L8 17 L8 14 L3 14 Z" fill="${ink}"/><path d="M23 11 Q26 12 25 17 Q24 19 22 18" fill="none" stroke="${ink}" stroke-width="1.2"/><circle cx="8" cy="9" r="0.7" fill="#f1ead7"/></svg>`;
   }
   return "";
 }
@@ -1158,26 +1152,9 @@ function ordinal(n){
 function renderEquivalents(kg){
   const host = document.getElementById("equivalents");
   host.innerHTML = "";
-  const choices = [];
-  const desc = [...EQUIVS].sort((a,b)=> b.kg - a.kg);
-  for (const eq of desc){
+
+  for (const eq of EQUIVS){
     const n = kg / eq.kg;
-    if (n >= 0.5){ choices.push({eq, n}); break; }
-  }
-  const wash = EQUIVS.find(e=> e.icon==="washer");
-  if (wash && (kg/wash.kg)>=1) choices.push({eq:wash, n: kg/wash.kg});
-  const ball = EQUIVS.find(e=> e.icon==="basketball");
-  choices.push({eq:ball, n: kg/ball.kg});
-
-  const seen = new Set();
-  const final = [];
-  for (const c of choices){
-    if (seen.has(c.eq.icon)) continue;
-    seen.add(c.eq.icon);
-    final.push(c);
-  }
-
-  for (const {eq, n} of final.slice(0,3)){
     const count = formatCount(n);
     const word = (Math.round(n*10)/10 === 1) ? eq.one : eq.many;
     const row = document.createElement("div");
@@ -1265,7 +1242,7 @@ function renderTotals(){
   const mxLand = max("trash_landfilled_tons_per_hh");
   const mnLand = min("trash_landfilled_tons_per_hh");
   const totalKg = aLand * TON_TO_KG;
-  const elephants = (totalKg / 6000).toFixed(2);
+  const washers = (totalKg / (130 * LB_TO_KG)).toFixed(1);
 
   const html = `
     <div>${aLand.toFixed(2)} t/hh &mdash; <i>state average landfilled</i></div>
@@ -1276,7 +1253,7 @@ function renderTotals(){
     </div>
     <div>Lightest: <b>${mnLand.town}</b> &mdash; ${mnLand.val.toFixed(2)} t/hh</div>
     <div style="margin-top:6px; padding-top:6px; border-top:1px dotted var(--ink-faint);">
-      That averages <b>${elephants}</b> elephants of trash, per household, every year.
+      That averages <b>${washers}</b> washing machines of trash, per household, every year.
     </div>
   `;
   document.getElementById("totals").innerHTML = html;
