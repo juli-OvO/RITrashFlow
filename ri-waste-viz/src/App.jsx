@@ -765,40 +765,101 @@ function Tooltip({ name, variable }) {
   );
 }
 
-function LevelDistributionChart({ levelInfo, stops, splitMethod, setSplitMethod, levelPatternSlots }) {
+function rangeParts(range, unit) {
+  if (!range) return { top: "--", bottom: "" };
+  if (range.above !== undefined) return { top: "above", bottom: fmtVal(range.above, unit) };
+  if (range.below !== undefined) return { top: "below", bottom: fmtVal(range.below, unit) };
+  return { top: fmtVal(range.min, unit), bottom: fmtVal(range.max, unit) };
+}
+
+function LevelDistributionChart({ levelInfo, stops, splitMethod, setSplitMethod, levelPatternSlots, variable }) {
   const maxCount = Math.max(...levelInfo.counts, 1);
+  const CHART_H = 110;
+  const RANGE_H = 40;
+  const LABEL_H = 26;
+  const vari = VARIABLES.find(v => v.key === variable);
+  const unit = vari?.unit || "";
+
   return (
-    <div style={{
-      width: 160, background: "#ffffff", border: "1px solid #d0d0d0", borderRadius: 4,
-      padding: 8, fontFamily: "monospace", boxShadow: "0 6px 18px rgb(0 0 0 / 0.08)"
-    }}>
-      <div style={{ fontSize: 8, color: "#777777", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 6 }}>
-        Level split
-      </div>
-      <div style={{ display: "flex", gap: 2, marginBottom: 7 }}>
-        {["stddev", "quantile", "equal"].map(method => (
+    <div style={{ fontFamily: "monospace", marginBottom: 18 }}>
+      {/* Method tabs */}
+      <div style={{ display: "flex", gap: 3, marginBottom: 10 }}>
+        {[["stddev","STD"],["quantile","QUANT"],["equal","EQUAL"]].map(([method, label]) => (
           <button key={method} onClick={() => setSplitMethod(method)} style={{
-            flex: 1, padding: "2px 3px", fontSize: 7, cursor: "pointer", fontFamily: "monospace",
-            textTransform: "uppercase", borderRadius: 3,
+            padding: "3px 9px", fontSize: 9, cursor: "pointer", fontFamily: "monospace",
+            textTransform: "uppercase", letterSpacing: 1,
             background: splitMethod === method ? "#e5e5e5" : "#ffffff",
-            color: splitMethod === method ? "#111111" : "#555555",
-            border: "1px solid " + (splitMethod === method ? "#777777" : "#c8c8c8")
-          }}>{method === "stddev" ? "Std" : method === "quantile" ? "Quant" : "Equal"}</button>
+            color: splitMethod === method ? "#111111" : "#666666",
+            border: "1px solid " + (splitMethod === method ? "#888888" : "#c8c8c8"),
+            borderRadius: 3
+          }}>{label}</button>
         ))}
       </div>
-      {[4, 3, 2, 1, 0].map(levelIndex => {
-        const count = levelInfo.counts[levelIndex] || 0;
-        const color = levelPatternSlots[levelIndex]?.color || interpolateColor(stops, levelMidpoint(levelIndex));
-        return (
-          <div key={levelIndex} style={{ display: "grid", gridTemplateColumns: "38px 1fr 48px", gap: 5, alignItems: "center", marginTop: 4 }}>
-            <span style={{ fontSize: 8, color: "#333333" }}>L{levelIndex + 1}</span>
-            <div style={{ height: 7, background: "#eeeeee", borderRadius: 2, overflow: "hidden" }}>
-              <div style={{ width: `${(count / maxCount) * 100}%`, height: "100%", background: color }} />
-            </div>
-            <span style={{ fontSize: 8, color: "#555555", textAlign: "right" }}>{count} towns</span>
+
+      {/* Chart: left label column + 5 level columns */}
+      <div style={{ display: "flex", gap: 0 }}>
+        {/* Y-axis labels */}
+        <div style={{ width: 64, flexShrink: 0, display: "flex", flexDirection: "column" }}>
+          <div style={{ height: RANGE_H, fontSize: 9, color: "#777777", display: "flex", alignItems: "center" }}>
+            data range
           </div>
-        );
-      })}
+          <div style={{ height: LABEL_H }} />
+          <div style={{ height: CHART_H, display: "flex", alignItems: "center", fontSize: 9, color: "#777777", lineHeight: 1.4 }}>
+            number<br/>of towns
+          </div>
+        </div>
+
+        {/* 5 columns */}
+        <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 3 }}>
+          {[0, 1, 2, 3, 4].map(levelIndex => {
+            const count = levelInfo.counts[levelIndex] || 0;
+            const barH = Math.round((count / maxCount) * CHART_H);
+            const color = levelPatternSlots[levelIndex]?.color || interpolateColor(stops, levelMidpoint(levelIndex));
+            const { top, bottom } = rangeParts(levelInfo.ranges?.[levelIndex], unit);
+            return (
+              <div key={levelIndex} style={{ display: "flex", flexDirection: "column", alignItems: "stretch" }}>
+                {/* data range: two lines, fixed height */}
+                <div style={{
+                  height: RANGE_H, display: "flex", flexDirection: "column",
+                  alignItems: "center", justifyContent: "center",
+                  fontSize: 8, color: "#444444", textAlign: "center", gap: 2
+                }}>
+                  <span>{top}</span>
+                  {bottom && <span style={{ color: "#888888" }}>{bottom}</span>}
+                </div>
+                {/* level label header */}
+                <div style={{
+                  height: LABEL_H, background: "#e8e8e8", display: "flex", alignItems: "center",
+                  justifyContent: "center", fontSize: 9, color: "#333333",
+                  border: "1px solid #c0c0c0"
+                }}>
+                  level {levelIndex + 1}
+                </div>
+                {/* bar (grows downward), count inside */}
+                <div style={{
+                  height: CHART_H, background: "#f5f5f5",
+                  border: "1px solid #c0c0c0", borderTop: "none",
+                  position: "relative", overflow: "hidden"
+                }}>
+                  <div style={{ width: "100%", height: barH, background: color, opacity: 0.75 }} />
+                  {count > 0 && (
+                    <div style={{
+                      position: "absolute",
+                      top: barH >= 18 ? barH - 14 : barH + 2,
+                      left: 0, right: 0,
+                      fontSize: 8, fontWeight: "bold", textAlign: "center",
+                      color: barH >= 18 ? "#ffffff" : "#444444",
+                      pointerEvents: "none"
+                    }}>
+                      {count}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
@@ -809,6 +870,8 @@ function LevelPatternDrawer({
   stops,
   variable,
   levelInfo,
+  splitMethod,
+  setSplitMethod,
 }) {
   function importLevelPattern(levelIndex, file) {
     if (!file || !/\.(png|jpe?g|svg)$/i.test(file.name)) return;
@@ -845,6 +908,12 @@ function LevelPatternDrawer({
         padding: "16px 14px 18px", fontFamily: "monospace", color: "#222222",
         overflowY: "auto", maxHeight: "calc(100vh - 160px)"
       }}>
+        <LevelDistributionChart
+          levelInfo={levelInfo} stops={stops}
+          splitMethod={splitMethod} setSplitMethod={setSplitMethod}
+          levelPatternSlots={levelPatternSlots} variable={variable}
+        />
+
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14, gap: 10 }}>
           <div>
             <div style={{ fontSize: 8, color: "#777777", textTransform: "uppercase", letterSpacing: 2 }}>Pattern levels</div>
@@ -1184,10 +1253,6 @@ export default function App() {
           display: "flex", flexDirection: "column", gap: 10,
           overflowY: "auto", maxHeight: "calc(100vh - 160px)"
         }}>
-          <LevelDistributionChart levelInfo={levelInfo} stops={stops}
-            splitMethod={splitMethod} setSplitMethod={setSplitMethod}
-            levelPatternSlots={levelPatternSlots} />
-
           {hovered
             ? <Tooltip name={hovered} variable={variable} />
             : (
@@ -1200,7 +1265,7 @@ export default function App() {
           {/* Top 5 worst */}
           <div style={{ marginTop: 12 }}>
             <div style={{ fontSize: 8, color: "#777777", textTransform: "uppercase", letterSpacing: 2, marginBottom: 6 }}>
-              Worst 5
+              Top 5
             </div>
             {[...MUNICIPALITIES].sort((a,b) => getValue(b,variable) - getValue(a,variable)).slice(0,5).map((m,i) => {
               const val = getValue(m, variable);
@@ -1221,7 +1286,7 @@ export default function App() {
           {/* Top 5 best */}
           <div style={{ marginTop: 8 }}>
             <div style={{ fontSize: 8, color: "#777777", textTransform: "uppercase", letterSpacing: 2, marginBottom: 6 }}>
-              Best 5
+              Bottom 5
             </div>
             {[...MUNICIPALITIES].sort((a,b) => getValue(a,variable) - getValue(b,variable)).slice(0,5).map((m,i) => {
               const val = getValue(m, variable);
@@ -1253,6 +1318,8 @@ export default function App() {
           stops={stops}
           variable={variable}
           levelInfo={levelInfo}
+          splitMethod={splitMethod}
+          setSplitMethod={setSplitMethod}
         />
       </div>
     </div>

@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Prototype</title>
+<title>Making Waste Visible — RI Textile Waste</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400;1,6..96,700&family=Archivo+Narrow:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --paper: #0a0c08;          /* near-black with green undertone */
+    --paper: #0a0c08;
     --paper-2: #11140e;
-    --ink: #e8ffd6;            /* toxic acid bone */
+    --ink: #e8ffd6;
     --ink-soft: rgba(232,255,214,0.55);
     --ink-faint: rgba(232,255,214,0.18);
     --hair: rgba(232,255,214,0.14);
-    --acid: #c6ff3d;           /* alarm green */
-    --warn: #ff2d2d;           /* warning red */
-    --rust: #b04a1f;           /* contamination */
-    --bruise: #4a1f6b;         /* deep purple shadow */
+    --acid: #c6ff3d;
+    --warn: #ff2d2d;
+    --rust: #b04a1f;
+    --bruise: #4a1f6b;
   }
   * { box-sizing: border-box; }
   html, body {
@@ -36,174 +36,117 @@
       radial-gradient(700px 500px at 20% 80%, rgba(255,45,45,0.07), transparent 60%),
       var(--paper);
   }
-  /* Grain overlay for that printed/alarming feel */
   body::before {
     content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 9;
-    pointer-events: none;
-    opacity: 0.18;
-    mix-blend-mode: overlay;
+    position: fixed; inset: 0; z-index: 9;
+    pointer-events: none; opacity: 0.18; mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
   }
-  /* Faint scanlines */
   body::after {
     content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 8;
-    pointer-events: none;
-    opacity: 0.06;
-    background: repeating-linear-gradient(
-      0deg,
-      rgba(232,255,214,0.5) 0 1px,
-      transparent 1px 3px
-    );
+    position: fixed; inset: 0; z-index: 8;
+    pointer-events: none; opacity: 0.06;
+    background: repeating-linear-gradient(0deg, rgba(232,255,214,0.5) 0 1px, transparent 1px 3px);
     mix-blend-mode: overlay;
   }
 
-  /* ---------- Editorial side rails ---------- */
+  /* ---------- Rails — shapes only ---------- */
   .rail {
-    position: fixed;
-    top: 0; bottom: 0;
-    width: 56px;
-    z-index: 4;
-    pointer-events: none;
+    position: fixed; top: 0; bottom: 0; width: 56px;
+    z-index: 4; pointer-events: none;
     border-right: 1px solid var(--hair);
     background: rgba(10,12,8,0.5);
   }
-  .rail.left { left: 0; }
+  .rail.left  { left: 0; }
   .rail.right { right: 0; border-right: none; border-left: 1px solid var(--hair); }
-  .rail .v-label {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%) rotate(-90deg);
-    transform-origin: center;
-    white-space: nowrap;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 10px;
-    letter-spacing: 0.32em;
-    text-transform: uppercase;
-    color: var(--acid);
+  .rail-shapes {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: space-evenly;
+    padding: 24px 0;
   }
-  .rail .v-stamp-top, .rail .v-stamp-bottom {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: "JetBrains Mono", monospace;
-    font-size: 9px;
-    letter-spacing: 0.22em;
-    color: var(--ink-soft);
-    text-transform: uppercase;
+  .rail-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--ink-faint);
+    animation: rail-pulse 3s ease-in-out infinite;
   }
-  .rail .v-stamp-top { top: 22px; color: var(--warn); }
-  .rail .v-stamp-bottom { bottom: 22px; }
+  .rail-dot:nth-child(2n)   { background: var(--acid); opacity: 0.3; animation-delay: 1s; }
+  .rail-dot:nth-child(3n)   { width: 3px; height: 3px; animation-delay: 2s; }
+  .rail-bar {
+    width: 20px; height: 1px;
+    background: var(--hair);
+  }
+  .rail-bar.accent { background: var(--acid); opacity: 0.4; }
+  @keyframes rail-pulse {
+    0%, 100% { opacity: 0.3; }
+    50%       { opacity: 0.9; }
+  }
 
-  /* ---------- Top header strip ---------- */
+  /* ---------- Top header ---------- */
   .header {
-    position: fixed;
-    top: 0; left: 56px; right: 56px;
-    height: 64px;
-    z-index: 5;
-    display: grid;
-    grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
-    align-items: center;
+    position: fixed; top: 0; left: 56px; right: 56px;
+    height: 64px; z-index: 5;
+    display: flex; align-items: center; gap: 24px;
     border-bottom: 1px solid var(--hair);
-    background: rgba(10,12,8,0.78);
-    backdrop-filter: blur(8px);
+    background: rgba(10,12,8,0.78); backdrop-filter: blur(8px);
     padding: 0 28px;
     font-family: "JetBrains Mono", monospace;
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--ink);
+    font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
   }
-  .header .cell {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding-right: 18px;
-    color: var(--ink-soft);
-  }
-  .header .cell strong { color: var(--acid); font-weight: 700; }
-  .header .cell .dash { width: 24px; height: 1px; background: var(--acid); display: inline-block; }
-  .header .cell .alarm { color: var(--warn); animation: blink 1.6s steps(2) infinite; }
+  .hdr-title { color: var(--acid); font-weight: 700; }
+  .hdr-sub { color: var(--ink-soft); }
+  .hdr-alarm { color: var(--warn); animation: blink 1.6s steps(2) infinite; margin-left: auto; }
+  .hdr-year { color: var(--ink-soft); }
   @keyframes blink { 50% { opacity: 0.2; } }
-  .header .icon-btn {
-    width: 22px; height: 22px;
-    border: 1px solid var(--ink-soft);
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 9px;
-    color: var(--ink);
-  }
 
   /* ---------- 3D stage ---------- */
-  .stage {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-  }
+  .stage { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
   #webgl { display: block; width: 100%; height: 100%; }
 
-  /* ---------- Soft gradient orb behind cubes (alarm glow) ---------- */
   .orb {
-    position: fixed;
-    z-index: 0;
-    width: 70vmin;
-    height: 70vmin;
-    right: -10vmin;
-    top: 8vh;
-    border-radius: 50%;
-    filter: blur(60px);
+    position: fixed; z-index: 0;
+    width: 70vmin; height: 70vmin;
+    right: -10vmin; top: 8vh;
+    border-radius: 50%; filter: blur(60px);
     background:
       radial-gradient(circle at 40% 40%, var(--acid), transparent 55%),
       radial-gradient(circle at 70% 65%, var(--warn), transparent 60%),
       radial-gradient(circle at 80% 90%, var(--bruise), transparent 55%);
-    opacity: 0.35;
+    opacity: 0.35; pointer-events: none; mix-blend-mode: screen;
     transition: opacity 600ms ease, transform 600ms ease;
-    pointer-events: none;
-    mix-blend-mode: screen;
   }
 
-  /* ---------- Captions ---------- */
+  /* ---------- Scroll sections ---------- */
   .scroll-track { position: relative; z-index: 3; }
   .scene-section {
     height: 100vh;
-    padding: 96px 96px 56px;
+    padding: 80px 96px 56px;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    align-items: end;
+    align-items: center;
     gap: 64px;
     pointer-events: none;
   }
-  .scene-section .caption {
-    pointer-events: auto;
-    max-width: 480px;
-  }
-  .scene-section.right { grid-template-columns: 1fr 1fr; }
   .scene-section.right .caption { grid-column: 2; justify-self: end; }
   .scene-section.left  .caption { grid-column: 1; justify-self: start; }
+  .scene-section.center .caption {
+    grid-column: 1 / -1; justify-self: center; text-align: center;
+  }
+  .scene-section .caption { pointer-events: auto; max-width: 480px; }
+  .scene-section.center .caption { max-width: 600px; }
+  /* Data slides (no 3D model) — both columns used for content */
+  .data-spread .cap-a { grid-column: 1; pointer-events: auto; }
+  .data-spread .cap-b { grid-column: 2; pointer-events: auto; }
 
   .eyebrow {
     font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--warn);
-    margin-bottom: 18px;
-    display: flex;
-    gap: 14px;
-    align-items: center;
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--warn); margin-bottom: 14px;
+    display: flex; gap: 12px; align-items: center;
   }
   .eyebrow .num { color: var(--ink-soft); }
-  .eyebrow .dash { width: 32px; height: 1px; background: var(--warn); display: inline-block; }
-  .eyebrow .alarm-dot {
+  .eyebrow .dash { width: 28px; height: 1px; background: var(--warn); display: inline-block; }
+  .alarm-dot {
     width: 8px; height: 8px; border-radius: 50%;
     background: var(--warn);
     box-shadow: 0 0 0 0 rgba(255,45,45,0.7);
@@ -215,233 +158,403 @@
     100% { box-shadow: 0 0 0 0 rgba(255,45,45,0); }
   }
 
-  .title-finally {
-    font-family: "Bodoni Moda", serif;
-    font-style: italic;
-    font-weight: 400;
-    font-size: 22px;
-    color: var(--acid);
-    margin: 0 0 12px;
-    letter-spacing: 0.02em;
-  }
   h2.headline {
     font-family: "Bodoni Moda", serif;
     font-weight: 900;
-    font-size: clamp(38px, 5.4vw, 78px);
-    line-height: 0.96;
-    letter-spacing: -0.01em;
+    font-size: clamp(36px, 5vw, 72px);
+    line-height: 0.96; letter-spacing: -0.01em;
     margin: 0 0 18px;
     text-transform: uppercase;
     color: var(--ink);
-    text-shadow: 0 0 32px rgba(198,255,61,0.08);
   }
   h2.headline em {
-    font-style: italic;
-    font-weight: 400;
-    text-transform: lowercase;
-    color: var(--warn);
-    font-family: "Bodoni Moda", serif;
-  }
-  h2.headline .strike {
-    text-decoration: line-through;
-    text-decoration-color: var(--warn);
-    text-decoration-thickness: 4px;
+    font-style: italic; font-weight: 400;
+    text-transform: lowercase; color: var(--warn);
   }
   .body-block {
     font-family: "Archivo Narrow", sans-serif;
-    font-size: 15px;
-    line-height: 1.5;
-    color: var(--ink);
+    font-size: 14px; line-height: 1.5; color: var(--ink-soft);
     max-width: 38ch;
-    border-top: 1px solid var(--hair);
-    padding-top: 14px;
+    border-top: 1px solid var(--hair); padding-top: 14px;
   }
-  .body-block .stat {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 14px;
+
+  /* ---------- Slide 0: Crisis data viz ---------- */
+  .split-bar-wrap {
+    margin-top: 16px;
+  }
+  .split-label {
     font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink-soft); margin-bottom: 6px;
+    display: flex; justify-content: space-between;
+  }
+  .split-bar {
+    height: 6px; background: var(--ink-faint);
+    border-radius: 2px; overflow: hidden; margin-bottom: 14px;
+    position: relative;
+  }
+  .split-bar-fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: var(--warn); border-radius: 2px;
+    width: 0;
+  }
+  .split-bar-fill.diverted { background: var(--acid); left: auto; right: 0; }
+
+  .crisis-stats {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; margin-top: 18px;
+  }
+  .stat-cell {
+    border: 1px solid var(--hair); padding: 10px 12px;
+  }
+  .stat-num {
+    font-family: "Bodoni Moda", serif;
+    font-size: clamp(22px, 3vw, 36px); font-weight: 900;
+    color: var(--acid); line-height: 1;
+    display: block; margin-bottom: 4px;
+  }
+  .stat-num.red { color: var(--warn); }
+  .stat-label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
     color: var(--ink-soft);
   }
-  .body-block .stat b { color: var(--acid); font-weight: 700; }
+  .countdown-wrap {
+    margin-top: 18px; border-top: 1px solid var(--hair); padding-top: 14px;
+  }
+  .countdown-label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--warn); margin-bottom: 8px;
+  }
+  .countdown-bar {
+    height: 4px; background: var(--ink-faint);
+    margin-bottom: 8px; position: relative;
+  }
+  .countdown-fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: linear-gradient(to right, var(--acid), var(--warn));
+    width: 0;
+  }
+  .countdown-sub {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px; letter-spacing: 0.15em;
+    color: var(--ink-soft);
+    display: flex; justify-content: space-between;
+  }
 
-  /* ---------- Final CTA ---------- */
-  .cta-wrap { display: flex; gap: 16px; margin-top: 22px; align-items: center; }
+  /* ---------- Slide 1: Map ---------- */
+  .map-section-caption {
+    max-width: 520px;
+  }
+  .map-outer {
+    margin-top: 14px;
+    border: 1px solid var(--hair);
+    background: rgba(17,20,14,0.85);
+    position: relative; overflow: hidden;
+  }
+  #mapContainer {
+    width: 100%; height: 240px; overflow: hidden;
+    position: relative;
+  }
+  #mapContainer svg {
+    width: 100%; height: 100%;
+    display: block;
+  }
+  .map-hover-info {
+    padding: 8px 12px;
+    border-top: 1px solid var(--hair);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--ink-soft);
+    display: flex; gap: 18px;
+    min-height: 28px;
+  }
+  .map-hover-info span b { color: var(--acid); }
+  .contam-bars { margin-top: 14px; }
+  .contam-bar-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 6px;
+  }
+  .contam-town {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-soft); width: 100px; flex-shrink: 0;
+  }
+  .contam-bar-track {
+    flex: 1; height: 3px; background: var(--ink-faint); position: relative;
+  }
+  .contam-bar-fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: var(--warn);
+    width: 0; transition: width 1s ease;
+  }
+  .contam-val {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px; color: var(--acid); width: 40px; text-align: right;
+  }
+
+  /* ---------- Slide 2: Translation key ---------- */
+  .translation-panel {
+    margin-top: 18px;
+    border: 1px solid var(--hair);
+    background: rgba(10,12,8,0.7);
+    backdrop-filter: blur(10px);
+    padding: 18px 22px;
+    display: inline-block;
+    text-align: left;
+  }
+  .key-row {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 10px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  }
+  .key-row:last-child { margin-bottom: 0; }
+  .key-from { color: var(--ink-soft); min-width: 88px; }
+  .key-arrow { color: var(--warn); font-family: "Bodoni Moda", serif; font-style: italic; font-size: 14px; }
+  .key-to { color: var(--acid); }
+
+  /* ---------- Slide 3: Close reading ---------- */
+  .reading-list {
+    margin-top: 14px;
+  }
+  .reading-item {
+    display: flex; justify-content: space-between;
+    padding: 9px 0; border-bottom: 1px solid var(--hair);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .reading-item:last-child { border-bottom: none; }
+  .r-label { color: var(--ink-soft); }
+  .r-val { color: var(--acid); }
+  .cost-meter {
+    margin-top: 18px; border: 1px solid var(--hair); padding: 14px;
+    background: rgba(255,45,45,0.05);
+  }
+  .cost-label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--warn); margin-bottom: 10px;
+  }
+  .cost-row {
+    display: flex; align-items: baseline; gap: 10px;
+    margin-bottom: 6px;
+  }
+  .cost-amount {
+    font-family: "Bodoni Moda", serif;
+    font-size: 28px; font-weight: 900; color: var(--acid); line-height: 1;
+  }
+  .cost-desc {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  /* ---------- Slide 4: Action ---------- */
+  .mandate-wrap { margin-top: 18px; }
+  .mandate-row { margin-bottom: 14px; }
+  .mandate-label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-soft); margin-bottom: 6px;
+    display: flex; justify-content: space-between;
+  }
+  .mandate-label b { color: var(--acid); }
+  .mandate-track {
+    height: 5px; background: var(--ink-faint); position: relative;
+  }
+  .mandate-fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: var(--acid); width: 0;
+  }
+  .mandate-target-line {
+    position: absolute; top: -4px; bottom: -4px; width: 2px;
+    background: var(--warn);
+  }
+  .mandate-sub {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px; letter-spacing: 0.12em;
+    color: var(--warn); margin-top: 4px;
+    text-align: right;
+  }
+
+  /* ---------- CTA ---------- */
+  .cta-wrap { display: flex; gap: 16px; margin-top: 22px; align-items: center; flex-wrap: wrap; }
   .cta-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 22px;
-    background: var(--acid);
-    color: #0a0c08;
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 12px 20px;
+    background: var(--acid); color: #0a0c08;
     text-decoration: none;
     font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    font-weight: 700;
+    font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
     border: 1px solid var(--acid);
     transition: background 180ms ease, transform 180ms ease, color 180ms ease;
     box-shadow: 0 0 24px rgba(198,255,61,0.4);
   }
   .cta-button:hover { background: var(--warn); color: var(--ink); border-color: var(--warn); transform: translateY(-2px); box-shadow: 0 0 24px rgba(255,45,45,0.5); }
-  .cta-button .arrow { font-family: "Bodoni Moda", serif; font-style: italic; font-size: 16px; font-weight: 700; }
+  .cta-button.secondary {
+    background: transparent; color: var(--ink); border-color: var(--hair);
+    box-shadow: none;
+  }
+  .cta-button.secondary:hover { border-color: var(--acid); color: var(--acid); }
 
-  /* ---------- Balloon + pin scroll indicator (right rail) ---------- */
+  /* ---------- Balloon + pin ---------- */
   .balloon-track {
-    position: fixed;
-    right: 0;
-    top: 64px;
-    bottom: 0;
-    width: 56px;
-    z-index: 6;
-    pointer-events: none;
+    position: fixed; right: 0; top: 64px; bottom: 0;
+    width: 56px; z-index: 6; pointer-events: none;
   }
   .balloon-track .axis {
-    position: absolute;
-    top: 24px;
-    bottom: 56px;
-    left: 50%;
+    position: absolute; top: 24px; bottom: 56px; left: 50%;
     width: 1px;
-    background: repeating-linear-gradient(to bottom,
-      var(--warn) 0 4px,
-      transparent 4px 8px);
-    transform: translateX(-50%);
-    opacity: 0.5;
+    background: repeating-linear-gradient(to bottom, var(--warn) 0 4px, transparent 4px 8px);
+    transform: translateX(-50%); opacity: 0.5;
   }
-  /* Pin sliding down */
   .pin {
-    position: absolute;
-    top: 24px;
-    left: 50%;
+    position: absolute; top: 24px; left: 50%;
     transform: translate(-50%, 0);
-    width: 44px;
-    height: 44px;
-    pointer-events: none;
+    width: 44px; height: 44px; pointer-events: none;
   }
   .pin svg { width: 100%; height: 100%; }
-
-  /* Balloon at bottom */
   .balloon {
-    position: absolute;
-    bottom: 24px;
-    left: 50%;
+    position: absolute; bottom: 24px; left: 50%;
     transform: translateX(-50%);
-    width: 44px;
-    height: 56px;
-    pointer-events: none;
+    width: 44px; height: 56px; pointer-events: none;
     transition: opacity 220ms ease;
   }
   .balloon svg { width: 100%; height: 100%; display: block; }
   .balloon.popped { opacity: 0; }
 
-  /* tiny labels next to balloon track */
-  .balloon-label {
-    position: absolute;
-    right: 56px;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 9px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--warn);
-    white-space: nowrap;
-    padding: 4px 10px;
-  }
-  .balloon-label.top { top: 28px; }
-  .balloon-label.bot { bottom: 28px; }
-
-  /* ---------- Legacy debris canvas placeholder ---------- */
-  #debris {
-    position: fixed;
-    inset: 0;
-    z-index: 7;
-    pointer-events: none;
-    display: none;
-  }
-
-  /* ---------- Section / progress ticker bottom-left ---------- */
+  /* ---------- Ticker ---------- */
   .ticker {
-    position: fixed;
-    left: 72px;
-    bottom: 22px;
-    z-index: 5;
+    position: fixed; left: 72px; bottom: 22px; z-index: 5;
     font-family: "JetBrains Mono", monospace;
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
+    font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
     color: var(--ink-soft);
-    display: flex;
-    gap: 18px;
-    align-items: center;
+    display: flex; gap: 18px; align-items: center;
   }
   .ticker .progress { display: flex; gap: 6px; }
   .ticker .dot {
-    width: 24px; height: 1px;
-    background: var(--ink-faint);
+    width: 24px; height: 1px; background: var(--ink-faint);
     transition: background 220ms ease, height 220ms ease;
   }
   .ticker .dot.is-active { background: var(--acid); height: 3px; }
   .ticker .alarm-tag {
-    color: var(--warn);
-    border: 1px solid var(--warn);
-    padding: 2px 8px;
+    color: var(--warn); border: 1px solid var(--warn); padding: 2px 8px;
     animation: blink 1.6s steps(2) infinite;
   }
 
+  /* ---------- HUD labels (slides 3-4 only) ---------- */
+  .hud-layer {
+    position: fixed; inset: 0; z-index: 2; pointer-events: none;
+    opacity: 0; transition: opacity 400ms ease;
+  }
+  .hud-layer.visible { opacity: 1; }
+  .hud-tag {
+    position: absolute;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--acid);
+    border: 1px solid rgba(198,255,61,0.4);
+    padding: 4px 8px;
+    background: rgba(10,12,8,0.7);
+    white-space: nowrap;
+  }
+  .hud-tag::before {
+    content: ""; position: absolute;
+    width: 24px; height: 1px; background: var(--acid);
+  }
+
+  /* ---------- Debris canvas ---------- */
+  #debris { position: fixed; inset: 0; z-index: 7; pointer-events: none; display: none; }
+
+  /* ---------- Full-screen right map overlay ---------- */
+  .map-overlay {
+    position: fixed;
+    top: 64px; left: 50%; right: 56px; bottom: 0;
+    z-index: 2; pointer-events: none; overflow: hidden;
+    opacity: 0; transition: opacity 700ms ease;
+  }
+  .map-overlay.is-visible { opacity: 1; }
+  .map-overlay svg { width: 100%; height: 100%; display: block; }
+
+  /* ---------- Bar chart data label ---------- */
+  .data-type-label {
+    font-family: "JetBrains Mono", monospace; font-size: 9px;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--warn);
+    margin: 18px 0 10px; display: flex; align-items: center; gap: 10px;
+  }
+  .data-type-label::before {
+    content: ""; display: inline-block; width: 18px; height: 1px;
+    background: var(--warn); flex-shrink: 0;
+  }
+
+  /* ---------- Responsive ---------- */
   @media (max-width: 880px) {
-    .header { left: 0; right: 0; padding: 0 16px; grid-template-columns: 1fr auto; }
-    .header .cell:nth-child(n+2):nth-child(-n+4) { display: none; }
+    .header { left: 0; right: 0; padding: 0 16px; }
     .rail.left, .rail.right { display: none; }
     .balloon-track { width: 36px; }
-    .scene-section { padding: 96px 24px 80px; grid-template-columns: 1fr; }
-    .scene-section.right .caption, .scene-section.left .caption { grid-column: 1; justify-self: start; }
+    .scene-section { padding: 80px 24px 80px; grid-template-columns: 1fr; }
+    .scene-section.right .caption,
+    .scene-section.left  .caption,
+    .scene-section.center .caption { grid-column: 1; justify-self: start; }
     .ticker { left: 24px; }
+    .crisis-stats { grid-template-columns: 1fr 1fr; }
+    .map-overlay { left: 0; right: 0; top: auto; bottom: 0; height: 45vh; }
   }
 </style>
 </head>
 <body>
 
-  <!-- soft gradient orb (decorative) -->
   <div class="orb" id="orb"></div>
 
-  <!-- 3D stage -->
   <div class="stage">
     <canvas id="webgl"></canvas>
   </div>
-
-  <!-- Legacy debris placeholder; trash bags now render inside the WebGL scene -->
   <canvas id="debris"></canvas>
 
-  <!-- Editorial side rails -->
-  <aside class="rail left">
-    <span class="v-stamp-top">Label</span>
-    <span class="v-label">Placeholder Text</span>
-    <span class="v-stamp-bottom">00.00.00</span>
+  <!-- Side rails — shape animations only -->
+  <aside class="rail left" aria-hidden="true">
+    <div class="rail-shapes">
+      <div class="rail-dot"></div>
+      <div class="rail-bar accent"></div>
+      <div class="rail-dot"></div>
+      <div class="rail-bar"></div>
+      <div class="rail-dot"></div>
+      <div class="rail-bar accent"></div>
+      <div class="rail-dot"></div>
+      <div class="rail-bar"></div>
+      <div class="rail-dot"></div>
+    </div>
   </aside>
-  <aside class="rail right">
-    <span class="v-stamp-top">scroll</span>
-    <span class="v-stamp-bottom">pop</span>
+  <aside class="rail right" aria-hidden="true">
+    <div class="rail-shapes">
+      <div class="rail-dot"></div>
+      <div class="rail-bar"></div>
+      <div class="rail-dot"></div>
+      <div class="rail-bar accent"></div>
+      <div class="rail-dot"></div>
+      <div class="rail-bar"></div>
+      <div class="rail-dot"></div>
+      <div class="rail-bar accent"></div>
+      <div class="rail-dot"></div>
+    </div>
   </aside>
 
-  <!-- Top header -->
+  <!-- Header -->
   <header class="header">
-    <div class="cell"><strong>Name</strong> <span class="dash"></span> Placeholder subtitle</div>
-    <div class="cell"><span class="alarm">●</span> LABEL · TAG</div>
-    <div class="cell">Place, Year</div>
-    <div class="cell">Info goes here</div>
-    <div class="cell" style="justify-content:flex-end; gap:10px;">
-      <span class="icon-btn">↻</span>
-      <span class="icon-btn">↗</span>
-    </div>
+    <span class="hdr-title">Making Waste Visible</span>
+    <span class="hdr-sub">RI Textile Waste 2024</span>
+    <span class="hdr-alarm">● RIRRC DATA</span>
+    <span class="hdr-year">2026</span>
   </header>
 
-  <!-- Balloon + Pin (right rail indicator) -->
+  <!-- Full-screen right-half map (scene 1) -->
+  <div class="map-overlay" id="map-overlay" aria-hidden="true"></div>
+
+  <!-- Balloon + Pin -->
   <div class="balloon-track" aria-hidden="true">
     <div class="axis"></div>
-    <span class="balloon-label top">PIN</span>
     <div class="pin" id="pin">
       <svg viewBox="0 0 44 44" fill="none">
         <circle cx="22" cy="14" r="9" fill="#ff2d2d"/>
@@ -458,77 +571,199 @@
         <path d="M22,48 C20,52 24,53 22,56" stroke="#e8ffd6" stroke-width="1" fill="none"/>
       </svg>
     </div>
-    <span class="balloon-label bot">BALLOON</span>
   </div>
 
-  <!-- Scroll captions -->
+  <!-- HUD overlay (slides 3-4) -->
+  <div class="hud-layer" id="hudLayer">
+    <div class="hud-tag" id="hudTag1" style="top:36%;right:14%">70.5% LANDFILLED</div>
+    <div class="hud-tag" id="hudTag2" style="top:55%;right:18%">$2.91M ANNUAL COST</div>
+  </div>
+
+  <!-- Scroll track -->
   <main class="scroll-track" id="track">
 
-    <section class="scene-section left" data-scene="0">
-      <div class="caption">
-        <p class="title-finally">Section One</p>
-        <div class="eyebrow"><span class="alarm-dot"></span><span class="num">01 / 05</span><span class="dash"></span><span>section label</span></div>
-        <h2 class="headline">TITLE<br/><em>one.</em></h2>
+    <!-- Section 0: Crisis / Hook -->
+    <section class="scene-section data-spread" data-scene="0">
+      <div class="cap-a">
+        <div class="eyebrow">
+          <span class="alarm-dot"></span>
+          <span class="num">01 / 05</span>
+          <span class="dash"></span>
+          <span>Waste Crisis</span>
+        </div>
+        <h2 class="headline">Emergency<br/><em>waste </em><br/>Deadline</h2>
         <div class="body-block">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          <div class="stat"><span>label / label / label</span><b>AA / BB / CC</b></div>
+          In 2024, RI’s Central Landfill received
+1,800 tons of TRASH EACH DAY, OR the equivalent of 360 Monster Trucks
+          <div class="split-bar-wrap">
+            <div class="split-label"><span>Diverted (29.5%)</span><span>Landfilled (70.5%)</span></div>
+            <div class="split-bar" id="splitBar">
+              <div class="split-bar-fill diverted" id="splitDiverted"></div>
+              <div class="split-bar-fill" id="splitLandfill"></div>
+            </div>
+          </div>
         </div>
       </div>
-    </section>
-
-    <section class="scene-section right" data-scene="1">
-      <div class="caption">
-        <div class="eyebrow"><span class="alarm-dot"></span><span class="num">02 / 05</span><span class="dash"></span><span>section label</span></div>
-        <h2 class="headline">TITLE<br/><em>two.</em></h2>
-        <div class="body-block">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          <div class="stat"><span>label / label / label</span><b>AA / BB / CC</b></div>
+      <div class="cap-b">
+        <div class="crisis-stats">
+          <div class="stat-cell">
+            <span class="stat-num red" id="rejectedCount">25,288.6</span>
+            <span class="stat-label">Tons rejected / yr</span>
+          </div>
+          <div class="stat-cell">
+            <span class="stat-num" id="yearCount">2026</span>
+            <span class="stat-label">Current year</span>
+          </div>
         </div>
-      </div>
-    </section>
-
-    <section class="scene-section left" data-scene="2">
-      <div class="caption">
-        <div class="eyebrow"><span class="alarm-dot"></span><span class="num">03 / 05</span><span class="dash"></span><span>section label</span></div>
-        <h2 class="headline">TITLE<br/><em>three.</em></h2>
-        <div class="body-block">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          <div class="stat"><span>label / label / label</span><b>AA / BB / CC</b></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="scene-section right" data-scene="3">
-      <div class="caption">
-        <div class="eyebrow"><span class="alarm-dot"></span><span class="num">04 / 05</span><span class="dash"></span><span>section label</span></div>
-        <h2 class="headline">TITLE<br/><em>four.</em></h2>
-        <div class="body-block">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          <div class="stat"><span>label / label / label</span><b>AA / BB / CC</b></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="scene-section left" data-scene="4">
-      <div class="caption">
-        <div class="eyebrow"><span class="alarm-dot"></span><span class="num">05 / 05</span><span class="dash"></span><span>section label</span></div>
-        <h2 class="headline">TITLE<br/><em>five.</em></h2>
-        <div class="body-block">
-          At current rates, the Central Landfill reaches capacity in 2046. Better recycling extends that timeline. Here's what you can do in your town.
-          <div class="stat"><span>label / label</span><b>AA / BB</b></div>
-          <div class="cta-wrap">
-            <a class="cta-button" href="making-waste-visible/RIWasteGazette.html">
-              Link Text <span class="arrow">↗</span>
-            </a>
+        <div class="countdown-wrap">
+          <div class="countdown-label">● Central Landfill capacity — projected full by 2046</div>
+          <div class="countdown-bar">
+            <div class="countdown-fill" id="countdownFill"></div>
+          </div>
+          <div class="countdown-sub">
+            <span></span>
+            <span id="countdownNow"></span>
+            <span>2046</span>
           </div>
         </div>
       </div>
     </section>
+
+    <!-- Section 1: Municipal Map -->
+    <section class="scene-section left" data-scene="1">
+      <div class="caption">
+        <div class="eyebrow">
+          <span class="alarm-dot"></span>
+          <span class="num">02 / 05</span>
+          <span class="dash"></span>
+          <span>Geographic Pattern</span>
+        </div>
+        <h2 class="headline">Rejected<br/>Recycling <em> map. </em></h2>
+        <div class="data-type-label">Rejected recycling · lbs / household</div>
+        <div class="contam-bars" id="contamBars">
+          <!-- filled by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Garment Reveal -->
+    <section class="scene-section left" data-scene="2">
+      <div class="caption">
+        <div class="eyebrow">
+          <span class="alarm-dot"></span>
+          <span class="num">03 / 05</span>
+          <span class="dash"></span>
+          <span>Garment Translation</span>
+        </div>
+        <h2 class="headline">data<br/><em>on</em> Garment</h2>
+        <div class="translation-panel">
+          <div class="key-row">
+            <span class="key-from">Total landfill</span>
+            <span class="key-arrow">→</span>
+            <span class="key-to">Pattern</span>
+          </div>
+          <div class="key-row">
+            <span class="key-from">Amount</span>
+            <span class="key-arrow">→</span>
+            <span class="key-to">Fabric texture</span>
+          </div>
+          <div class="key-row">
+            <span class="key-from">Map</span>
+            <span class="key-arrow">→</span>
+            <span class="key-to">Seam line</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Close Reading / Detail -->
+    <section class="scene-section left" data-scene="3">
+      <div class="caption">
+        <div class="eyebrow">
+          <span class="alarm-dot"></span>
+          <span class="num">04 / 05</span>
+          <span class="dash"></span>
+          <span>Close Reading</span>
+        </div>
+        <h2 class="headline">THE COST<br/>OF <em>contamination.</em></h2>
+        <div class="reading-list">
+          <div class="reading-item">
+            <span class="r-label">Knit gauge</span>
+            <span class="r-val">Providence rejection rate: 648 lbs/hh</span>
+          </div>
+          <div class="reading-item">
+            <span class="r-label">Stripe density</span>
+            <span class="r-val">70.5% of RI textile waste landfilled</span>
+          </div>
+          <div class="reading-item">
+            <span class="r-label">Seam placement</span>
+            <span class="r-val">38 municipalities, 38 different rates</span>
+          </div>
+        </div>
+        <div class="cost-meter">
+          <div class="cost-label">● Annual contamination cost</div>
+          <div class="cost-row">
+            <span class="cost-amount">$2.91M</span>
+            <span class="cost-desc">statewide / year</span>
+          </div>
+          <div class="cost-row">
+            <span class="cost-amount" style="font-size:20px;color:var(--warn)">$1.94M</span>
+            <span class="cost-desc">Providence alone</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Action -->
+    <section class="scene-section left" data-scene="4">
+      <div class="caption">
+        <div class="eyebrow">
+          <span class="alarm-dot"></span>
+          <span class="num">05 / 05</span>
+          <span class="dash"></span>
+          <span>What you can do</span>
+        </div>
+        <h2 class="headline">CHANGE<br/>THE <em>numbers.</em></h2>
+        <div class="mandate-wrap">
+          <div class="mandate-row">
+            <div class="mandate-label">
+              <span>State avg recycling</span>
+              <b id="recycleVal">—</b>
+            </div>
+            <div class="mandate-track">
+              <div class="mandate-fill" id="recycleFill" data-target="35"></div>
+              <div class="mandate-target-line" style="left:50%"></div>
+            </div>
+            <div class="mandate-sub">Target: 50% diversion mandate</div>
+          </div>
+          <div class="mandate-row">
+            <div class="mandate-label">
+              <span>Best performer (Warwick)</span>
+              <b id="bestVal">—</b>
+            </div>
+            <div class="mandate-track">
+              <div class="mandate-fill" id="bestFill" data-target="50.2" style="background:var(--acid)"></div>
+              <div class="mandate-target-line" style="left:50%"></div>
+            </div>
+            <div class="mandate-sub">50% mandate threshold</div>
+          </div>
+        </div>
+        <div class="cta-wrap">
+          <a class="cta-button" href="making-waste-visible/RIWasteGazette.html">
+            RI Waste Gazette <span style="font-family:'Bodoni Moda',serif;font-style:italic;font-size:16px;font-weight:700;">↗</span>
+          </a>
+          <a class="cta-button secondary" href="https://rirrc.org/recycling-composting-disposal/what-to-recycle-in-your-bin-cart" target="_blank" rel="noopener">
+            What to Recycle ↗
+          </a>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- Ticker -->
   <div class="ticker">
-    <span class="alarm-tag">TAG</span>
+    <span class="alarm-tag" id="tickerTag">CRISIS</span>
     <span id="ticker-label">01 / 05</span>
     <div class="progress" id="progress">
       <span class="dot is-active"></span>
@@ -539,7 +774,6 @@
     </div>
   </div>
 
-  <!-- libs -->
   <script type="importmap">
     {
       "imports": {
@@ -557,17 +791,176 @@
     import RAPIER from "https://cdn.jsdelivr.net/npm/@dimforge/rapier3d-compat@0.19.3/+esm";
 
     const { gsap, ScrollTrigger } = window;
-
-    /* ============================================================
-     * MAKING WASTE VISIBLE — wireframe v0.2
-     * - Cubes are clustered/overlapping to hint at a garment shape
-     * - Camera stays mostly fixed; the GROUP rotates and we zoom in
-     * - Balloon descends as user scrolls; pops on final scene
-     * - Trash bags use Rapier rigid-body physics inside the WebGL scene
-     * ============================================================ */
     gsap.registerPlugin(ScrollTrigger);
 
-    /* ---------- THREE setup ---------- */
+    /* ============================================================
+     * MAKING WASTE VISIBLE — index.html
+     * ============================================================ */
+
+    // --- Town data ---
+    const TOWN_DATA = {
+      "Coventry":         { rejected: 10,  diversion: 33.8 },
+      "Cranston":         { rejected: 257, diversion: 27.3 },
+      "Cumberland":       { rejected: 58,  diversion: 28.6 },
+      "East_Providence":  { rejected: 115, diversion: 36.6 },
+      "Newport":          { rejected: 0,   diversion: 40.6 },
+      "North_Providence": { rejected: 136, diversion: 22.8 },
+      "Pawtucket":        { rejected: 216, diversion: 17.4 },
+      "Providence":       { rejected: 648, diversion: 7.8  },
+      "WARWICK":          { rejected: 14,  diversion: 50.2 },
+      "Woonsocket":       { rejected: 19,  diversion: 30.1 },
+      "Barrington":       { rejected: 21,  diversion: 49.4 },
+      "Bristol":          { rejected: 3,   diversion: 33.2 },
+      "Burrillville":     { rejected: 31,  diversion: 32.7 },
+      "Central_Falls":    { rejected: 36,  diversion: 20.4 },
+      "East_Greenwich":   { rejected: 18,  diversion: 35.7 },
+      "Foster":           { rejected: 25,  diversion: 20.3 },
+      "Johnston":         { rejected: 71,  diversion: 14.3 },
+      "Lincoln":          { rejected: 17,  diversion: 29.5 },
+      "Middletown":       { rejected: 23,  diversion: 49.1 },
+      "North_Smithfield": { rejected: 32,  diversion: 33.6 },
+      "Scituate":         { rejected: 13,  diversion: 25.6 },
+      "Smithfield":       { rejected: 22,  diversion: 39.2 },
+      "Tiverton":         { rejected: 18,  diversion: 35.3 },
+      "Warren":           { rejected: 0,   diversion: 37.2 },
+      "West_Warwick":     { rejected: 203, diversion: 21.6 },
+      "Charlestown":      { rejected: 0,   diversion: 35.0 },
+      "Exeter":           { rejected: 0,   diversion: 29.4 },
+      "Glocester":        { rejected: 1,   diversion: 33.0 },
+      "Jamestown":        { rejected: 2,   diversion: 45.8 },
+      "Little_Compton":   { rejected: 0,   diversion: 31.1 },
+      "Narragansett":     { rejected: 3,   diversion: 30.7 },
+      "New_Shoreham":     { rejected: 0,   diversion: 34.9 },
+      "North_Kingstown":  { rejected: 9,   diversion: 55.1 },
+      "Portsmouth":       { rejected: 0,   diversion: 54.0 },
+      "Richmond":         { rejected: 0,   diversion: 39.9 },
+      "Hopkinton":        { rejected: 0,   diversion: 39.9 },
+      "South_Kingstown":  { rejected: 3,   diversion: 36.0 },
+      "West_Greenwich":   { rejected: 7,   diversion: 29.2 },
+      "Westerly":         { rejected: 0,   diversion: 40.7 },
+    };
+
+    // Max rejected for color scale
+    const MAX_REJECTED = 648;
+
+    function rejectionColor(lbs) {
+      if (!lbs || lbs === 0) return "#1a2218";
+      const t = Math.min(lbs / MAX_REJECTED, 1);
+      // dark green → amber → alarm red
+      if (t < 0.15) return "#1e2e18";
+      if (t < 0.35) return "#3a2010";
+      if (t < 0.55) return "#6a2210";
+      if (t < 0.75) return "#a02010";
+      return "#ff2d2d";
+    }
+
+    // --- Map (slide 1) — full-screen right overlay ---
+    const MAP_HIGHLIGHT  = ["Providence","Cranston","Pawtucket","West_Warwick","North_Providence","East_Providence"];
+    const MAP_OPACITIES  = [0.90, 0.72, 0.60, 0.52, 0.42, 0.34];
+
+    function initMap() {
+      fetch("making-waste-visible/ri_municipalities.svg")
+        .then(r => r.text())
+        .then(svgText => {
+          const overlay = document.getElementById("map-overlay");
+          overlay.innerHTML = svgText;
+          const svg = overlay.querySelector("svg");
+          if (!svg) return;
+
+          svg.setAttribute("width", "100%");
+          svg.setAttribute("height", "100%");
+          svg.style.background = "none";
+
+          // Make all paths transparent (override embedded defs)
+          const styleEl = svg.querySelector("defs style");
+          if (styleEl) {
+            styleEl.textContent =
+              ".cls-1,.cls-4{fill:transparent;stroke:rgba(232,255,214,0.28);stroke-width:1px;}" +
+              ".cls-3{fill:transparent;}";
+          }
+          svg.querySelectorAll("path, polygon").forEach(el => {
+            if (!el.id) {
+              el.style.fill = "transparent";
+              el.style.stroke = "rgba(232,255,214,0.28)";
+              el.style.strokeWidth = "1";
+            }
+          });
+
+          // Highlight top-6 rejected-recycling towns in red
+          MAP_HIGHLIGHT.forEach((id, i) => {
+            const el = svg.getElementById(id);
+            if (!el) return;
+            el.style.fill = "#ff2d2d";
+            el.style.fillOpacity = String(MAP_OPACITIES[i]);
+            el.style.stroke = "rgba(255,45,45,0.75)";
+            el.style.strokeWidth = "1.5";
+          });
+        })
+        .catch(e => console.warn("RI map could not load:", e));
+
+      // Build top-6 contamination bars
+      const top6 = [
+        { town: "Providence",     rejected: 648 },
+        { town: "Cranston",       rejected: 257 },
+        { town: "Pawtucket",      rejected: 216 },
+        { town: "West Warwick",   rejected: 203 },
+        { town: "N. Providence",  rejected: 136 },
+        { town: "E. Providence",  rejected: 115 },
+      ];
+      const container = document.getElementById("contamBars");
+      top6.forEach(({ town, rejected }) => {
+        const pct = (rejected / 648 * 100).toFixed(1);
+        container.innerHTML += `
+          <div class="contam-bar-row">
+            <span class="contam-town">${town}</span>
+            <div class="contam-bar-track">
+              <div class="contam-bar-fill" data-target="${pct}" style="width:0"></div>
+            </div>
+            <span class="contam-val">${rejected}</span>
+          </div>`;
+      });
+    }
+
+    // --- Scene 0 bar animations ---
+    function animateScene0() {
+      gsap.fromTo("#splitLandfill", { width: "0%" }, { width: "70.5%", duration: 1.2, ease: "power3.out", delay: 0.2 });
+      gsap.fromTo("#splitDiverted", { width: "0%" }, { width: "29.5%", duration: 1.2, ease: "power3.out", delay: 0.5 });
+      gsap.fromTo("#countdownFill", { width: "0%" }, { width: "62%",   duration: 1.4, ease: "power3.out", delay: 0.6 });
+    }
+    function resetScene0() {
+      gsap.killTweensOf("#splitLandfill, #splitDiverted, #countdownFill");
+      gsap.set(["#splitLandfill","#splitDiverted","#countdownFill"], { width: "0%" });
+    }
+
+    // --- Scene 4 bar animations ---
+    function animateScene4() {
+      gsap.fromTo("#recycleFill", { width: "0%" }, { width: "35%",   duration: 1.4, ease: "power3.out", delay: 0.2 });
+      gsap.fromTo("#bestFill",    { width: "0%" }, { width: "50.2%", duration: 1.4, ease: "power3.out", delay: 0.4 });
+      document.getElementById("recycleVal").textContent = "35%";
+      document.getElementById("bestVal").textContent    = "50.2%";
+    }
+    function resetScene4() {
+      gsap.killTweensOf("#recycleFill, #bestFill");
+      gsap.set(["#recycleFill","#bestFill"], { width: "0%" });
+      document.getElementById("recycleVal").textContent = "—";
+      document.getElementById("bestVal").textContent    = "—";
+    }
+
+    // --- Scene 1 bar animations ---
+    function animateBars() {
+      document.querySelectorAll(".contam-bar-fill").forEach((bar, i) => {
+        gsap.fromTo(bar,
+          { width: "0%" },
+          { width: parseFloat(bar.dataset.target) + "%", duration: 1.1, ease: "power3.out", delay: i * 0.08 }
+        );
+      });
+    }
+    function resetBars() {
+      gsap.killTweensOf(".contam-bar-fill");
+      document.querySelectorAll(".contam-bar-fill").forEach(bar => gsap.set(bar, { width: "0%" }));
+    }
+
+    // --- THREE.js setup ---
     const canvas = document.getElementById("webgl");
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
@@ -582,508 +975,466 @@
     camera.position.set(0, 0.2, 9);
     camera.lookAt(0, 0, 0);
 
-    scene.add(new THREE.AmbientLight(0xffffff, 1.6));
-    const key = new THREE.DirectionalLight(0xffffff, 0.7);
-    key.position.set(5, 6, 7);
+    scene.add(new THREE.AmbientLight(0xffffff, 1.8));
+    const key = new THREE.DirectionalLight(0xffffff, 0.9);
+    key.position.set(4, 6, 6);
     key.castShadow = true;
     scene.add(key);
-    const fill = new THREE.DirectionalLight(0xc8c4ba, 0.4);
-    fill.position.set(-5, -2, 4);
+    const fill = new THREE.DirectionalLight(0xc8e8c0, 0.5);
+    fill.position.set(-4, -2, 4);
     scene.add(fill);
+    const rim = new THREE.DirectionalLight(0xfff0c0, 0.3);
+    rim.position.set(0, -4, -4);
+    scene.add(rim);
 
-    /* ---------- Cube cluster: a pseudo-garment ----------
-       Layout: roughly a torso silhouette
-         [head-ish small cube on top]
-                 [torso]
-              /          \
-         [sleeve L]   [sleeve R]
-                [hem / lower]
-       Cubes overlap so they read as one mass.
-    --------------------------------------------------- */
-    const cluster = new THREE.Group();
-    scene.add(cluster);
+    // --- Garment group ---
+    const GARMENT_HIDDEN_Y = 10;
+    const garmentGroup = new THREE.Group();
+    scene.add(garmentGroup);
+    garmentGroup.position.y = GARMENT_HIDDEN_Y; // starts off-screen
 
-    // [x, y, z, size, label]
-    const layout = [
-      { p: [ 0.0,  1.30, 0.05], s: 0.95, label: "INTRO"   },  // 0 collar / head
-      { p: [ 0.0,  0.10, 0.00], s: 1.55, label: "RECYCLE" },  // 1 torso center
-      { p: [-1.55, 0.15, 0.10], s: 1.20, label: "REJECT"  },  // 2 left sleeve
-      { p: [ 1.55, 0.15, 0.10], s: 1.20, label: "LANDFILL"},  // 3 right sleeve
-      { p: [ 0.0, -1.35, -0.05], s: 1.40, label: "DIVERT" },  // 4 hem
-    ];
+    const spinState = { rate: 0 };
 
-    const cubeMeshes = [];
-    function makeCube(cfg, idx) {
-      const grp = new THREE.Group();
-      const g = new THREE.BoxGeometry(cfg.s, cfg.s, cfg.s);
-      const m = new THREE.MeshStandardMaterial({
-        color: 0x1a1f12,
-        roughness: 0.95,
-        metalness: 0.0,
-        emissive: 0x0a0c08,
+    function normalizeGarment(gltfScene) {
+      const model = new THREE.Group();
+      model.name = "normalized-garment";
+      model.add(gltfScene);
+
+      gltfScene.updateMatrixWorld(true);
+      let box = new THREE.Box3().setFromObject(gltfScene);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      const longest = Math.max(size.x, size.y, size.z) || 1;
+
+      gltfScene.position.sub(center);
+      const scale = 2.0 / longest;
+      model.updateMatrixWorld(true);
+
+      model.scale.setScalar(scale);
+      model.updateMatrixWorld(true);
+
+      box = new THREE.Box3().setFromObject(model);
+      const normalizedCenter = box.getCenter(new THREE.Vector3());
+      gltfScene.position.add(normalizedCenter.multiplyScalar(-1 / scale));
+      model.updateMatrixWorld(true);
+
+      model.traverse(child => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
       });
-      const mesh = new THREE.Mesh(g, m);
-      grp.add(mesh);
-
-      // sharp edges
-      const edges = new THREE.EdgesGeometry(g);
-      const lines = new THREE.LineSegments(
-        edges,
-        new THREE.LineBasicMaterial({ color: 0xc6ff3d })
-      );
-      grp.add(lines);
-
-      // small accent dot to mark this cube's "data slot"
-      const pin = new THREE.Mesh(
-        new THREE.SphereGeometry(0.05, 12, 12),
-        new THREE.MeshBasicMaterial({ color: 0xff2d2d })
-      );
-      pin.position.set(cfg.s / 2 - 0.06, cfg.s / 2 - 0.06, cfg.s / 2 - 0.06);
-      grp.add(pin);
-
-      grp.position.set(...cfg.p);
-      // tiny per-cube tilt to feel hand-placed
-      grp.rotation.y = (idx - 2) * 0.05;
-      grp.rotation.x = idx % 2 ? -0.04 : 0.04;
-      grp.userData = { idx, baseY: cfg.p[1], mat: m, label: cfg.label };
-      return grp;
+      return model;
     }
 
-    layout.forEach((cfg, i) => {
-      const c = makeCube(cfg, i);
-      cluster.add(c);
-      cubeMeshes.push(c);
-    });
+    let garmentLoaded = false;
 
-    // Center the cluster vertically a touch
-    cluster.position.set(0, 0.1, 0);
+    function loadGarment() {
+      const loader = new GLTFLoader();
+      const paths = [
+        "./ncss core garment Clo3d file/CLO TOP.glb",
+        "./ncss core garment Clo3d file/Clo top pose 2.glb",
+      ];
 
-    /* ---------- Rapier trash bag pile ----------
-       The old 2D debris placeholder spawned from the balloon position.
-       This keeps that story beat but uses real 3D bodies: bags are loaded
-       once, stacked on load, and kicked apart by the balloon pop or cursor.
-    ----------------------------------------------------- */
-    const BAG_COUNT = 21;
+      function tryLoad(idx) {
+        if (idx >= paths.length) {
+          buildFallbackGarment();
+          return;
+        }
+        loader.load(
+          paths[idx],
+          gltf => {
+            const model = normalizeGarment(gltf.scene);
+            garmentGroup.add(model);
+            garmentLoaded = true;
+          },
+          undefined,
+          () => tryLoad(idx + 1)
+        );
+      }
+      tryLoad(0);
+    }
+
+    function buildFallbackGarment() {
+      // Stylized torso silhouette from boxes if no GLB found
+      const mat = new THREE.MeshStandardMaterial({
+        color: 0x1a2010, roughness: 0.9, metalness: 0.0,
+      });
+      const edgeMat = new THREE.LineBasicMaterial({ color: 0xc6ff3d });
+      const parts = [
+        [0, 0.6,  0, 0.85, 1.2, 0.5],
+        [0, -0.55, 0, 1.0,  0.9, 0.5],
+        [-0.9, 0.45, 0, 0.55, 0.7, 0.4],
+        [ 0.9, 0.45, 0, 0.55, 0.7, 0.4],
+      ];
+      parts.forEach(([x, y, z, w, h, d]) => {
+        const g = new THREE.BoxGeometry(w, h, d);
+        const mesh = new THREE.Mesh(g, mat.clone());
+        mesh.position.set(x, y, z);
+        mesh.castShadow = true;
+        garmentGroup.add(mesh);
+        const edges = new THREE.LineSegments(new THREE.EdgesGeometry(g), edgeMat);
+        edges.position.copy(mesh.position);
+        garmentGroup.add(edges);
+      });
+      garmentLoaded = true;
+    }
+
+    loadGarment();
+
+    // --- Rapier trash bags ---
+    const BAG_COUNT = 18;
     const BAG_MODEL_URL = "./assets/models/garbage_bag.glb";
-    const BAG_FLOOR_Y = -2.35;
-    const BAG_SPAWN = new THREE.Vector3(2.45, 2.1, 0.1);
+    const BAG_FLOOR_Y = -2.4;
+    const BAG_SPAWN = new THREE.Vector3(2.4, 2.0, 0.1);
     const BAG_MOUSE_RADIUS = 1.45;
     const bagGroup = new THREE.Group();
     scene.add(bagGroup);
+    bagGroup.visible = false;
 
-    const bagFloorVisual = new THREE.Mesh(
+    const bagFloor = new THREE.Mesh(
       new THREE.PlaneGeometry(10.4, 4.8),
-      new THREE.MeshStandardMaterial({
-        color: 0x1b2216,
-        roughness: 1,
-        metalness: 0,
-        transparent: true,
-        opacity: 0.22,
-      })
+      new THREE.MeshStandardMaterial({ color: 0x1b2216, roughness: 1, transparent: true, opacity: 0.18 })
     );
-    bagFloorVisual.position.set(0, BAG_FLOOR_Y - 0.005, 0);
-    bagFloorVisual.rotation.x = -Math.PI / 2;
-    bagFloorVisual.receiveShadow = true;
-    scene.add(bagFloorVisual);
+    bagFloor.position.set(0, BAG_FLOOR_Y - 0.005, 0);
+    bagFloor.rotation.x = -Math.PI / 2;
+    bagFloor.receiveShadow = true;
+    scene.add(bagFloor);
+    bagFloor.visible = false;
 
     let physicsWorld = null;
     let bagTemplate = null;
     let bagItems = [];
     let trashReady = false;
-    const pointer = {
-      active: false,
-      ndc: new THREE.Vector2(),
-      world: new THREE.Vector3(),
-    };
+    const pointer = { active: false, ndc: new THREE.Vector2(), world: new THREE.Vector3() };
     const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -(BAG_FLOOR_Y + 0.22));
     const raycaster = new THREE.Raycaster();
 
-    function rand(min, max) {
-      return min + Math.random() * (max - min);
-    }
+    function rand(min, max) { return min + Math.random() * (max - min); }
 
-    function updatePointerWorld(clientX, clientY) {
-      pointer.ndc.set(
-        (clientX / window.innerWidth) * 2 - 1,
-        -(clientY / window.innerHeight) * 2 + 1
-      );
+    function updatePointerWorld(cx, cy) {
+      pointer.ndc.set((cx / window.innerWidth) * 2 - 1, -(cy / window.innerHeight) * 2 + 1);
       raycaster.setFromCamera(pointer.ndc, camera);
       raycaster.ray.intersectPlane(groundPlane, pointer.world);
     }
+    window.addEventListener("pointermove", e => { pointer.active = true; updatePointerWorld(e.clientX, e.clientY); });
+    window.addEventListener("pointerleave", () => { pointer.active = false; });
 
-    window.addEventListener("pointermove", (event) => {
-      pointer.active = true;
-      updatePointerWorld(event.clientX, event.clientY);
-    });
-    window.addEventListener("pointerleave", () => {
-      pointer.active = false;
-    });
-
-    function tuneBagMaterial(material) {
-      if (!material) return material;
-      const tuned = material.clone();
-      tuned.roughness = 0.92;
-      tuned.metalness = 0.02;
-      if (tuned.color) {
-        tuned.color.offsetHSL(rand(-0.02, 0.02), rand(-0.04, 0.03), rand(-0.08, 0.05));
-      }
-      return tuned;
+    function tuneBag(mat) {
+      if (!mat) return mat;
+      const m = mat.clone();
+      m.roughness = 0.92; m.metalness = 0.02;
+      if (m.color) m.color.offsetHSL(rand(-0.02, 0.02), rand(-0.04, 0.03), rand(-0.08, 0.05));
+      return m;
     }
-
-    function cloneBagModel(scale) {
+    function cloneBag(scale) {
       const model = bagTemplate.clone(true);
       model.scale.setScalar(scale);
-      model.traverse((child) => {
-        if (!child.isMesh) return;
-        child.castShadow = true;
-        child.receiveShadow = true;
-        child.material = Array.isArray(child.material)
-          ? child.material.map(tuneBagMaterial)
-          : tuneBagMaterial(child.material);
+      model.traverse(c => {
+        if (!c.isMesh) return;
+        c.castShadow = c.receiveShadow = true;
+        c.material = Array.isArray(c.material) ? c.material.map(tuneBag) : tuneBag(c.material);
       });
       return model;
     }
-
-    function normalizeBagTemplate(gltfScene) {
-      const model = gltfScene.clone(true);
-      const box = new THREE.Box3().setFromObject(model);
+    function normalizeBag(gltfScene) {
+      const m = gltfScene.clone(true);
+      const box = new THREE.Box3().setFromObject(m);
       const center = box.getCenter(new THREE.Vector3());
       const size = box.getSize(new THREE.Vector3());
-      const longest = Math.max(size.x, size.y, size.z) || 1;
-      model.position.sub(center);
-      model.scale.setScalar(1 / longest);
-      return model;
+      m.position.sub(center);
+      m.scale.setScalar(1 / (Math.max(size.x, size.y, size.z) || 1));
+      return m;
     }
-
-    function createPhysicsBounds() {
-      const floor = RAPIER.ColliderDesc.cuboid(5.2, 0.18, 2.4)
-        .setTranslation(0, BAG_FLOOR_Y - 0.16, 0)
-        .setFriction(1.15)
-        .setRestitution(0.04);
-      physicsWorld.createCollider(floor);
-
-      [
-        { x: -4.7, y: -0.55, z: 0, sx: 0.18, sy: 2.2, sz: 2.4 },
-        { x:  4.7, y: -0.55, z: 0, sx: 0.18, sy: 2.2, sz: 2.4 },
-        { x: 0, y: -0.55, z: -2.0, sx: 5.2, sy: 2.2, sz: 0.18 },
-        { x: 0, y: -0.55, z:  2.0, sx: 5.2, sy: 2.2, sz: 0.18 },
-      ].forEach((wall) => {
-        physicsWorld.createCollider(
-          RAPIER.ColliderDesc.cuboid(wall.sx, wall.sy, wall.sz)
-            .setTranslation(wall.x, wall.y, wall.z)
-            .setFriction(1.0)
-            .setRestitution(0.02)
-        );
+    function createBounds() {
+      physicsWorld.createCollider(
+        RAPIER.ColliderDesc.cuboid(5.2, 0.18, 2.4)
+          .setTranslation(0, BAG_FLOOR_Y - 0.16, 0).setFriction(1.15).setRestitution(0.04)
+      );
+      [[-4.7,-0.55,0,.18,2.2,2.4],[4.7,-0.55,0,.18,2.2,2.4],[0,-0.55,-2,5.2,2.2,.18],[0,-0.55,2,5.2,2.2,.18]].forEach(([x,y,z,sx,sy,sz]) => {
+        physicsWorld.createCollider(RAPIER.ColliderDesc.cuboid(sx,sy,sz).setTranslation(x,y,z).setFriction(1).setRestitution(0.02));
       });
     }
-
-    function createBagBody(index, origin = BAG_SPAWN) {
-      const visualScale = rand(0.62, 0.96);
-      const halfExtents = {
-        x: visualScale * rand(0.34, 0.43),
-        y: visualScale * rand(0.28, 0.38),
-        z: visualScale * rand(0.25, 0.34),
-      };
-      const row = index % 5;
-      const layer = Math.floor(index / 5);
-      const q = new THREE.Quaternion().setFromEuler(
-        new THREE.Euler(rand(-0.25, 0.25), rand(-0.45, 0.45), rand(-0.25, 0.25))
+    function createBag(idx, origin = BAG_SPAWN) {
+      const vs = rand(0.62, 0.96);
+      const he = { x: vs*rand(0.34,0.43), y: vs*rand(0.28,0.38), z: vs*rand(0.25,0.34) };
+      const row = idx % 5, layer = Math.floor(idx / 5);
+      const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(rand(-.25,.25),rand(-.45,.45),rand(-.25,.25)));
+      const body = physicsWorld.createRigidBody(
+        RAPIER.RigidBodyDesc.dynamic()
+          .setTranslation(origin.x+(row-2)*.22+rand(-.08,.08), origin.y+layer*.46+rand(0,.2), origin.z+rand(-.35,.35))
+          .setRotation({x:q.x,y:q.y,z:q.z,w:q.w}).setLinearDamping(.72).setAngularDamping(.82)
       );
-      const bodyDesc = RAPIER.RigidBodyDesc.dynamic()
-        .setTranslation(
-          origin.x + (row - 2) * 0.22 + rand(-0.08, 0.08),
-          origin.y + layer * 0.46 + rand(0, 0.2),
-          origin.z + rand(-0.35, 0.35)
-        )
-        .setRotation({ x: q.x, y: q.y, z: q.z, w: q.w })
-        .setLinearDamping(0.72)
-        .setAngularDamping(0.82);
-      const body = physicsWorld.createRigidBody(bodyDesc);
-      const collider = RAPIER.ColliderDesc.cuboid(halfExtents.x, halfExtents.y, halfExtents.z)
-        .setDensity(5.4)
-        .setFriction(1.2)
-        .setRestitution(0.035);
-      physicsWorld.createCollider(collider, body);
-
-      const mesh = cloneBagModel(visualScale * 0.9);
-      mesh.rotation.set(rand(-0.35, 0.35), rand(-Math.PI, Math.PI), rand(-0.35, 0.35));
+      physicsWorld.createCollider(RAPIER.ColliderDesc.cuboid(he.x,he.y,he.z).setDensity(5.4).setFriction(1.2).setRestitution(.035), body);
+      const mesh = cloneBag(vs * 0.9);
+      mesh.rotation.set(rand(-.35,.35), rand(-Math.PI,Math.PI), rand(-.35,.35));
       bagGroup.add(mesh);
       bagItems.push({ body, mesh });
     }
-
-    function clearTrashBags() {
-      bagItems.forEach(({ body, mesh }) => {
-        physicsWorld.removeRigidBody(body);
-        bagGroup.remove(mesh);
-      });
+    function clearBags() {
+      bagItems.forEach(({body,mesh}) => { physicsWorld.removeRigidBody(body); bagGroup.remove(mesh); });
       bagItems = [];
     }
-
-    function spawnTrashBags(origin = BAG_SPAWN) {
+    function spawnBags(origin = BAG_SPAWN) {
       if (!trashReady) return;
-      clearTrashBags();
-      for (let i = 0; i < BAG_COUNT; i++) createBagBody(i, origin);
+      clearBags();
+      for (let i = 0; i < BAG_COUNT; i++) createBag(i, origin);
     }
-
-    function screenToBagWorld(clientX, clientY) {
-      updatePointerWorld(clientX, clientY);
-      return pointer.world.clone();
-    }
-
-    function blastTrashBags(origin, strength = 4.8, radius = 2.1) {
+    function blastBags(origin, strength = 4.8, radius = 2.1) {
       if (!trashReady) return;
-      bagItems.forEach(({ body }) => {
+      bagItems.forEach(({body}) => {
         const t = body.translation();
-        const dx = t.x - origin.x;
-        const dz = t.z - origin.z;
-        const dy = Math.max(0.12, t.y - origin.y);
-        const dist = Math.max(Math.sqrt(dx * dx + dz * dz + dy * dy), 0.001);
+        const dx=t.x-origin.x, dz=t.z-origin.z, dy=Math.max(.12,t.y-origin.y);
+        const dist = Math.max(Math.sqrt(dx*dx+dz*dz+dy*dy), .001);
         if (dist > radius) return;
-        const falloff = 1 - dist / radius;
-        const impulse = strength * falloff * falloff;
-        body.applyImpulse({
-          x: (dx / dist) * impulse + rand(-0.08, 0.08),
-          y: Math.max(0.2, dy / dist) * impulse * 0.38,
-          z: (dz / dist) * impulse + rand(-0.08, 0.08),
-        }, true);
-        body.applyTorqueImpulse({
-          x: rand(-0.5, 0.5) * impulse,
-          y: rand(-0.25, 0.25) * impulse,
-          z: rand(-0.5, 0.5) * impulse,
-        }, true);
+        const f = 1 - dist/radius, imp = strength*f*f;
+        body.applyImpulse({x:(dx/dist)*imp+rand(-.08,.08),y:Math.max(.2,dy/dist)*imp*.38,z:(dz/dist)*imp+rand(-.08,.08)},true);
+        body.applyTorqueImpulse({x:rand(-.5,.5)*imp,y:rand(-.25,.25)*imp,z:rand(-.5,.5)*imp},true);
       });
     }
-
     function applyCursorRepulsion(dt) {
-      if (!trashReady || !pointer.active) return;
-      bagItems.forEach(({ body }) => {
+      if (!trashReady||!pointer.active) return;
+      bagItems.forEach(({body}) => {
         const t = body.translation();
-        const dx = t.x - pointer.world.x;
-        const dz = t.z - pointer.world.z;
-        const dist = Math.max(Math.sqrt(dx * dx + dz * dz), 0.001);
+        const dx=t.x-pointer.world.x, dz=t.z-pointer.world.z;
+        const dist = Math.max(Math.sqrt(dx*dx+dz*dz),.001);
         if (dist > BAG_MOUSE_RADIUS) return;
-        const falloff = 1 - dist / BAG_MOUSE_RADIUS;
-        const impulse = 10.5 * falloff * falloff * dt;
-        body.applyImpulse({
-          x: (dx / dist) * impulse,
-          y: 0.08 * falloff,
-          z: (dz / dist) * impulse,
-        }, true);
-        body.applyTorqueImpulse({
-          x: (dz / dist) * impulse * 0.85,
-          y: rand(-0.12, 0.12) * falloff,
-          z: -(dx / dist) * impulse * 0.85,
-        }, true);
+        const f = 1-dist/BAG_MOUSE_RADIUS, imp = 10.5*f*f*dt;
+        body.applyImpulse({x:(dx/dist)*imp,y:.08*f,z:(dz/dist)*imp},true);
+        body.applyTorqueImpulse({x:(dz/dist)*imp*.85,y:rand(-.12,.12)*f,z:-(dx/dist)*imp*.85},true);
       });
     }
-
-    function stepTrashPhysics(dt) {
+    function stepBags(dt) {
       if (!trashReady) return;
       applyCursorRepulsion(dt);
-      physicsWorld.timestep = Math.min(dt, 1 / 30);
+      physicsWorld.timestep = Math.min(dt, 1/30);
       physicsWorld.step();
-      bagItems.forEach(({ body, mesh }) => {
-        const p = body.translation();
-        const r = body.rotation();
-        mesh.position.set(p.x, p.y, p.z);
-        mesh.quaternion.set(r.x, r.y, r.z, r.w);
+      bagItems.forEach(({body,mesh}) => {
+        const p=body.translation(), r=body.rotation();
+        mesh.position.set(p.x,p.y,p.z);
+        mesh.quaternion.set(r.x,r.y,r.z,r.w);
       });
     }
-
-    function initTrashBagPhysics() {
-      if (!RAPIER || !GLTFLoader) {
-        console.error("Trash bag physics requires Rapier and GLTFLoader.");
-        return;
-      }
+    function initBagPhysics() {
       RAPIER.init().then(() => {
-        physicsWorld = new RAPIER.World({ x: 0, y: -9.81, z: 0 });
-        createPhysicsBounds();
-        const loader = new GLTFLoader();
-        loader.load(
-          BAG_MODEL_URL,
-          (gltf) => {
-            bagTemplate = normalizeBagTemplate(gltf.scene);
-            trashReady = true;
-            spawnTrashBags();
-          },
-          undefined,
-          (error) => {
-            console.error("Could not load garbage bag model:", error);
-          }
-        );
+        physicsWorld = new RAPIER.World({ x:0, y:-9.81, z:0 });
+        createBounds();
+        new GLTFLoader().load(BAG_MODEL_URL, gltf => {
+          bagTemplate = normalizeBag(gltf.scene);
+          trashReady = true;
+          spawnBags();
+        }, undefined, () => {
+          // no bag model — skip physics
+          trashReady = false;
+        });
       });
     }
-    initTrashBagPhysics();
+    initBagPhysics();
 
-    /* ---------- Per-scene camera/group targets ----------
-       Camera stays roughly head-on; the GROUP rotates to present
-       a different face, and we zoom by moving camera Z + cluster
-       offset so the focused cube sits in the right composition.
-    ----------------------------------------------------- */
+    /* ---- Camera/garment targets ---- */
     function makeTargets() {
       return [
-        // 0 INTRO — wide, slow rotation, full cluster center
-        { camZ: 9.5, clusterX:  0.0,  clusterY: 0.1, rotY: -0.05, focusIdx: -1 },
-        // 1 RECYCLING — focus torso (idx 1), caption right -> cluster left
-        { camZ: 5.2, clusterX: -1.6,  clusterY: 0.05, rotY:  0.55, focusIdx: 1 },
-        // 2 CONTAMINATION — focus left sleeve (idx 2), caption left -> cluster right
-        { camZ: 5.0, clusterX:  2.0,  clusterY: 0.0,  rotY: -0.65, focusIdx: 2 },
-        // 3 LANDFILL — focus right sleeve (idx 3), caption right -> cluster left
-        { camZ: 5.0, clusterX: -2.0,  clusterY: 0.0,  rotY:  0.85, focusIdx: 3 },
-        // 4 DIVERT — focus hem (idx 4), caption left -> cluster right, slight tilt up
-        { camZ: 5.4, clusterX:  1.6,  clusterY: 1.1,  rotY: -0.35, focusIdx: 4 },
+        // 0 CRISIS — garment offscreen above, camera wide
+        { camZ: 10.5, clusterX:  0.0, clusterY: 0.0, slideY: GARMENT_HIDDEN_Y, rotY:  0.06, spinRate: 0 },
+        // 1 MAP — same, garment still hidden
+        { camZ: 10.5, clusterX:  0.2, clusterY: 0.0, slideY: GARMENT_HIDDEN_Y, rotY: -0.06, spinRate: 0 },
+        // 2 GARMENT REVEAL — centered vertically beside the left-side text
+        { camZ:  5.2, clusterX:  0.9, clusterY: 0.0, slideY: 0, rotY:  0.0,  spinRate: 1 },
+        // 3 DETAIL — tight zoom, garment remains vertically centered
+        { camZ:  3.2, clusterX:  1.35, clusterY: 0.0, slideY: 0, rotY: -0.35, spinRate: 0 },
+        // 4 ACTION — garment exits upward
+        { camZ: 10.5, clusterX:  0.0, clusterY: 0.0, slideY: GARMENT_HIDDEN_Y, rotY:  0.0,  spinRate: 0 },
       ];
     }
     let targets = makeTargets();
+    let garmentRotY = targets[0].rotY;
 
-    // mutable state animated by GSAP
     const state = {
-      camZ: targets[0].camZ,
+      camZ:     targets[0].camZ,
       clusterX: targets[0].clusterX,
       clusterY: targets[0].clusterY,
-      rotY: targets[0].rotY,
+      slideY:   targets[0].slideY,
+      rotY:     targets[0].rotY,
       activeIdx: 0,
     };
 
-    /* ---------- Render loop ---------- */
+    /* ---- Render loop ---- */
     const clock = new THREE.Clock();
     function tick() {
       const dt = Math.min(clock.getDelta(), 0.033);
       const t = clock.elapsedTime;
 
-      // apply state to the scene
       camera.position.z = state.camZ;
-      cluster.position.x = state.clusterX;
-      cluster.position.y = state.clusterY;
-      cluster.rotation.y = state.rotY + Math.sin(t * 0.3) * 0.02;
-      cluster.rotation.x = Math.sin(t * 0.4) * 0.02;
+      garmentGroup.position.x = state.clusterX;
+      garmentGroup.position.y = state.clusterY + state.slideY;
 
-      // gentle per-cube breathing
-      cubeMeshes.forEach((c, i) => {
-        c.position.y = c.userData.baseY + Math.sin(t * 0.7 + i * 1.2) * 0.025;
-      });
+      const fixedRotY = state.rotY + Math.sin(t * 0.25) * 0.03;
+      if (spinState.rate > 0) {
+        garmentRotY += 0.32 * dt * spinState.rate;
+        const settle = 1 - Math.min(spinState.rate, 1);
+        const delta = Math.atan2(Math.sin(fixedRotY - garmentRotY), Math.cos(fixedRotY - garmentRotY));
+        garmentRotY += delta * Math.min(1, dt * 2.0 * settle);
+      } else {
+        const delta = Math.atan2(Math.sin(fixedRotY - garmentRotY), Math.cos(fixedRotY - garmentRotY));
+        garmentRotY += delta * Math.min(1, dt * 2.0);
+      }
+      garmentGroup.rotation.y = garmentRotY;
+      garmentGroup.rotation.x = Math.sin(t * 0.35) * 0.015;
 
-      stepTrashPhysics(dt);
-      camera.lookAt(0, 0, 0);
+      const trashVisible = state.activeIdx >= 4;
+      bagGroup.visible = trashVisible;
+      bagFloor.visible = trashVisible;
+      stepBags(dt);
+      camera.lookAt(0, state.clusterY, 0);
       renderer.render(scene, camera);
       requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
 
-    /* ---------- Scroll-driven animations ---------- */
+    /* ---- Scroll system ---- */
     function buildScroll() {
       ScrollTrigger.getAll().forEach(s => s.kill());
       gsap.killTweensOf(state);
 
-      // One master timeline — each segment covers one section's scroll distance.
-      // fromTo() with explicit from/to values per segment prevents the snap-back
-      // that gsap.to() causes by locking in "from" values at creation time.
       const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
       for (let i = 1; i < targets.length; i++) {
-        const from = targets[i - 1];
-        const to   = targets[i];
-        tl.fromTo(
-          state,
-          { camZ: from.camZ, clusterX: from.clusterX, clusterY: from.clusterY, rotY: from.rotY },
-          { camZ: to.camZ,   clusterX: to.clusterX,   clusterY: to.clusterY,   rotY: to.rotY,
-            immediateRender: false }
+        const from = targets[i-1], to = targets[i];
+        tl.fromTo(state,
+          { camZ: from.camZ, clusterX: from.clusterX, clusterY: from.clusterY, slideY: from.slideY, rotY: from.rotY },
+          { camZ: to.camZ, clusterX: to.clusterX, clusterY: to.clusterY, slideY: to.slideY, rotY: to.rotY, immediateRender: false }
         );
       }
-
-      // Pin the master timeline to the full scroll range of the track.
-      // All five sections are equal height (100vh), so each of the four
-      // segments above gets exactly 25% of the timeline — matching the
-      // original per-section trigger ranges (top-bottom → top-top).
       ScrollTrigger.create({
-        animation: tl,
-        trigger: "#track",
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 0.6,
+        animation: tl, trigger: "#track",
+        start: "top top", end: "bottom bottom", scrub: 0.6,
       });
 
-      // Active scene index
       gsap.utils.toArray(".scene-section").forEach((section, i) => {
         ScrollTrigger.create({
-          trigger: section,
-          start: "top center",
-          end: "bottom center",
+          trigger: section, start: "top center", end: "bottom center",
           onEnter: () => setActive(i),
           onEnterBack: () => setActive(i),
         });
       });
 
-      // Page-wide progress for the balloon/pin
       ScrollTrigger.create({
-        trigger: document.body,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 0.3,
-        onUpdate: (self) => updatePin(self.progress),
+        trigger: document.body, start: "top top", end: "bottom bottom",
+        scrub: 0.3, onUpdate: self => updatePin(self.progress),
       });
 
-      // Pop on entering final section
+      // Scene 0 bars
+      ScrollTrigger.create({
+        trigger: ".scene-section[data-scene='0']",
+        start: "top 60%",
+        onEnter:     () => animateScene0(),
+        onLeaveBack: () => resetScene0(),
+      });
+
+      // Scene 1 bars
+      ScrollTrigger.create({
+        trigger: ".scene-section[data-scene='1']",
+        start: "top 60%",
+        onEnter:     () => animateBars(),
+        onLeaveBack: () => resetBars(),
+      });
+
+      // Scene 4 mandate bars
+      ScrollTrigger.create({
+        trigger: ".scene-section[data-scene='4']",
+        start: "top 60%",
+        onEnter:     () => animateScene4(),
+        onLeaveBack: () => resetScene4(),
+      });
+
+      // Balloon pop at last section
       ScrollTrigger.create({
         trigger: ".scene-section[data-scene='4']",
         start: "top 65%",
-        onEnter: () => popBalloon(),
-        onLeaveBack: () => resetBalloon(),
+        onEnter: popBalloon,
+        onLeaveBack: resetBalloon,
       });
     }
 
+    function startGarmentSpin() {
+      gsap.to(spinState, { rate: 1, duration: 0.6, ease: "power2.out", delay: 0.4 });
+    }
+    function stopGarmentSpin() {
+      gsap.to(spinState, { rate: 0, duration: 1.1, ease: "power2.out" });
+    }
+
+    // Track spin state per active scene
+    const SCENE_TAGS = ["CRISIS", "MAP", "REVEAL", "DETAIL", "ACTION"];
+
     function setActive(idx) {
       state.activeIdx = idx;
-      // progress dots
+
       document.querySelectorAll("#progress .dot").forEach((d, i) =>
         d.classList.toggle("is-active", i === idx)
       );
       document.getElementById("ticker-label").textContent =
         `${String(idx + 1).padStart(2, "0")} / 05`;
+      const tag = document.getElementById("tickerTag");
+      if (tag) tag.textContent = SCENE_TAGS[idx] || "";
 
-      // highlight focused cube
-      const focusIdx = targets[idx].focusIdx;
-      cubeMeshes.forEach((c, i) => {
-        const isFocus = i === focusIdx;
-        const target = isFocus ? 1.06 : 1.0;
-        gsap.to(c.scale, { x: target, y: target, z: target, duration: 0.6, ease: "power2.out" });
-        gsap.to(c.userData.mat.color, {
-          r: isFocus ? 0.78 : 0.10,
-          g: isFocus ? 1.00 : 0.12,
-          b: isFocus ? 0.24 : 0.07,
-          duration: 0.6,
-        });
-        gsap.to(c.userData.mat.emissive, {
-          r: isFocus ? 0.30 : 0.04,
-          g: isFocus ? 0.45 : 0.05,
-          b: isFocus ? 0.10 : 0.03,
-          duration: 0.6,
-        });
-      });
+      // Spin only on slide 2
+      if (idx === 2) {
+        startGarmentSpin();
+      } else if (spinState.rate > 0.5) {
+        stopGarmentSpin();
+      }
 
-      // shift orb subtly per scene
-      const orb = document.getElementById("orb");
-      const offsets = [
-        { x: "0vmin",  y: "0vh",  o: 0.7 },
-        { x: "-12vmin", y: "4vh",  o: 0.5 },
-        { x: "10vmin",  y: "8vh",  o: 0.55 },
-        { x: "-6vmin", y: "16vh", o: 0.45 },
-        { x: "0vmin",  y: "0vh",  o: 0.85 },
+      // Map overlay — visible only on scene 1
+      document.getElementById("map-overlay").classList.toggle("is-visible", idx === 1);
+
+      // HUD visibility
+      const hud = document.getElementById("hudLayer");
+      if (hud) hud.classList.toggle("visible", idx === 3);
+
+      // Orb shifts
+      const orbs = [
+        { x: "0",     y: "0",   o: 0.55 },
+        { x: "-8vmin", y: "6vh",  o: 0.40 },
+        { x: "0",     y: "0",   o: 0.70 },
+        { x: "8vmin", y: "12vh", o: 0.50 },
+        { x: "0",     y: "0",   o: 0.80 },
       ];
-      const o = offsets[idx];
-      gsap.to(orb, { x: o.x, y: o.y, opacity: o.o, duration: 0.9, ease: "power2.out" });
+      const o = orbs[idx];
+      gsap.to("#orb", { x: o.x, y: o.y, opacity: o.o, duration: 0.9, ease: "power2.out" });
+
+      // Trigger data animations
+      animateScene(idx);
     }
 
-    /* ---------- Balloon + pin ---------- */
+    // --- Per-scene data animations ---
+    let animatedScenes = new Set();
+    function animateScene(idx) {
+      if (animatedScenes.has(idx)) return;
+      animatedScenes.add(idx);
+
+      if (idx === 0) {
+        // Animated counter for rejected tons
+        gsap.to({ val: 0 }, {
+          val: 25288,
+          duration: 2.2,
+          ease: "power2.out",
+          onUpdate() {
+            const el = document.getElementById("rejectedCount");
+            if (el) el.textContent = Math.floor(this.targets()[0].val).toLocaleString();
+          },
+        });
+        document.getElementById("yearCount").textContent = new Date().getFullYear();
+      }
+
+    }
+
+    /* ---- Balloon / pin ---- */
     const pinEl = document.getElementById("pin");
     const balloonEl = document.getElementById("balloon");
     const trackEl = document.querySelector(".balloon-track");
 
-    function updatePin(progress) {
-      // pin descends from top to balloon position
+    function updatePin(p) {
       const trackH = trackEl.clientHeight;
-      const startY = 0;                   // top
-      const endY = trackH - 24 - 56 - 22; // stop just above balloon
-      const y = startY + (endY - startY) * progress;
+      const y = (trackH - 24 - 56 - 22) * p;
       pinEl.style.transform = `translate(-50%, ${y}px)`;
     }
 
@@ -1091,37 +1442,37 @@
     function popBalloon() {
       if (popped) return;
       popped = true;
-      // tiny shake then disappear
       gsap.to(balloonEl, { scale: 1.15, duration: 0.08, ease: "power1.out" });
-      gsap.to(balloonEl, { scale: 0.0, opacity: 0, duration: 0.18, delay: 0.08, ease: "power2.in",
+      gsap.to(balloonEl, { scale: 0, opacity: 0, duration: 0.18, delay: 0.08, ease: "power2.in",
         onComplete: () => balloonEl.classList.add("popped"),
       });
-      // kick the loaded GLB trash-bag pile from the balloon position
-      const r = balloonEl.getBoundingClientRect();
-      const blastOrigin = screenToBagWorld(r.left + r.width / 2, r.top + r.height / 2);
-      blastTrashBags(blastOrigin, 8.5, 3.0);
+      updatePointerWorld(
+        balloonEl.getBoundingClientRect().left + balloonEl.getBoundingClientRect().width / 2,
+        balloonEl.getBoundingClientRect().top  + balloonEl.getBoundingClientRect().height / 2
+      );
+      blastBags(pointer.world.clone(), 8.5, 3.0);
     }
     function resetBalloon() {
       popped = false;
       balloonEl.classList.remove("popped");
       gsap.set(balloonEl, { scale: 1, opacity: 1 });
-      spawnTrashBags();
+      spawnBags();
     }
 
-    /* ---------- init + resize ---------- */
+    /* ---- Init ---- */
+    initMap();
     buildScroll();
     setActive(0);
     updatePin(0);
 
-    function onResize() {
+    window.addEventListener("resize", () => {
       renderer.setSize(window.innerWidth, window.innerHeight);
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       targets = makeTargets();
       buildScroll();
       ScrollTrigger.refresh();
-    }
-    window.addEventListener("resize", onResize);
+    });
   </script>
 </body>
 </html>
