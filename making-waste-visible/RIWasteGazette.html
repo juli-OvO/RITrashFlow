@@ -238,8 +238,8 @@
     /* render the muni SVG as ink */
     filter: contrast(1.1);
   }
-  .map-canvas svg.basemap path,
-  .map-canvas svg.basemap polygon,
+  .map-canvas svg.basemap path:not(.choropleth),
+  .map-canvas svg.basemap polygon:not(.choropleth),
   .map-canvas svg.basemap polyline,
   .map-canvas svg.basemap rect,
   .map-canvas svg.basemap circle{
@@ -247,7 +247,7 @@
     stroke: rgba(26,23,20,0.7) !important;
     stroke-width: 0.6 !important;
   }
-  /* choropleth fills — higher specificity beats the fallback !important above */
+  /* choropleth fills */
   .map-canvas svg.basemap path.choropleth,
   .map-canvas svg.basemap polygon.choropleth{
     fill: var(--choro-fill) !important;
@@ -440,37 +440,19 @@
     font-weight: normal;
   }
 
-  .ranking{
+  .dist-chart-wrap{
     margin: 10px 0 6px;
     border: 1.5px solid var(--ink);
-    padding: 8px 10px;
+    padding: 8px 10px 6px;
     background: var(--paper-2);
-    text-align: center;
-    position: relative;
   }
-  .ranking .rank-label{
+  .dist-chart-wrap .rank-label{
     font-family: var(--mono);
     font-size: 9px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--ink-faint);
   }
-  .ranking .rank-num{
-    font-family: var(--serif-display);
-    font-weight: 900;
-    font-size: 36px;
-    line-height: 1;
-    margin: 2px 0;
-  }
-  .ranking .rank-sup{ font-size: 18px; vertical-align: top; }
-  .ranking .rank-of{
-    font-family: var(--serif-body);
-    font-style: italic;
-    font-size: 11px;
-    color: var(--ink-soft);
-  }
-  .ranking.bad{ background: #f0d6c8; }
-  .ranking.good{ background: #d8e3c8; }
 
   /* equivalents block */
   .equiv-block{
@@ -665,14 +647,14 @@
     <aside class="col col--left">
       <h2 class="section-h">The Field</h2>
 
-      <p class="lede">Across thirty&#8209;nine municipalities, Rhode Islanders sent <b>0.83 tons of trash per household</b> to the Central Landfill in Johnston in 2025. Some sent twice that. Some sent a third.</p>
+      <p class="lede">Across thirty&#8209;nine municipalities, Rhode Islanders sent <b> 1.2 tons of trash per household</b> to the Central Landfill in Johnston in 2025. </p>
 
       <div class="photo-block">
         <img src="trash_pile.png" alt="A pile of municipal waste" />
       </div>
       <p class="photo-cap">Fig. 1 &mdash; The Central Landfill, Johnston RI. Photographed at the working face.</p>
 
-      <div class="kicker">&mdash; Worst offenders, landfilled &mdash;</div>
+   
       <h2 class="section-h" style="font-size:18px;">Top</h2>
       <div id="worst-list" class="headline-list"></div>
 
@@ -700,26 +682,26 @@
 
           <div class="map-legend">
             <div class="lg-title">The Legend</div>
-            <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.08em;color:var(--ink-faint);text-transform:uppercase;margin-bottom:4px;">Diversion rate</div>
+            <div id="lg-metric-label" style="font-family:var(--mono);font-size:9px;letter-spacing:0.08em;color:var(--ink-faint);text-transform:uppercase;margin-bottom:4px;">Landfilled</div>
             <div class="lg-row">
-              <span style="display:inline-block;width:14px;height:14px;background:#7f1d1d;border:1px solid rgba(26,23,20,0.35);flex-shrink:0;"></span>
-              <span>&lt;15%</span>
+              <span style="display:inline-block;width:16px;height:16px;background:#3d0a06;border:1px solid rgba(26,23,20,0.35);flex-shrink:0;"></span>
+              <span id="lg-label-1">—</span>
             </div>
             <div class="lg-row">
-              <span style="display:inline-block;width:14px;height:14px;background:#d85a30;border:1px solid rgba(26,23,20,0.35);flex-shrink:0;"></span>
-              <span>15–25%</span>
+              <span style="display:inline-block;width:16px;height:16px;background:#7a1209;border:1px solid rgba(26,23,20,0.35);flex-shrink:0;"></span>
+              <span id="lg-label-2">—</span>
             </div>
             <div class="lg-row">
-              <span style="display:inline-block;width:14px;height:14px;background:#b45309;border:1px solid rgba(26,23,20,0.35);flex-shrink:0;"></span>
-              <span>25–35%</span>
+              <span style="display:inline-block;width:16px;height:16px;background:#b82412;border:1px solid rgba(26,23,20,0.35);flex-shrink:0;"></span>
+              <span id="lg-label-3">—</span>
             </div>
             <div class="lg-row">
-              <span style="display:inline-block;width:14px;height:14px;background:#1d4ed8;border:1px solid rgba(26,23,20,0.35);flex-shrink:0;"></span>
-              <span>35–50%</span>
+              <span style="display:inline-block;width:16px;height:16px;background:#d4714a;border:1px solid rgba(26,23,20,0.35);flex-shrink:0;"></span>
+              <span id="lg-label-4">—</span>
             </div>
             <div class="lg-row">
-              <span style="display:inline-block;width:14px;height:14px;background:#166534;border:1px solid rgba(26,23,20,0.35);flex-shrink:0;"></span>
-              <span>&#x2265;50% mandate met</span>
+              <span style="display:inline-block;width:16px;height:16px;background:#ecbfaa;border:1px solid rgba(26,23,20,0.35);flex-shrink:0;"></span>
+              <span id="lg-label-5">—</span>
             </div>
             <div class="lg-row" style="margin-top:6px;border-top:1px dotted rgba(26,23,20,0.3);padding-top:6px;">
               <svg width="22" height="18" viewBox="0 0 22 18">
@@ -778,10 +760,9 @@
             <span class="stat-value" id="d-diversion">&mdash; <span class="unit">%</span></span>
           </div>
 
-          <div class="ranking" id="d-ranking">
-            <div class="rank-label" id="r-label">Landfill rank</div>
-            <div class="rank-num"><span id="r-num">&mdash;</span><span class="rank-sup" id="r-sup"></span></div>
-            <div class="rank-of">out of <span id="r-of">39</span> towns</div>
+          <div class="dist-chart-wrap" id="d-ranking">
+            <div class="rank-label">Diversion rate · all towns</div>
+            <svg id="dist-chart" viewBox="0 0 220 72" width="100%" height="72" style="display:block;margin-top:4px;overflow:visible;"></svg>
           </div>
 
           <div class="equiv-block">
@@ -796,9 +777,6 @@
         <!-- <span class="pq-attr">&mdash; </span> -->
       </div>
 
-      <div class="kicker">&mdash; Statewide tally &mdash;</div>
-      <h2 class="section-h" style="font-size:18px;">By the Numbers</h2>
-      <div id="totals" style="font-family:var(--mono); font-size:11px; line-height:1.7;"></div>
     </aside>
 
   </div>
@@ -930,23 +908,59 @@ const SVG_ID_MAP = {
 };
 
 function divColor(d){
-  if (d < 15) return '#7f1d1d';
-  if (d < 25) return '#d85a30';
-  if (d < 35) return '#b45309';
-  if (d < 50) return '#1d4ed8';
-  return '#166534';
+  if (d < 15) return '#3d0a06';
+  if (d < 25) return '#7a1209';
+  if (d < 35) return '#b82412';
+  if (d < 50) return '#d4714a';
+  return '#ecbfaa';
 }
 
-const DIVERSION = {};
-DATA.towns.forEach(t => { DIVERSION[t.town] = t.overall_diversion_rate_pct; });
+
+function modeColor(value, mode){
+  const [q1,q2,q3,q4] = MODE_QBREAKS[mode];
+  const bad = MODE[mode].high_is_bad;
+  const idx = bad
+    ? (value<=q1 ? 4 : value<=q2 ? 3 : value<=q3 ? 2 : value<=q4 ? 1 : 0)
+    : (value>=q4 ? 4 : value>=q3 ? 3 : value>=q2 ? 2 : value>=q1 ? 1 : 0);
+  return CHORO_COLORS[idx];
+}
+
+function renderLegend(mode){
+  const [q1,q2,q3,q4] = MODE_QBREAKS[mode];
+  const bad = MODE[mode].high_is_bad;
+  const unit = mode === 'landfill' ? 't/hh' : 'lb/hh';
+  const fmt = mode === 'landfill' ? v => v.toFixed(2) : v => Math.round(v);
+  document.getElementById('lg-metric-label').textContent = MODE[mode].bandLabel;
+  // labels: tier 1 = darkest/worst → tier 5 = lightest/best
+  const labels = bad ? [
+    `> ${fmt(q4)} ${unit}`,
+    `${fmt(q3)}–${fmt(q4)} ${unit}`,
+    `${fmt(q2)}–${fmt(q3)} ${unit}`,
+    `${fmt(q1)}–${fmt(q2)} ${unit}`,
+    `≤ ${fmt(q1)} ${unit}`,
+  ] : [
+    `< ${fmt(q1)} ${unit}`,
+    `${fmt(q1)}–${fmt(q2)} ${unit}`,
+    `${fmt(q2)}–${fmt(q3)} ${unit}`,
+    `${fmt(q3)}–${fmt(q4)} ${unit}`,
+    `≥ ${fmt(q4)} ${unit}`,
+  ];
+  labels.forEach((lbl, i) => {
+    document.getElementById(`lg-label-${i+1}`).textContent = lbl;
+  });
+}
+
+let mapSvg = null;
 
 function applyChoroColors(svg){
+  mapSvg = svg;
   svg.querySelectorAll('path[id], polygon[id]').forEach(el => {
     const town = SVG_ID_MAP[el.id];
-    if (!town || DIVERSION[town] === undefined) return;
+    const val = MODE_VALS[activeMode][town];
+    if (!town || val === undefined) return;
     el.classList.add('choropleth');
     el.dataset.town = town;
-    el.style.setProperty('--choro-fill', divColor(DIVERSION[town]));
+    el.style.setProperty('--choro-fill', modeColor(val, activeMode));
   });
 }
 
@@ -977,6 +991,20 @@ const MODE = {
   rejected: { key:"rejected_recycling_lbs_per_hh", label:"rejected", unit:"lbs / hh", high_is_bad:true,
               triUnit:15, bandLabel:"Rejected" }
 };
+
+// Per-mode lookup and quintile breaks (20/40/60/80th percentile)
+const MODE_VALS = {};
+const MODE_QBREAKS = {};
+const CHORO_COLORS = ['#3d0a06','#7a1209','#b82412','#d4714a','#ecbfaa']; // worst→best
+
+for (const m of Object.keys(MODE)){
+  const key = MODE[m].key;
+  MODE_VALS[m] = {};
+  DATA.towns.forEach(t => { MODE_VALS[m][t.town] = t[key]; });
+  const sorted = DATA.towns.map(t => t[key]).sort((a,b)=>a-b);
+  const q = p => sorted[Math.min(Math.floor(p*sorted.length), sorted.length-1)];
+  MODE_QBREAKS[m] = [q(0.2), q(0.4), q(0.6), q(0.8)];
+}
 
 /* =========================================================
    EQUIVALENTS — convert kg/lbs to relatable objects
@@ -1025,7 +1053,8 @@ function init(){
   computeRankings();
   renderOverlay();
   renderHeadlines();
-  renderTotals();
+  renderLegend(activeMode);
+  renderDistChart(null);
 
   document.querySelectorAll("#mode-toggle button").forEach(btn=>{
     btn.addEventListener("click", ()=>{
@@ -1033,7 +1062,10 @@ function init(){
       btn.classList.add("active");
       activeMode = btn.dataset.mode;
       renderHeadlines();
+      renderLegend(activeMode);
+      if (mapSvg) applyChoroColors(mapSvg);
       if (activeTown) showTown(activeTown);
+      else renderDistChart(null);
     });
   });
 
@@ -1108,26 +1140,67 @@ function showTown(name){
   document.getElementById("d-reject").innerHTML    = `${Math.round(t.rejected_recycling_lbs_per_hh).toLocaleString()} <span class="unit">lb/hh</span>`;
   document.getElementById("d-diversion").innerHTML = `${t.overall_diversion_rate_pct.toFixed(1)} <span class="unit">%</span>`;
 
-  const r = RANKS[activeMode][t.town];
-  const rEl = document.getElementById("d-ranking");
-  const high_is_bad = MODE[activeMode].high_is_bad;
-  const ord = ordinal(r.rank);
-  document.getElementById("r-num").textContent = r.rank;
-  document.getElementById("r-sup").textContent = ord.sup;
-  document.getElementById("r-of").textContent = r.of;
-  document.getElementById("r-label").textContent = `${MODE[activeMode].bandLabel} rank — ` +
-    (high_is_bad ? (r.rank<=5 ? "among the worst" : r.rank>=r.of-5 ? "among the best" : "in the middle")
-                 : (r.rank<=5 ? "among the best" : r.rank>=r.of-5 ? "among the worst" : "in the middle"));
-
-  rEl.classList.remove("bad","good");
-  if (high_is_bad && r.rank<=10) rEl.classList.add("bad");
-  if (high_is_bad && r.rank>=r.of-9) rEl.classList.add("good");
-  if (!high_is_bad && r.rank<=10) rEl.classList.add("good");
-  if (!high_is_bad && r.rank>=r.of-9) rEl.classList.add("bad");
+  renderDistChart(t.town);
 
   const value = t[MODE[activeMode].key];
   const kg = activeMode === "landfill" ? value * TON_TO_KG : value * LB_TO_KG;
   renderEquivalents(kg);
+}
+
+function renderDistChart(townName){
+  const svg = document.getElementById('dist-chart');
+  const W=220, H=72, pL=24, pR=8, pT=8, pB=18;
+  const plotW = W-pL-pR, plotH = H-pT-pB;
+
+  const key = MODE[activeMode].key;
+  const params = {
+    landfill:  { BIN:0.1,  MAX:2.0,  ticks:[0,0.5,1.0,1.5,2.0], fmt:v=>v.toFixed(1) },
+    recycling: { BIN:50,   MAX:700,  ticks:[0,175,350,525,700],  fmt:v=>v },
+    rejected:  { BIN:100,  MAX:700,  ticks:[0,200,400,600],      fmt:v=>v },
+  };
+  const {BIN, MAX, ticks, fmt} = params[activeMode];
+
+  const bins = new Array(Math.round(MAX/BIN)).fill(0);
+  DATA.towns.forEach(t => {
+    const bi = Math.min(Math.floor(t[key]/BIN), bins.length-1);
+    bins[bi]++;
+  });
+  const maxCount = Math.max(...bins);
+
+  const xS = v => pL + (v/MAX)*plotW;
+  const yS = c => pT + plotH - (c/maxCount)*plotH;
+
+  const midPts = bins.map((c,i) => `${xS((i+0.5)*BIN).toFixed(1)},${yS(c).toFixed(1)}`);
+  const fillPts = `${xS(0.5*BIN).toFixed(1)},${pT+plotH} ${midPts.join(' ')} ${xS((bins.length-0.5)*BIN).toFixed(1)},${pT+plotH}`;
+
+  let h = '';
+  h += `<polygon points="${fillPts}" fill="rgba(61,10,6,0.10)"/>`;
+  h += `<polyline points="${midPts.join(' ')}" fill="none" stroke="#7a1209" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+  bins.forEach((c,i) => {
+    h += `<circle cx="${xS((i+0.5)*BIN).toFixed(1)}" cy="${yS(c).toFixed(1)}" r="2" fill="#7a1209"/>`;
+  });
+
+  h += `<line x1="${pL}" y1="${pT+plotH}" x2="${pL+plotW}" y2="${pT+plotH}" stroke="rgba(26,23,20,0.25)" stroke-width="0.8"/>`;
+  ticks.forEach(v => {
+    const x = xS(v);
+    h += `<line x1="${x}" y1="${pT+plotH}" x2="${x}" y2="${pT+plotH+3}" stroke="rgba(26,23,20,0.3)" stroke-width="0.8"/>`;
+    h += `<text x="${x}" y="${H-1}" text-anchor="middle" font-size="6.5" font-family="monospace" fill="rgba(26,23,20,0.45)">${fmt(v)}</text>`;
+  });
+
+  const townData = townName ? DATA.towns.find(t => t.town === townName) : null;
+  if (townData){
+    const tv = townData[key];
+    const mx = xS(tv);
+    const bi = Math.min(Math.floor(tv/BIN), bins.length-1);
+    const my = yS(bins[bi]);
+    h += `<line x1="${mx.toFixed(1)}" y1="${pT}" x2="${mx.toFixed(1)}" y2="${pT+plotH}" stroke="#3d0a06" stroke-width="1.2" stroke-dasharray="2 2"/>`;
+    h += `<circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="3.5" fill="#3d0a06" stroke="#f1ead7" stroke-width="1.5"/>`;
+  }
+  svg.innerHTML = h;
+
+  // update label
+  document.querySelector('#d-ranking .rank-label').textContent =
+    `${MODE[activeMode].bandLabel} · all towns`;
 }
 
 function clearTown(){
@@ -1230,34 +1303,6 @@ function headlineRow(t, n, m, fromBottom=false){
 /* =========================================================
    TOTALS
    ========================================================= */
-function renderTotals(){
-  const t = DATA.towns;
-  const avg = (k)=> t.reduce((s,x)=> s+x[k],0) / t.length;
-  const max = (k)=> t.reduce((m,x)=> x[k]>m.val ? {val:x[k], town:x.town} : m, {val:-Infinity,town:""});
-  const min = (k)=> t.reduce((m,x)=> x[k]<m.val ? {val:x[k], town:x.town} : m, {val:Infinity,town:""});
-
-  const aLand = avg("trash_landfilled_tons_per_hh");
-  const aRec  = avg("mrf_recycling_lbs_per_hh");
-  const aRej  = avg("rejected_recycling_lbs_per_hh");
-  const mxLand = max("trash_landfilled_tons_per_hh");
-  const mnLand = min("trash_landfilled_tons_per_hh");
-  const totalKg = aLand * TON_TO_KG;
-  const washers = (totalKg / (130 * LB_TO_KG)).toFixed(1);
-
-  const html = `
-    <div>${aLand.toFixed(2)} t/hh &mdash; <i>state average landfilled</i></div>
-    <div>${Math.round(aRec).toLocaleString()} lb/hh &mdash; <i>state average recycled</i></div>
-    <div>${Math.round(aRej).toLocaleString()} lb/hh &mdash; <i>state average rejected</i></div>
-    <div style="margin-top:6px; padding-top:6px; border-top:1px dotted var(--ink-faint);">
-      Heaviest: <b>${mxLand.town}</b> &mdash; ${mxLand.val.toFixed(2)} t/hh
-    </div>
-    <div>Lightest: <b>${mnLand.town}</b> &mdash; ${mnLand.val.toFixed(2)} t/hh</div>
-    <div style="margin-top:6px; padding-top:6px; border-top:1px dotted var(--ink-faint);">
-      That averages <b>${washers}</b> washing machines of trash, per household, every year.
-    </div>
-  `;
-  document.getElementById("totals").innerHTML = html;
-}
 
 init();
 </script>

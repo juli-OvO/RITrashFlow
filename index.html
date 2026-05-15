@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Making Waste Visible — RI Textile Waste</title>
+<title>Making Waste Visible — RI  Waste</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400;1,6..96,700&family=Archivo+Narrow:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -138,6 +138,18 @@
   .data-spread .cap-a { grid-column: 1; pointer-events: auto; }
   .data-spread .cap-b { grid-column: 2; pointer-events: auto; }
 
+  /* Centered pair — for slides with no model, content floats to center */
+  .center-pair {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 80px;
+    align-items: flex-start;
+    justify-content: center;
+    pointer-events: auto;
+  }
+  .center-pair .pair-a { flex: 0 0 360px; pointer-events: auto; }
+  .center-pair .pair-b { flex: 0 0 420px; pointer-events: auto; }
+
   .eyebrow {
     font-family: "JetBrains Mono", monospace;
     font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
@@ -189,7 +201,7 @@
     display: flex; justify-content: space-between;
   }
   .split-bar {
-    height: 6px; background: var(--ink-faint);
+    height: 18px; background: var(--ink-faint);
     border-radius: 2px; overflow: hidden; margin-bottom: 14px;
     position: relative;
   }
@@ -228,7 +240,7 @@
     color: var(--warn); margin-bottom: 8px;
   }
   .countdown-bar {
-    height: 4px; background: var(--ink-faint);
+    height: 12px; background: var(--ink-faint);
     margin-bottom: 8px; position: relative;
   }
   .countdown-fill {
@@ -282,7 +294,7 @@
     color: var(--ink-soft); width: 100px; flex-shrink: 0;
   }
   .contam-bar-track {
-    flex: 1; height: 3px; background: var(--ink-faint); position: relative;
+    flex: 1; height: 9px; background: var(--ink-faint); position: relative;
   }
   .contam-bar-fill {
     position: absolute; left: 0; top: 0; bottom: 0;
@@ -329,25 +341,25 @@
   .r-label { color: var(--ink-soft); }
   .r-val { color: var(--acid); }
   .cost-meter {
-    margin-top: 18px; border: 1px solid var(--hair); padding: 14px;
+    margin-top: 18px; border: 1px solid var(--hair); padding: 28px;
     background: rgba(255,45,45,0.05);
   }
   .cost-label {
     font-family: "JetBrains Mono", monospace;
-    font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--warn); margin-bottom: 10px;
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--warn); margin-bottom: 18px;
   }
   .cost-row {
-    display: flex; align-items: baseline; gap: 10px;
-    margin-bottom: 6px;
+    display: flex; align-items: baseline; gap: 14px;
+    margin-bottom: 12px;
   }
   .cost-amount {
     font-family: "Bodoni Moda", serif;
-    font-size: 28px; font-weight: 900; color: var(--acid); line-height: 1;
+    font-size: 56px; font-weight: 900; color: var(--acid); line-height: 1;
   }
   .cost-desc {
     font-family: "JetBrains Mono", monospace;
-    font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase;
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
     color: var(--ink-soft);
   }
 
@@ -362,14 +374,14 @@
   }
   .mandate-label b { color: var(--acid); }
   .mandate-track {
-    height: 5px; background: var(--ink-faint); position: relative;
+    height: 15px; background: var(--ink-faint); position: relative;
   }
   .mandate-fill {
     position: absolute; left: 0; top: 0; bottom: 0;
     background: var(--acid); width: 0;
   }
   .mandate-target-line {
-    position: absolute; top: -4px; bottom: -4px; width: 2px;
+    position: absolute; top: -6px; bottom: -6px; width: 2px;
     background: var(--warn);
   }
   .mandate-sub {
@@ -398,6 +410,19 @@
     box-shadow: none;
   }
   .cta-button.secondary:hover { border-color: var(--acid); color: var(--acid); }
+  /* Large equal-weight button pair for slide 5 */
+  .cta-wrap.cta-equal { flex-direction: column; gap: 12px; }
+  .cta-wrap.cta-equal .cta-button {
+    padding: 16px 28px; font-size: 11px; width: 100%; justify-content: center;
+  }
+  .cta-wrap.cta-equal .cta-button.secondary {
+    background: var(--warn); color: var(--ink); border-color: var(--warn);
+    box-shadow: 0 0 24px rgba(255,45,45,0.35);
+  }
+  .cta-wrap.cta-equal .cta-button.secondary:hover {
+    background: var(--acid); color: #0a0c08; border-color: var(--acid);
+    box-shadow: 0 0 24px rgba(198,255,61,0.5);
+  }
 
   /* ---------- Balloon + pin ---------- */
   .balloon-track {
@@ -544,7 +569,7 @@
   <!-- Header -->
   <header class="header">
     <span class="hdr-title">Making Waste Visible</span>
-    <span class="hdr-sub">RI Textile Waste 2024</span>
+    <span class="hdr-sub">RI  Waste </span>
     <span class="hdr-alarm">● RIRRC DATA</span>
     <span class="hdr-year">2026</span>
   </header>
@@ -688,7 +713,7 @@
         <h2 class="headline">THE COST<br/>OF <em>contamination.</em></h2>
         <div class="reading-list">
           <div class="reading-item">
-            <span class="r-label">Knit gauge</span>
+            <!-- <span class="r-label">Knit gauge</span>
             <span class="r-val">Providence rejection rate: 648 lbs/hh</span>
           </div>
           <div class="reading-item">
@@ -699,7 +724,7 @@
             <span class="r-label">Seam placement</span>
             <span class="r-val">38 municipalities, 38 different rates</span>
           </div>
-        </div>
+        </div> -->
         <div class="cost-meter">
           <div class="cost-label">● Annual contamination cost</div>
           <div class="cost-row">
@@ -707,7 +732,7 @@
             <span class="cost-desc">statewide / year</span>
           </div>
           <div class="cost-row">
-            <span class="cost-amount" style="font-size:20px;color:var(--warn)">$1.94M</span>
+            <span class="cost-amount" style="font-size:40px;color:var(--warn)">$1.94M</span>
             <span class="cost-desc">Providence alone</span>
           </div>
         </div>
@@ -715,46 +740,65 @@
     </section>
 
     <!-- Section 4: Action -->
-    <section class="scene-section left" data-scene="4">
-      <div class="caption">
-        <div class="eyebrow">
-          <span class="alarm-dot"></span>
-          <span class="num">05 / 05</span>
-          <span class="dash"></span>
-          <span>What you can do</span>
-        </div>
-        <h2 class="headline">CHANGE<br/>THE <em>numbers.</em></h2>
-        <div class="mandate-wrap">
-          <div class="mandate-row">
-            <div class="mandate-label">
-              <span>State avg recycling</span>
-              <b id="recycleVal">—</b>
-            </div>
-            <div class="mandate-track">
-              <div class="mandate-fill" id="recycleFill" data-target="35"></div>
-              <div class="mandate-target-line" style="left:50%"></div>
-            </div>
-            <div class="mandate-sub">Target: 50% diversion mandate</div>
+    <section class="scene-section" data-scene="4">
+      <div class="center-pair">
+        <div class="pair-a">
+          <div class="eyebrow">
+            <span class="alarm-dot"></span>
+            <span class="num">05 / 05</span>
+            <span class="dash"></span>
+            <span>What you can do</span>
           </div>
-          <div class="mandate-row">
-            <div class="mandate-label">
-              <span>Best performer (Warwick)</span>
-              <b id="bestVal">—</b>
-            </div>
-            <div class="mandate-track">
-              <div class="mandate-fill" id="bestFill" data-target="50.2" style="background:var(--acid)"></div>
-              <div class="mandate-target-line" style="left:50%"></div>
-            </div>
-            <div class="mandate-sub">50% mandate threshold</div>
+          <h2 class="headline">CHANGE<br/>THE <em>numbers.</em></h2>
+          <p class="body-block">Rhode Island has a 50% diversion mandate — but most municipalities fall short. Warwick is the only city meeting the threshold. The gap is closeable.</p>
+          <div class="cta-wrap cta-equal">
+            <a class="cta-button" href="making-waste-visible/RIWasteGazette.html">
+              RI Waste Gazette <span style="font-family:'Bodoni Moda',serif;font-style:italic;font-size:16px;font-weight:700;">↗</span>
+            </a>
+            <a class="cta-button secondary" href="https://rirrc.org/recycling-composting-disposal/what-to-recycle-in-your-bin-cart" target="_blank" rel="noopener">
+              What to Recycle ↗
+            </a>
           </div>
         </div>
-        <div class="cta-wrap">
-          <a class="cta-button" href="making-waste-visible/RIWasteGazette.html">
-            RI Waste Gazette <span style="font-family:'Bodoni Moda',serif;font-style:italic;font-size:16px;font-weight:700;">↗</span>
-          </a>
-          <a class="cta-button secondary" href="https://rirrc.org/recycling-composting-disposal/what-to-recycle-in-your-bin-cart" target="_blank" rel="noopener">
-            What to Recycle ↗
-          </a>
+        <div class="pair-b">
+          <div class="mandate-wrap">
+            <div class="mandate-row">
+              <div class="mandate-label">
+                <span>Mandatory recycling — current</span>
+                <b id="mandRecycleVal" style="color:var(--warn)">—</b>
+              </div>
+              <div class="mandate-track">
+                <div class="mandate-fill" id="mandRecycleFill" style="background:var(--warn)"></div>
+              </div>
+            </div>
+            <div class="mandate-row">
+              <div class="mandate-label">
+                <span>Mandatory recycling — required</span>
+                <b style="color:var(--acid)">35%</b>
+              </div>
+              <div class="mandate-track">
+                <div class="mandate-fill" id="reqRecycleFill" style="background:var(--acid)"></div>
+              </div>
+            </div>
+            <div class="mandate-row" style="margin-top:14px">
+              <div class="mandate-label">
+                <span>Overall diversion — current</span>
+                <b id="mandDiversionVal" style="color:var(--warn)">—</b>
+              </div>
+              <div class="mandate-track">
+                <div class="mandate-fill" id="mandDiversionFill" style="background:var(--warn)"></div>
+              </div>
+            </div>
+            <div class="mandate-row">
+              <div class="mandate-label">
+                <span>Overall diversion — required</span>
+                <b style="color:var(--acid)">50%</b>
+              </div>
+              <div class="mandate-track">
+                <div class="mandate-fill" id="reqDiversionFill" style="background:var(--acid)"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -840,23 +884,25 @@
       "Westerly":         { rejected: 0,   diversion: 40.7 },
     };
 
-    // Max rejected for color scale
-    const MAX_REJECTED = 648;
+    // Quantile scale for rejected recycling
+    const _rejVals = Object.values(TOWN_DATA)
+      .map(d => d.rejected).filter(v => v > 0).sort((a, b) => a - b);
+    function _quantileVal(q) {
+      return _rejVals[Math.min(Math.floor(q * _rejVals.length), _rejVals.length - 1)];
+    }
+    const Q1 = _quantileVal(0.25);
+    const Q2 = _quantileVal(0.50);
+    const Q3 = _quantileVal(0.75);
 
     function rejectionColor(lbs) {
       if (!lbs || lbs === 0) return "#1a2218";
-      const t = Math.min(lbs / MAX_REJECTED, 1);
-      // dark green → amber → alarm red
-      if (t < 0.15) return "#1e2e18";
-      if (t < 0.35) return "#3a2010";
-      if (t < 0.55) return "#6a2210";
-      if (t < 0.75) return "#a02010";
-      return "#ff2d2d";
+      if (lbs <= Q1) return "#3d1a10";       // Q1 — faint dark red
+      if (lbs <= Q2) return "#7a1e0c";       // Q2 — medium dark red
+      if (lbs <= Q3) return "#b82412";       // Q3 — strong red
+      return "#ff2d2d";                       // Q4 — alarm red
     }
 
     // --- Map (slide 1) — full-screen right overlay ---
-    const MAP_HIGHLIGHT  = ["Providence","Cranston","Pawtucket","West_Warwick","North_Providence","East_Providence"];
-    const MAP_OPACITIES  = [0.90, 0.72, 0.60, 0.52, 0.42, 0.34];
 
     function initMap() {
       fetch("making-waste-visible/ri_municipalities.svg")
@@ -886,14 +932,17 @@
             }
           });
 
-          // Highlight top-6 rejected-recycling towns in red
-          MAP_HIGHLIGHT.forEach((id, i) => {
+          // Color all towns by quantile-distributed rejected recycling
+          Object.entries(TOWN_DATA).forEach(([id, data]) => {
             const el = svg.getElementById(id);
             if (!el) return;
-            el.style.fill = "#ff2d2d";
-            el.style.fillOpacity = String(MAP_OPACITIES[i]);
-            el.style.stroke = "rgba(255,45,45,0.75)";
-            el.style.strokeWidth = "1.5";
+            const color = rejectionColor(data.rejected);
+            el.style.fill = color;
+            el.style.fillOpacity = "1";
+            if (data.rejected > 0) {
+              el.style.stroke = color;
+              el.style.strokeWidth = "1.5";
+            }
           });
         })
         .catch(e => console.warn("RI map could not load:", e));
@@ -934,16 +983,18 @@
 
     // --- Scene 4 bar animations ---
     function animateScene4() {
-      gsap.fromTo("#recycleFill", { width: "0%" }, { width: "35%",   duration: 1.4, ease: "power3.out", delay: 0.2 });
-      gsap.fromTo("#bestFill",    { width: "0%" }, { width: "50.2%", duration: 1.4, ease: "power3.out", delay: 0.4 });
-      document.getElementById("recycleVal").textContent = "35%";
-      document.getElementById("bestVal").textContent    = "50.2%";
+      gsap.fromTo("#mandRecycleFill",  { width: "0%" }, { width: "28.9%", duration: 1.4, ease: "power3.out", delay: 0.15 });
+      gsap.fromTo("#reqRecycleFill",   { width: "0%" }, { width: "35%",   duration: 1.4, ease: "power3.out", delay: 0.35 });
+      gsap.fromTo("#mandDiversionFill",{ width: "0%" }, { width: "29.8%", duration: 1.4, ease: "power3.out", delay: 0.55 });
+      gsap.fromTo("#reqDiversionFill", { width: "0%" }, { width: "50%",   duration: 1.4, ease: "power3.out", delay: 0.75 });
+      document.getElementById("mandRecycleVal").textContent  = "28.9%";
+      document.getElementById("mandDiversionVal").textContent = "29.8%";
     }
     function resetScene4() {
-      gsap.killTweensOf("#recycleFill, #bestFill");
-      gsap.set(["#recycleFill","#bestFill"], { width: "0%" });
-      document.getElementById("recycleVal").textContent = "—";
-      document.getElementById("bestVal").textContent    = "—";
+      gsap.killTweensOf("#mandRecycleFill, #reqRecycleFill, #mandDiversionFill, #reqDiversionFill");
+      gsap.set(["#mandRecycleFill","#reqRecycleFill","#mandDiversionFill","#reqDiversionFill"], { width: "0%" });
+      document.getElementById("mandRecycleVal").textContent  = "—";
+      document.getElementById("mandDiversionVal").textContent = "—";
     }
 
     // --- Scene 1 bar animations ---
@@ -975,8 +1026,8 @@
     camera.position.set(0, 0.2, 9);
     camera.lookAt(0, 0, 0);
 
-    scene.add(new THREE.AmbientLight(0xffffff, 1.8));
-    const key = new THREE.DirectionalLight(0xffffff, 0.9);
+    scene.add(new THREE.AmbientLight(0xffffff, 1));
+    const key = new THREE.DirectionalLight(0xffffff, 0.5);
     key.position.set(4, 6, 6);
     key.castShadow = true;
     scene.add(key);
@@ -1241,7 +1292,7 @@
         // 2 GARMENT REVEAL — centered vertically beside the left-side text
         { camZ:  5.2, clusterX:  0.9, clusterY: 0.0, slideY: 0, rotY:  0.0,  spinRate: 1 },
         // 3 DETAIL — tight zoom, garment remains vertically centered
-        { camZ:  3.2, clusterX:  1.35, clusterY: 0.0, slideY: 0, rotY: -0.35, spinRate: 0 },
+        { camZ:  3.2, clusterX:  1, clusterY: 0.0, slideY: 0, rotY: -0.35, spinRate: 0 },
         // 4 ACTION — garment exits upward
         { camZ: 10.5, clusterX:  0.0, clusterY: 0.0, slideY: GARMENT_HIDDEN_Y, rotY:  0.0,  spinRate: 0 },
       ];
@@ -1283,7 +1334,7 @@
 
       const trashVisible = state.activeIdx >= 4;
       bagGroup.visible = trashVisible;
-      bagFloor.visible = trashVisible;
+      bagFloor.visible = false;
       stepBags(dt);
       camera.lookAt(0, state.clusterY, 0);
       renderer.render(scene, camera);
